@@ -1,0 +1,26 @@
+name: file_manager
+description: A file manager for Android device written by Flutter
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.2.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^0.1.2
+  fluttertoast: ^3.1.0
+  flutter_svg: ">=0.12.4"
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icon/
+
