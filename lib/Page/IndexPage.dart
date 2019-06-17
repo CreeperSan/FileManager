@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:file_manager/Page/Pagers/BasePager.dart';
 import 'package:file_manager/Page/Pagers/HomePager.dart';
+import 'package:file_manager/Page/Pagers/FilePager.dart';
 
 class IndexPage extends StatefulWidget{
   @override
@@ -19,7 +20,7 @@ class _IndexPageState extends State<IndexPage>{
     super.initState();
     // 初始化頁面
     _pagerList.clear();
-    _pagerList.add(new HomePager());
+    _pagerList.add(new FilePager());
     _pagerList.add(new HomePager());
   }
 
