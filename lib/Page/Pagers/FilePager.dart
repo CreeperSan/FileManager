@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:file_manager/Collection/StackCollection.dart';
 import 'package:file_manager/Page/Pagers/BasePager.dart';
+import 'package:flutter/services.dart';
 
 class FilePager extends BasePager{
 
