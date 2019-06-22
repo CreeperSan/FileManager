@@ -32,7 +32,40 @@ class _FilePagerState extends State<FilePager>{
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text("文件"));
+    return Stack(children: <Widget>[
+      Container(child: Column(children: <Widget>[
+        Container(height: 32, decoration: BoxDecoration(color: Colors.white),child: Row(children: <Widget>[
+          Expanded(child: ListView(scrollDirection: Axis.horizontal, children: <Widget>[
+            Icon(Icons.chevron_right),
+            Align(child: Text("Asdasdasd")),
+            Align(child: Text("Asdasdasd")),
+            Align(child: Text("Asdasdasd")),
+            Align(child: Text("Asdasdasd")),
+            Align(child: Text("Asdasdasd")),
+            Align(child: Text("Asdasdasd")),
+            Align(child: Text("Asdasdasd")),
+            Align(child: Text("Asdasdasd")),
+            Align(child: Text("Asdasdasd")),
+            Align(child: Text("Asdasdasd")),
+            Align(child: Text("Asdasdasd")),
+            Align(child: Text("Asdasdasd")),
+            Align(child: Text("Asdasdasd")),
+            Align(child: Text("Asdasdasd")),
+            Align(child: Text("Asdasdasd")),
+            Align(child: Text("Asdasdasd")),
+          ]))
+        ])),
+        Divider(height: 1, color: Colors.blueGrey),
+        Expanded(child: ListView(children: <Widget>[
+          Text("ASd")
+        ]))
+      ]))
+    ]);
+  }
+
+  /// 點擊事件
+  void _onMorePress(){
+    print("onMenuPressed()");
   }
 
 }
