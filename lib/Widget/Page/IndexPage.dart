@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:file_manager/Page/Pagers/BasePager.dart';
-import 'package:file_manager/Page/Pagers/HomePager.dart';
-import 'package:file_manager/Page/Pagers/FilePager.dart';
+import 'package:file_manager/Widget/Page/Pagers/BasePager.dart';
+import 'package:file_manager/Widget/Page/Pagers/HomePager.dart';
+import 'package:file_manager/Widget/Page/Pagers/FilePager.dart';
 
 class IndexPage extends StatefulWidget{
   @override

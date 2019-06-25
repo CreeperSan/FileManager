@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:file_manager/Page/IndexPage.dart';
+import 'package:file_manager/Widget/Page/IndexPage.dart';
 
 class BootPage extends StatefulWidget{
   @override

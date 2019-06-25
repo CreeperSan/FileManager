@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:file_manager/Collection/StackCollection.dart';
-import 'package:file_manager/Page/Pagers/BasePager.dart';
-import 'package:flutter/services.dart';
+import 'package:file_manager/Widget/Page/Pagers/BasePager.dart';
 
 class FilePager extends BasePager{
 
@@ -71,13 +70,19 @@ class _FilePagerState extends State<FilePager>{
         ])),
         Divider(height: 1, color: Colors.blueGrey),
         Row(children: <Widget>[
-          _getBottomButtom("選擇", Icons.select_all),
-          _getBottomButtom("新建", Icons.add),
-          _getBottomButtom("搜索", Icons.search),
-          _getBottomButtom("刷新", Icons.refresh),
-          _getBottomButtom("更多", Icons.more_horiz),
+          _getBottomButton("選擇", Icons.select_all),
+          _getBottomButton("新建", Icons.add),
+          _getBottomButton("搜索", Icons.search),
+          _getBottomButton("刷新", Icons.refresh),
+          _getBottomButton("更多", Icons.more_horiz),
         ])
       ])),
+      RaisedButton(onPressed: ()=>{
+        showDialog(
+            context: context,
+            builder: _getCreateDialog
+        )
+      })
     ]);
   }
 
@@ -109,11 +114,45 @@ class _FilePagerState extends State<FilePager>{
     ]);
   }
 
-  Widget _getBottomButtom(String name, IconData icon){
+  Widget _getBottomButton(String name, IconData icon){
     return Expanded(child: Padding(padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16), child: Column(children: <Widget>[
       Icon(icon),
       Text(name)
     ])));
+  }
+
+  Widget _getCreateDialog(BuildContext context){
+    return StatefulBuilder(builder: (context, mSetState){
+      final FILE_TYPE_FILE = 0;
+      final FILE_TYPE_DIRECTORY = 1;
+      int fileType = FILE_TYPE_FILE;
+      String dialogTitle = "創建文件";
+
+      void Function(int value) onValueChange = (int value){
+        print("select -> $value");
+        mSetState(() {
+          dialogTitle = value.toString();
+        });
+      };
+
+      return AlertDialog(
+        title: Text(dialogTitle),
+        content: SingleChildScrollView(child: ListBody(children: <Widget>[
+          Row(children: <Widget>[
+            Expanded(child: RadioListTile(title: Text("文件"), value: FILE_TYPE_FILE, groupValue: fileType, onChanged: onValueChange)),
+            Expanded(child: RadioListTile(title: Text("文件夾"), value: FILE_TYPE_DIRECTORY, groupValue: fileType, onChanged: onValueChange)),
+          ]),
+          TextField(decoration: InputDecoration(
+              labelText: "請輸入名稱"
+          )),
+        ])),
+        actions: <Widget>[
+          FlatButton(child: Text("創建"), onPressed: ()=>{
+            Navigator.of(context).pop()
+          })
+        ],
+      );
+    });
   }
 
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:file_manager/Page/BootPage.dart';
+import 'package:file_manager/Widget/Page/BootPage.dart';
 import 'package:file_manager/main.dart';
 
 class FileApplication extends StatelessWidget{
