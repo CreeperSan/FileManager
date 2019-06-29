@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:file_manager/Collection/StackCollection.dart';
 import 'package:file_manager/Widget/Page/Pagers/BasePager.dart';
+import 'package:file_manager/Widget/Dialog/CreateFileDirectoryDialog.dart';
+import 'dart:async';
 
 class FilePager extends BasePager{
 
@@ -22,6 +24,12 @@ class FilePager extends BasePager{
 }
 
 class _FilePagerState extends State<FilePager>{
+  static const int _stateIdle = 0;
+  static const int _stateSuccess = 1;
+  static const int _stateRefreshing = 2;
+  static const int _stateSearching = 3;
+
+  int currentState = _stateSuccess;
 
 
   @override
@@ -44,7 +52,23 @@ class _FilePagerState extends State<FilePager>{
           ]))
         ])),
         Divider(height: 1, color: Colors.blueGrey),
-        Expanded(child: ListView(children: <Widget>[
+        Expanded(child: _getContentWidget()),
+        Divider(height: 1, color: Colors.blueGrey),
+        Row(children: <Widget>[
+          _getBottomButton("選擇", Icons.select_all, _onSelectTap),
+          _getBottomButton("新建", Icons.add, _onNewTap),
+          _getBottomButton("搜索", Icons.search, _onSearchTap),
+          _getBottomButton("刷新", Icons.refresh, _onRefreshTap),
+          _getBottomButton("更多", Icons.more_horiz, _onMoreTap),
+        ])
+      ])),
+    ]);
+  }
+
+  Widget _getContentWidget(){
+    switch(currentState){
+      case _stateSuccess:
+        return ListView(children: <Widget>[
           Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
             _getFileItemWidget("12.txt", "26.01 kb", "-we", "01/05/19"),
             _getFileItemWidget("13.txt", "26.01 kb", "-we", "01/05/19"),
@@ -67,28 +91,83 @@ class _FilePagerState extends State<FilePager>{
             _getFileItemWidget("15.sh", "26.01 kb", "-we", "01/05/19"),
             _getFileItemWidget("16.java", "26.01 kb", "-we", "01/05/19"),
           ])
-        ])),
-        Divider(height: 1, color: Colors.blueGrey),
-        Row(children: <Widget>[
-          _getBottomButton("選擇", Icons.select_all),
-          _getBottomButton("新建", Icons.add),
-          _getBottomButton("搜索", Icons.search),
-          _getBottomButton("刷新", Icons.refresh),
-          _getBottomButton("更多", Icons.more_horiz),
-        ])
-      ])),
-      RaisedButton(onPressed: ()=>{
-        showDialog(
-            context: context,
-            builder: _getCreateDialog
-        )
-      })
-    ]);
+        ]);
+      case _stateRefreshing:
+        return Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.center, children: <Widget>[
+          CircularProgressIndicator(),
+          Container(height: 12),
+          Text("正在讀取文件列表...")
+        ]);
+      default:
+        return Center(child: Text("Idle..."));
+    }
   }
 
   /// 點擊事件
-  void _onMorePress(){
-    print("onMenuPressed()");
+  void _onSelectTap(){
+
+  }
+
+  void _onNewTap(){
+    showDialog(
+        context: context,
+        builder: (context){
+          const FILE_TYPE_FILE = 0;
+          const FILE_TYPE_DIRECTORY = 1;
+          int fileType = FILE_TYPE_FILE;
+          String dialogTitle = "創建文件";
+
+          return StatefulBuilder(builder: (context, state){
+            void onValueChange(int value){
+              print("value -> $value");
+              state(() {
+                fileType = value;
+                switch(fileType){
+                  case FILE_TYPE_FILE :
+                    dialogTitle = "創建文件";
+                    break;
+                  case FILE_TYPE_DIRECTORY :
+                    dialogTitle = "創建文件夾";
+                    break;
+                }
+              });
+            }
+
+            return AlertDialog(
+              title: Text(dialogTitle),
+              content: SingleChildScrollView(child: ListBody(children: <Widget>[
+                Container(height: 30, child: Row(children: <Widget>[
+                  Expanded(child: RadioListTile(title: Text("文件"), value: FILE_TYPE_FILE, groupValue: fileType, onChanged: onValueChange)),
+                  Expanded(child: RadioListTile(title: Text("文件夾"), value: FILE_TYPE_DIRECTORY, groupValue: fileType, onChanged: onValueChange)),
+                ])),
+                TextField(decoration: InputDecoration(
+                    labelText: "請輸入名稱"
+                )),
+              ])),
+              actions: <Widget>[
+                FlatButton(child: Text("創建"), onPressed: ()=>{
+                  Navigator.of(context).pop()
+                })
+              ],
+            );
+          });
+        }
+    );
+  }
+
+  void _onSearchTap(){
+
+  }
+
+  void _onRefreshTap(){
+    setState(() { currentState = _stateRefreshing; });
+    new Future.delayed(Duration(seconds: 1), ()=>{
+      setState(() { currentState = _stateSuccess; })
+    });
+  }
+
+  void _onMoreTap(){
+
   }
 
   Widget _getFileItemWidget(String fileName, String fileSize, String permission, String time){
@@ -114,26 +193,25 @@ class _FilePagerState extends State<FilePager>{
     ]);
   }
 
-  Widget _getBottomButton(String name, IconData icon){
-    return Expanded(child: Padding(padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16), child: Column(children: <Widget>[
-      Icon(icon),
-      Text(name)
-    ])));
+  Widget _getBottomButton(String name, IconData icon, Function onTab) {
+    return Expanded(child: GestureDetector(onTap: onTab,
+        child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: Column(children: <Widget>[Icon(icon), Text(name)]))));
   }
 
   Widget _getCreateDialog(BuildContext context){
-    return StatefulBuilder(builder: (context, mSetState){
-      final FILE_TYPE_FILE = 0;
-      final FILE_TYPE_DIRECTORY = 1;
-      int fileType = FILE_TYPE_FILE;
-      String dialogTitle = "創建文件";
+    final FILE_TYPE_FILE = 0;
+    final FILE_TYPE_DIRECTORY = 1;
+    int fileType = FILE_TYPE_FILE;
+    String dialogTitle = "創建";
 
-      void Function(int value) onValueChange = (int value){
+    return StatefulBuilder(builder: (context, state){
+
+      void onValueChange(int value){
         print("select -> $value");
-        mSetState(() {
-          dialogTitle = value.toString();
-        });
-      };
+        state(() {});
+      }
 
       return AlertDialog(
         title: Text(dialogTitle),
@@ -141,7 +219,12 @@ class _FilePagerState extends State<FilePager>{
           Row(children: <Widget>[
             Expanded(child: RadioListTile(title: Text("文件"), value: FILE_TYPE_FILE, groupValue: fileType, onChanged: onValueChange)),
             Expanded(child: RadioListTile(title: Text("文件夾"), value: FILE_TYPE_DIRECTORY, groupValue: fileType, onChanged: onValueChange)),
+            Expanded(child: RadioListTile(title: Text("???"), value: 3, groupValue: fileType, onChanged: (value){
+              fileType++;
+              fileType = fileType~/3;
+            })),
           ]),
+          Text(fileType.toString()),
           TextField(decoration: InputDecoration(
               labelText: "請輸入名稱"
           )),
