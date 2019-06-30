@@ -41,6 +41,9 @@ class _IndexPageState extends State<IndexPage>{
         childrenDelegate: SliverChildBuilderDelegate((context, index) => _pagerList[index], childCount: _pagerList.length),
         onPageChanged: _onPagerPageChange,
       ),
+      drawer: Container(decoration: BoxDecoration(color: Colors.white),child: ListView(children: <Widget>[
+        Text("Text")
+      ])),
     );
   }
 

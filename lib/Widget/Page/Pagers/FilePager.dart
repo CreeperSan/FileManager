@@ -54,13 +54,7 @@ class _FilePagerState extends State<FilePager>{
         Divider(height: 1, color: Colors.blueGrey),
         Expanded(child: _getContentWidget()),
         Divider(height: 1, color: Colors.blueGrey),
-        Row(children: <Widget>[
-          _getBottomButton("選擇", Icons.select_all, _onSelectTap),
-          _getBottomButton("新建", Icons.add, _onNewTap),
-          _getBottomButton("搜索", Icons.search, _onSearchTap),
-          _getBottomButton("刷新", Icons.refresh, _onRefreshTap),
-          _getBottomButton("更多", Icons.more_horiz, _onMoreTap),
-        ])
+        _getBottomWidget()
       ])),
     ]);
   }
@@ -156,7 +150,26 @@ class _FilePagerState extends State<FilePager>{
   }
 
   void _onSearchTap(){
-
+    showDialog(
+      context: context,
+      builder: (context){
+        return StatefulBuilder(builder: (context, state){
+          return AlertDialog(
+            title: Text("搜索文件"),
+            content: SingleChildScrollView(child: ListBody(children: <Widget>[
+              TextField(decoration: InputDecoration(
+                labelText: "請輸入搜索的文件内容"
+              ))
+            ])),
+            actions: <Widget>[
+              FlatButton(child: Text("搜索"), onPressed: ()=>{
+                Navigator.of(context).pop()
+              })
+            ]
+          );
+        });
+      }
+    );
   }
 
   void _onRefreshTap(){
@@ -167,7 +180,27 @@ class _FilePagerState extends State<FilePager>{
   }
 
   void _onMoreTap(){
+    showModalBottomSheet(context: context, builder: (BuildContext context){
+      return BottomSheet(builder: (builderContext){
+        return Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+          ListTile(
+            leading: Icon(Icons.info),
+            title: Text("文件詳情"),
+            trailing: Icon(Icons.arrow_right),
+          ),
+        ]);
+      }, onClosing: (){});
+    });
+  }
 
+  Widget _getBottomWidget(){
+    return Row(children: <Widget>[
+      _createBottomButtonWidget("選擇", Icons.select_all, _onSelectTap),
+      _createBottomButtonWidget("新建", Icons.add, _onNewTap),
+      _createBottomButtonWidget("搜索", Icons.search, _onSearchTap),
+      _createBottomButtonWidget("刷新", Icons.refresh, _onRefreshTap),
+      _createBottomButtonWidget("更多", Icons.more_horiz, _onMoreTap),
+    ]);
   }
 
   Widget _getFileItemWidget(String fileName, String fileSize, String permission, String time){
@@ -193,7 +226,7 @@ class _FilePagerState extends State<FilePager>{
     ]);
   }
 
-  Widget _getBottomButton(String name, IconData icon, Function onTab) {
+  Widget _createBottomButtonWidget(String name, IconData icon, Function onTab) {
     return Expanded(child: GestureDetector(onTap: onTab,
         child: Padding(
             padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
