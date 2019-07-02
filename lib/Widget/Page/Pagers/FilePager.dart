@@ -28,13 +28,24 @@ class _FilePagerState extends State<FilePager>{
   static const int _stateSuccess = 1;
   static const int _stateRefreshing = 2;
   static const int _stateSearching = 3;
+  static const int _stateSelecting = 4;
 
   int currentState = _stateSuccess;
 
+  FileStack fileStack = FileStack();
 
   @override
   void initState() {
     super.initState();
+    // 初始化虛擬數據
+    FolderItem item = FolderItem();
+    item.folderName = "folder";
+    for(int i=0; i<64; i++){
+      FileItem tmpItem = FileItem();
+      tmpItem.name = "文件$i.txt";
+      item._fileList.add(tmpItem);
+    }
+    fileStack.fileStack.add(item);
   }
 
   @override
@@ -61,30 +72,10 @@ class _FilePagerState extends State<FilePager>{
 
   Widget _getContentWidget(){
     switch(currentState){
+      case _stateSelecting:
       case _stateSuccess:
         return ListView(children: <Widget>[
-          Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-            _getFileItemWidget("12.txt", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("13.txt", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("14.mp4", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("15.sh", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("16.java", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("14.mp4", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("15.sh", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("16.java", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("14.mp4", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("15.sh", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("16.java", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("14.mp4", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("15.sh", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("16.java", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("14.mp4", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("15.sh", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("16.java", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("14.mp4", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("15.sh", "26.01 kb", "-we", "01/05/19"),
-            _getFileItemWidget("16.java", "26.01 kb", "-we", "01/05/19"),
-          ])
+          Column(mainAxisAlignment: MainAxisAlignment.center, children: _getCurrentFolderFileWidgetList())
         ]);
       case _stateRefreshing:
         return Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.center, children: <Widget>[
@@ -99,7 +90,11 @@ class _FilePagerState extends State<FilePager>{
 
   /// 點擊事件
   void _onSelectTap(){
-
+    if(currentState == _stateSuccess){
+      setState(() { currentState = _stateSelecting; });
+    }else if(currentState == _stateSelecting){
+      setState(() { currentState = _stateSuccess; });
+    }
   }
 
   void _onNewTap(){
@@ -203,20 +198,82 @@ class _FilePagerState extends State<FilePager>{
     ]);
   }
 
-  Widget _getFileItemWidget(String fileName, String fileSize, String permission, String time){
-    return Row(children: <Widget>[
-      Container(width: 48, height: 48, child: Icon(Icons.insert_drive_file)),
-      Expanded(child: Column(children: <Widget>[
-        Row(children: <Widget>[
-          Text(fileName, style: TextStyle(fontSize: 16))
-        ]),
-        Padding(padding: EdgeInsets.only(right: 16), child: Row(children: <Widget>[
-          Expanded(child: Text(fileSize, textAlign: TextAlign.left)),
-          Expanded(child: Text(permission, textAlign: TextAlign.center)),
-          Expanded(child: Text(time, textAlign: TextAlign.right)),
+  List<Widget> _getCurrentFolderFileWidgetList(){
+    List<Widget> widgetList = [];
+    fileStack.fileStack[0]._fileList.forEach((fileItem){
+      widgetList.add(_getFileItemWidgett(fileItem));
+    });
+    return widgetList;
+  }
+
+  Widget _getFileItemWidgett(FileItem fileItem){
+    if(currentState == _stateSelecting){
+      return Row(children: <Widget>[
+        Container(width: 48, height: 48, child: Icon(Icons.insert_drive_file)),
+        Expanded(child: Column(children: <Widget>[
+          Row(children: <Widget>[
+            Text(fileItem.name, style: TextStyle(fontSize: 16))
+          ]),
+          Padding(padding: EdgeInsets.only(right: 16), child: Row(children: <Widget>[
+            Expanded(child: Text(fileItem.getFileSize(), textAlign: TextAlign.left)),
+            Expanded(child: Text(fileItem.getPermissionText(), textAlign: TextAlign.center)),
+            Expanded(child: Text(fileItem.getModifyTime(), textAlign: TextAlign.right)),
+          ]))
+        ])),
+        Checkbox(value: fileItem.isSelected, onChanged: (newState){
+          setState(() { fileItem.isSelected = !fileItem.isSelected; });
+        })
+      ]);
+    }else{
+      return Row(children: <Widget>[
+        Container(width: 48, height: 48, child: Icon(Icons.insert_drive_file)),
+        Expanded(child: Column(children: <Widget>[
+          Row(children: <Widget>[
+            Text(fileItem.name, style: TextStyle(fontSize: 16))
+          ]),
+          Padding(padding: EdgeInsets.only(right: 16), child: Row(children: <Widget>[
+            Expanded(child: Text(fileItem.getFileSize(), textAlign: TextAlign.left)),
+            Expanded(child: Text(fileItem.getPermissionText(), textAlign: TextAlign.center)),
+            Expanded(child: Text(fileItem.getModifyTime(), textAlign: TextAlign.right)),
+          ]))
         ]))
-      ]))
-    ]);
+      ]);
+    }
+  }
+
+  Widget _getFileItemWidget(String fileName, String fileSize, String permission, String time){
+    if(currentState == _stateSelecting){
+      return Row(children: <Widget>[
+        Container(width: 48, height: 48, child: Icon(Icons.insert_drive_file)),
+        Expanded(child: Column(children: <Widget>[
+          Row(children: <Widget>[
+            Text(fileName, style: TextStyle(fontSize: 16))
+          ]),
+          Padding(padding: EdgeInsets.only(right: 16), child: Row(children: <Widget>[
+            Expanded(child: Text(fileSize, textAlign: TextAlign.left)),
+            Expanded(child: Text(permission, textAlign: TextAlign.center)),
+            Expanded(child: Text(time, textAlign: TextAlign.right)),
+          ]))
+        ])),
+        Checkbox(value: true, onChanged: (newState){
+
+        })
+      ]);
+    }else{
+      return Row(children: <Widget>[
+        Container(width: 48, height: 48, child: Icon(Icons.insert_drive_file)),
+        Expanded(child: Column(children: <Widget>[
+          Row(children: <Widget>[
+            Text(fileName, style: TextStyle(fontSize: 16))
+          ]),
+          Padding(padding: EdgeInsets.only(right: 16), child: Row(children: <Widget>[
+            Expanded(child: Text(fileSize, textAlign: TextAlign.left)),
+            Expanded(child: Text(permission, textAlign: TextAlign.center)),
+            Expanded(child: Text(time, textAlign: TextAlign.right)),
+          ]))
+        ]))
+      ]);
+    }
   }
 
   Widget _getFilePathWidget(String folderName){
@@ -233,49 +290,11 @@ class _FilePagerState extends State<FilePager>{
             child: Column(children: <Widget>[Icon(icon), Text(name)]))));
   }
 
-  Widget _getCreateDialog(BuildContext context){
-    final FILE_TYPE_FILE = 0;
-    final FILE_TYPE_DIRECTORY = 1;
-    int fileType = FILE_TYPE_FILE;
-    String dialogTitle = "創建";
-
-    return StatefulBuilder(builder: (context, state){
-
-      void onValueChange(int value){
-        print("select -> $value");
-        state(() {});
-      }
-
-      return AlertDialog(
-        title: Text(dialogTitle),
-        content: SingleChildScrollView(child: ListBody(children: <Widget>[
-          Row(children: <Widget>[
-            Expanded(child: RadioListTile(title: Text("文件"), value: FILE_TYPE_FILE, groupValue: fileType, onChanged: onValueChange)),
-            Expanded(child: RadioListTile(title: Text("文件夾"), value: FILE_TYPE_DIRECTORY, groupValue: fileType, onChanged: onValueChange)),
-            Expanded(child: RadioListTile(title: Text("???"), value: 3, groupValue: fileType, onChanged: (value){
-              fileType++;
-              fileType = fileType~/3;
-            })),
-          ]),
-          Text(fileType.toString()),
-          TextField(decoration: InputDecoration(
-              labelText: "請輸入名稱"
-          )),
-        ])),
-        actions: <Widget>[
-          FlatButton(child: Text("創建"), onPressed: ()=>{
-            Navigator.of(context).pop()
-          })
-        ],
-      );
-    });
-  }
-
 }
 
 /// 文件管理隊列
 class FileStack{
-  StackCollection<FolderItem> fileStack = StackCollection();
+  List<FolderItem> fileStack = List();
 
   String getPath(){
     return "/";
@@ -291,9 +310,23 @@ class FolderItem{
 
 /// 單個文件對象
 class FileItem{
+  bool isSelected = false;
   bool isDirectory = false;
   String path = "";
   String name = "";
+  int fileSize;
   int createTimeStamp = 0;
   int modifyTimeStamp = 0;
+
+  String getPermissionText(){
+    return "rwe";
+  }
+
+  String getFileSize(){
+    return "26.03kb";
+  }
+
+  String getModifyTime(){
+    return "03/07/19";
+  }
 }
