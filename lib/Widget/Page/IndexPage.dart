@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:file_manager/Widget/Page/Pagers/BasePager.dart';
 import 'package:file_manager/Widget/Page/Pagers/HomePager.dart';
 import 'package:file_manager/Widget/Page/Pagers/FilePager.dart';
+import 'package:file_manager/Widget/Page/Pagers/ApplicationPager.dart';
 
 class IndexPage extends StatefulWidget{
   @override
@@ -22,6 +23,7 @@ class _IndexPageState extends State<IndexPage>{
     _pagerList.clear();
     _pagerList.add(new FilePager());
     _pagerList.add(new HomePager());
+    _pagerList.add(new ApplicationPager());
   }
 
   void _onPagerPageChange(int newPage){
@@ -41,10 +43,20 @@ class _IndexPageState extends State<IndexPage>{
         childrenDelegate: SliverChildBuilderDelegate((context, index) => _pagerList[index], childCount: _pagerList.length),
         onPageChanged: _onPagerPageChange,
       ),
-      drawer: Container(decoration: BoxDecoration(color: Colors.white),child: ListView(children: <Widget>[
-        Text("Text")
-      ])),
+      drawer: Drawer(child: ListView(children: _getDrawerItems())),
     );
+  }
+
+  List<Widget> _getDrawerItems(){
+    List<Widget> widgetList = [];
+    widgetList.add(Image.asset("assets/image/img_drawer_header.png"));
+    for(var pageItem in _pagerList){
+      widgetList.add(Padding(padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8), child: Row(children: <Widget>[
+        Icon(pageItem.getPagerIconWidget(false), size: 28),
+        Expanded(flex: 1, child: Padding(padding: EdgeInsets.only(left: 8), child: Text(pageItem.getPagerName()))),
+      ])));
+    }
+    return widgetList;
   }
 
 }
