@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:file_manager/Collection/StackCollection.dart';
 import 'package:file_manager/Widget/Page/Pagers/BasePager.dart';
 import 'package:file_manager/Widget/Dialog/CreateFileDirectoryDialog.dart';
+import 'package:file_manager/MethodChannel/FileChannel.dart';
 import 'dart:async';
 
 class FilePager extends BasePager{
