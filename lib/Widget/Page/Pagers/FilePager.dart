@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:file_manager/Collection/StackCollection.dart';
 import 'package:file_manager/Widget/Page/Pagers/BasePager.dart';
 import 'package:file_manager/Widget/Dialog/CreateFileDirectoryDialog.dart';
+import 'package:file_manager/Widget/PublicWidget/HintBackgroundWidget.dart';
 import 'package:file_manager/MethodChannel/FileChannel.dart';
 import 'dart:async';
 
@@ -35,10 +36,14 @@ class _FilePagerState extends State<FilePager>{
 
   FileStack fileStack = FileStack();
 
+  FileChannel _fileChannel = FileChannel.getInstance();
+  bool _hasFilePermission = false;
+
   @override
   void initState() {
     super.initState();
     // 初始化虛擬數據
+    initAsync();
     FolderItem item = FolderItem();
     item.folderName = "folder";
     for(int i=0; i<64; i++){
@@ -49,26 +54,49 @@ class _FilePagerState extends State<FilePager>{
     fileStack.fileStack.add(item);
   }
 
+  void initAsync(){
+    initPermission();
+    if(_hasFilePermission){ // 如果没有权限就不进行初始化了
+      return;
+    }
+    initRootDirectory();
+  }
+
+  void initPermission() async {
+    _hasFilePermission = await _fileChannel.checkHasFilePermission();
+    setState(() {}); // 更新权限
+  }
+
+  void initRootDirectory() async {
+    String path = await _fileChannel.getStorageRootPath();
+    print('地址');
+    print(path);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(children: <Widget>[
-      Container(child: Column(children: <Widget>[
-        Container(height: 32, decoration: BoxDecoration(color: Colors.white),child: Row(children: <Widget>[
-          Expanded(child: ListView(scrollDirection: Axis.horizontal, children: <Widget>[
-            Icon(Icons.chevron_right),
-            _getFilePathWidget("emulated"),
-            _getFilePathWidget("storage"),
-            _getFilePathWidget("0"),
-            _getFilePathWidget("tmp"),
-            _getFilePathWidget(".Data"),
-          ]))
+    if(_hasFilePermission){
+      return Stack(children: <Widget>[
+        Container(child: Column(children: <Widget>[
+          Container(height: 32, decoration: BoxDecoration(color: Colors.white),child: Row(children: <Widget>[
+            Expanded(child: ListView(scrollDirection: Axis.horizontal, children: <Widget>[
+              Icon(Icons.chevron_right),
+              _getFilePathWidget("emulated"),
+              _getFilePathWidget("storage"),
+              _getFilePathWidget("0"),
+              _getFilePathWidget("tmp"),
+              _getFilePathWidget(".Data"),
+            ]))
+          ])),
+          Divider(height: 1, color: Colors.blueGrey),
+          Expanded(child: _getContentWidget()),
+          Divider(height: 1, color: Colors.blueGrey),
+          _getBottomWidget()
         ])),
-        Divider(height: 1, color: Colors.blueGrey),
-        Expanded(child: _getContentWidget()),
-        Divider(height: 1, color: Colors.blueGrey),
-        _getBottomWidget()
-      ])),
-    ]);
+      ]);
+    }else{
+      return HintBackgroundWidget(Icons.error_outline, "无法获取文件访问权限，请赋予权限");
+    }
   }
 
   Widget _getContentWidget(){

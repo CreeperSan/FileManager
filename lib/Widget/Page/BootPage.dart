@@ -16,7 +16,7 @@ class BootPageState extends State<BootPage>{
   @override
   void initState() {
     super.initState();
-    new Timer(const Duration(milliseconds: 1500), () {
+    new Timer(const Duration(milliseconds: 300), () {
       try {
         Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(
             builder: (BuildContext context) => new IndexPage()), ( //跳转到主页

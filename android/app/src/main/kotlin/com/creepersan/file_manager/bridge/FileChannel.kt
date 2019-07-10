@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Environment
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import org.json.JSONObject
 
 class FileChannel(val context:Context) : MethodChannel.MethodCallHandler{
     companion object{
@@ -40,7 +41,7 @@ class FileChannel(val context:Context) : MethodChannel.MethodCallHandler{
     }
 
     private fun getStorageRootPath(call: MethodCall, result:MethodChannel.Result){
-        result.success(Environment.getExternalStorageState())
+        result.success(Environment.getExternalStorageDirectory().path)
     }
 
     private fun checkHasFilePermission(call: MethodCall, result:MethodChannel.Result){

@@ -15,18 +15,27 @@ class FileChannel extends BaseChannel{
   static const _METHOD_DELETE_FILE = "deleteFile";
   static const _METHOD_RENAME_FILE = "renameFile";
 
-  static MethodChannel _instance;
+  static MethodChannel _channel = MethodChannel(_CHANNEL_NAME);
+  static FileChannel _instance;
 
   FileChannel._();
 
-  static getInstance(){
+  static FileChannel getInstance(){
     if(_instance == null){
-      _instance = MethodChannel(_CHANNEL_NAME);
+      _instance = FileChannel._();
     }
+    return _instance;
   }
 
-  Future<bool> checkHasFilePermission() async {
-    return _instance.invokeMethod(_METHOD_CHECK_HAS_FILE_PERMISSION);
+  Future<bool> checkHasFilePermission(){
+    return _channel.invokeMethod(_METHOD_CHECK_HAS_FILE_PERMISSION);
   }
+
+  Future<String> getStorageRootPath(){
+    return _channel.invokeMethod(_METHOD_GET_STORAGE_ROOT_PATH);
+  }
+
+
+
 
 }
