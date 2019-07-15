@@ -34,7 +34,7 @@ class _FilePagerState extends State<FilePager>{
 
   int currentState = _stateSuccess;
 
-  FileStack fileStack = FileStack();
+  FileStack fileStack;
 
   FileChannel _fileChannel = FileChannel.getInstance();
   bool _hasFilePermission = false;
@@ -43,6 +43,8 @@ class _FilePagerState extends State<FilePager>{
   void initState() {
     super.initState();
     // 初始化虛擬數據
+    fileStack = FileStack();
+    fileStack.initAsExternalStorageDirectory(_fileChannel);
     initAsync();
     FolderItem item = FolderItem();
     item.folderName = "folder";
@@ -325,6 +327,21 @@ class _FilePagerState extends State<FilePager>{
 class FileStack{
   List<FolderItem> fileStack = List();
 
+  void initAsExternalStorageDirectory(FileChannel fileChannel) async {
+    fileStack.clear(); // 清除之前的记录
+
+    FolderItem folderItem = FolderItem();
+    String rootDirectory = await fileChannel.getStorageRootPath();
+
+    FileItem fileItem = FileItem();
+    fileItem.isSelected = false;
+
+    fileStack.add(folderItem);
+
+    print("Root => $rootDirectory");
+    print("asdasd");
+  }
+
   String getPath(){
     return "/";
   }
@@ -339,12 +356,12 @@ class FolderItem{
 
 /// 單個文件對象
 class FileItem{
+  bool isExist = false;
   bool isSelected = false;
   bool isDirectory = false;
   String path = "";
   String name = "";
   int fileSize;
-  int createTimeStamp = 0;
   int modifyTimeStamp = 0;
 
   String getPermissionText(){

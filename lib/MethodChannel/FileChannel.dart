@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:file_manager/MethodChannel/BaseChannel.dart';
 
@@ -33,6 +34,13 @@ class FileChannel extends BaseChannel{
 
   Future<String> getStorageRootPath(){
     return _channel.invokeMethod(_METHOD_GET_STORAGE_ROOT_PATH);
+  }
+
+  getFileDetail(String path) async {
+    Map<String, Object> fileItem = Map();
+    String content = await _channel.invokeMethod(_METHOD_GET_FILE_DETAIL, path);
+    Map<String, dynamic> jsonObj = json.decode(content);
+    return jsonObj;
   }
 
 

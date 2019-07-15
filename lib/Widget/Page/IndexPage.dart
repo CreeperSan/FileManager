@@ -20,6 +20,7 @@ class _IndexPageState extends State<IndexPage>{
   void initState() {
     super.initState();
     // 初始化頁面
+    print("初始化页面");
     _pagerList.clear();
     _pagerList.add(new FilePager());
     _pagerList.add(new HomePager());

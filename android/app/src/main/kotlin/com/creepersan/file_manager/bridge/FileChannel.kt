@@ -8,6 +8,8 @@ import android.os.Environment
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import org.json.JSONObject
+import java.io.File
+import java.lang.Exception
 
 class FileChannel(val context:Context) : MethodChannel.MethodCallHandler{
     companion object{
@@ -65,8 +67,27 @@ class FileChannel(val context:Context) : MethodChannel.MethodCallHandler{
 
     }
 
-    private fun getFileDetail(call: MethodCall, result: MethodChannel.Result){
 
+    private fun getFileDetail(call: MethodCall, result: MethodChannel.Result){
+        val jsonObject = JSONObject()
+        val filePath : String
+        try {
+            filePath = call.arguments as String
+        }catch (e:Exception){
+            result.error("Params Error", "Params should be file path", null)
+            e.printStackTrace()
+            return
+        }
+        val file = File(filePath)
+        val isExist = file.exists()
+        jsonObject.put("isExist", isExist)
+        jsonObject.put("isSelected", false)
+        jsonObject.put("isDirectory", if (isExist) { file.isDirectory } else false)
+        jsonObject.put("path", if (isExist){ file.absolutePath } else "")
+        jsonObject.put("name", if (isExist){ file.name } else "")
+        jsonObject.put("fileSize", if (isExist){ file.length() }else 0L)
+        jsonObject.put("modifyTimeStamp", if (isExist){ file.lastModified() }else 0L)
+        result.success(jsonObject.toString())
     }
 
     private fun copyFile(call: MethodCall, result: MethodChannel.Result){
