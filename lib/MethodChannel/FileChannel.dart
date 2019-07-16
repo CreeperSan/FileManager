@@ -37,13 +37,16 @@ class FileChannel extends BaseChannel{
   }
 
   getFileDetail(String path) async {
-    Map<String, Object> fileItem = Map();
     String content = await _channel.invokeMethod(_METHOD_GET_FILE_DETAIL, path);
     Map<String, dynamic> jsonObj = json.decode(content);
     return jsonObj;
   }
 
-
+  getDirectoryFileListAsync(String path) async {
+    String filePathListJsonString = await _channel.invokeMethod(_METHOD_GET_DIRECTORY_FILE_LIST, path);
+    List<dynamic> pathList = json.decode(filePathListJsonString);
+    return pathList;
+  }
 
 
 }

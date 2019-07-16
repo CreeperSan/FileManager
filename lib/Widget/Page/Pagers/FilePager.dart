@@ -42,34 +42,26 @@ class _FilePagerState extends State<FilePager>{
   @override
   void initState() {
     super.initState();
+    initAsync();
     // 初始化虛擬數據
     fileStack = FileStack();
-    fileStack.initAsExternalStorageDirectory(_fileChannel);
-    initAsync();
-    FolderItem item = FolderItem();
-    item.folderName = "folder";
-    for(int i=0; i<64; i++){
-      FileItem tmpItem = FileItem();
-      tmpItem.name = "文件$i.txt";
-      item._fileList.add(tmpItem);
-    }
-    fileStack.fileStack.add(item);
+    fileStack.initAsExternalStorageDirectoryAsync(_fileChannel);
   }
 
   void initAsync(){
-    initPermission();
+    initPermissionAsync();
     if(_hasFilePermission){ // 如果没有权限就不进行初始化了
       return;
     }
-    initRootDirectory();
+    initRootDirectoryAsync();
   }
 
-  void initPermission() async {
+  void initPermissionAsync() async {
     _hasFilePermission = await _fileChannel.checkHasFilePermission();
     setState(() {}); // 更新权限
   }
 
-  void initRootDirectory() async {
+  void initRootDirectoryAsync() async {
     String path = await _fileChannel.getStorageRootPath();
     print('地址');
     print(path);
@@ -81,14 +73,7 @@ class _FilePagerState extends State<FilePager>{
       return Stack(children: <Widget>[
         Container(child: Column(children: <Widget>[
           Container(height: 32, decoration: BoxDecoration(color: Colors.white),child: Row(children: <Widget>[
-            Expanded(child: ListView(scrollDirection: Axis.horizontal, children: <Widget>[
-              Icon(Icons.chevron_right),
-              _getFilePathWidget("emulated"),
-              _getFilePathWidget("storage"),
-              _getFilePathWidget("0"),
-              _getFilePathWidget("tmp"),
-              _getFilePathWidget(".Data"),
-            ]))
+            Expanded(child: ListView(scrollDirection: Axis.horizontal, children: _getPathWidgetList()))
           ])),
           Divider(height: 1, color: Colors.blueGrey),
           Expanded(child: _getContentWidget()),
@@ -99,6 +84,16 @@ class _FilePagerState extends State<FilePager>{
     }else{
       return HintBackgroundWidget(Icons.error_outline, "无法获取文件访问权限，请赋予权限");
     }
+  }
+
+  List<Widget> _getPathWidgetList(){
+    List<Widget> widgetList = [];
+    widgetList.add(Icon(Icons.chevron_right));
+    for(int i=0; i<fileStack.getSize(); i++){
+      FolderFileList folderItem = fileStack.getFolderItem(i);
+      widgetList.add(FlatButton(onPressed: ()=>{}, child: Text("/${folderItem.getName()}")));
+    }
+    return widgetList;
   }
 
   Widget _getContentWidget(){
@@ -118,6 +113,7 @@ class _FilePagerState extends State<FilePager>{
         return Center(child: Text("Idle..."));
     }
   }
+
 
   /// 點擊事件
   void _onSelectTap(){
@@ -231,16 +227,26 @@ class _FilePagerState extends State<FilePager>{
 
   List<Widget> _getCurrentFolderFileWidgetList(){
     List<Widget> widgetList = [];
-    fileStack.fileStack[0]._fileList.forEach((fileItem){
-      widgetList.add(_getFileItemWidgett(fileItem));
-    });
+    if(fileStack.getSize() > 0){
+      FolderFileList fileList = fileStack.getLast();
+      for(int i=0; i<fileList.getFilesSize(); i++){
+        FileItem fileItem = fileList.getFileItem(i);
+        if(fileItem == null){ continue; }
+        widgetList.add(_getFileItemWidgett(fileItem));
+      }
+    }
+//    if(fileStack.folderFileListStack.length > 0){
+//      fileStack.folderFileListStack.last.fileList.forEach((fileItem){
+//        widgetList.add(_getFileItemWidgett(fileItem));
+//      });
+//    }
     return widgetList;
   }
 
   Widget _getFileItemWidgett(FileItem fileItem){
     if(currentState == _stateSelecting){
       return Row(children: <Widget>[
-        Container(width: 48, height: 48, child: Icon(Icons.insert_drive_file)),
+        Container(width: 48, height: 48, child: fileItem.getFileIcon()),
         Expanded(child: Column(children: <Widget>[
           Row(children: <Widget>[
             Text(fileItem.name, style: TextStyle(fontSize: 16))
@@ -257,7 +263,7 @@ class _FilePagerState extends State<FilePager>{
       ]);
     }else{
       return Row(children: <Widget>[
-        Container(width: 48, height: 48, child: Icon(Icons.insert_drive_file)),
+        Container(width: 48, height: 48, child: fileItem.getFileIcon()),
         Expanded(child: Column(children: <Widget>[
           Row(children: <Widget>[
             Text(fileItem.name, style: TextStyle(fontSize: 16))
@@ -325,21 +331,65 @@ class _FilePagerState extends State<FilePager>{
 
 /// 文件管理隊列
 class FileStack{
-  List<FolderItem> fileStack = List();
+  List<FolderFileList> folderFileListStack = List();
+  
+  int getSize(){
+    return folderFileListStack.length;
+  }
 
-  void initAsExternalStorageDirectory(FileChannel fileChannel) async {
-    fileStack.clear(); // 清除之前的记录
+  FolderFileList getLast(){
+    if(getSize() > 0){
+      return folderFileListStack.last;
+    }else{
+      return null;
+    }
+  }
 
-    FolderItem folderItem = FolderItem();
-    String rootDirectory = await fileChannel.getStorageRootPath();
+  FolderFileList getFolderItem(int index){
+    return folderFileListStack[index];
+  }
 
-    FileItem fileItem = FileItem();
-    fileItem.isSelected = false;
+  void pushFileItem(FolderFileList fileItem){
+    folderFileListStack.add(fileItem);
+  }
 
-    fileStack.add(folderItem);
+  void pushFileItemByPathAsync(String path) async {
 
-    print("Root => $rootDirectory");
-    print("asdasd");
+  }
+
+  FolderFileList popFileItem(){
+    if(isCanPopFileItem()){
+      FolderFileList lasFileItem = folderFileListStack.removeLast();
+      return lasFileItem;
+    }else{
+      return null;
+    }
+  }
+
+  bool isCanPopFileItem(){
+    return folderFileListStack==null ? false : folderFileListStack.length > 0;
+  }
+
+  void initAsExternalStorageDirectoryAsync(FileChannel fileChannel) async {
+    folderFileListStack.clear(); // 清除之前的记录
+
+    String path = await fileChannel.getStorageRootPath();
+
+    FileItem rootFileItem = FileItem();
+    await rootFileItem.initFromPathAsync(path);
+
+    FolderFileList folderFileList = FolderFileList("内置存储", []);
+
+    List pathList = await fileChannel.getDirectoryFileListAsync(path);
+
+    for(int i=0; i<pathList.length; i++){
+      String tmpPath = pathList[i];
+      FileItem fileItem = FileItem();
+      await fileItem.initFromPathAsync(tmpPath);
+      folderFileList.addFile(fileItem);
+    }
+
+    folderFileListStack.add(folderFileList);
   }
 
   String getPath(){
@@ -349,30 +399,82 @@ class FileStack{
 }
 
 /// 文件的列表
-class FolderItem{
+class FolderFileList{
   String folderName = "";
-  List<FileItem> _fileList = [];
+  List<FileItem> fileList = [];
+
+  FolderFileList(this.folderName, this.fileList);
+
+  String getName(){
+    return folderName=="" ? "<Empty>" : folderName;
+  }
+
+  int getFilesSize(){
+    return fileList.length;
+  }
+
+  void addFile(FileItem fileItem){
+    fileList.add(fileItem);
+  }
+
+  void removeItem(FileItem fileItem){
+    fileList.remove(fileItem);
+  }
+
+  FileItem getFileItem(int index){
+    if(index < 0 || index >= getFilesSize()){
+      return null;
+    }else{
+      return fileList[index];
+    }
+  }
 }
 
 /// 單個文件對象
 class FileItem{
+  static const KEY_IS_EXIST = "isExist";
+  static const KEY_IS_SELECTED = "isSelected";
+  static const KEY_IS_DIRECTORY = "isDirectory";
+  static const KEY_PATH = "path";
+  static const KEY_NAME = "name";
+  static const KEY_FILE_SIZE = "fileSize";
+  static const KEY_MODIFY_TIME_STAMP = "modifyTimeStamp";
+
   bool isExist = false;
   bool isSelected = false;
   bool isDirectory = false;
   String path = "";
   String name = "";
-  int fileSize;
-  int modifyTimeStamp = 0;
+  String fileSize = "不存在";
+  String modifyTimeStamp = "";
+
+  FileItem();
+
+  initFromPathAsync(String path) async {
+    FileChannel channel = FileChannel.getInstance();
+    var fileDetail = await channel.getFileDetail(path);
+    this.isExist = fileDetail.containsKey(KEY_IS_EXIST) ? fileDetail[KEY_IS_EXIST] : false;
+    this.isSelected = fileDetail.containsKey(KEY_IS_SELECTED) ? fileDetail[KEY_IS_SELECTED] : false;
+    this.isDirectory = fileDetail.containsKey(KEY_IS_DIRECTORY) ? fileDetail[KEY_IS_DIRECTORY] : false;
+    this.path = fileDetail.containsKey(KEY_PATH) ? fileDetail[KEY_PATH] : "";
+    this.name = fileDetail.containsKey(KEY_NAME) ? fileDetail[KEY_NAME] : "<Empty>";
+    this.fileSize = fileDetail.containsKey(KEY_FILE_SIZE) ? fileDetail[KEY_FILE_SIZE] : "未知";
+    this.modifyTimeStamp = fileDetail.containsKey(KEY_MODIFY_TIME_STAMP) ? fileDetail[KEY_MODIFY_TIME_STAMP] : "未知";
+  }
+
+  Widget getFileIcon(){
+    return Icon(isDirectory ? Icons.folder : Icons.insert_drive_file, color: Colors.black);
+  }
 
   String getPermissionText(){
     return "rwe";
   }
 
   String getFileSize(){
-    return "26.03kb";
+    return fileSize;
   }
 
   String getModifyTime(){
-    return "03/07/19";
+    return modifyTimeStamp;
   }
 }

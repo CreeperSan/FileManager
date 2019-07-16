@@ -5,8 +5,11 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
+import com.creepersan.file_manager.formatter.toDateString
+import com.creepersan.file_manager.formatter.toFileSizeString
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.lang.Exception
@@ -64,7 +67,24 @@ class FileChannel(val context:Context) : MethodChannel.MethodCallHandler{
     }
 
     private fun getDirectoryFileList(call: MethodCall, result: MethodChannel.Result){
-
+        val jsonArray = JSONArray()
+        val filePath : String
+        try {
+            filePath = call.arguments as String
+        }catch (e:Exception){
+            result.error("Params Error", "Params should be file path", null)
+            e.printStackTrace()
+            return
+        }
+        val folder = File(filePath)
+        if (folder.exists() && folder.isDirectory){
+            folder.listFiles()?.forEach {  tmpFile ->
+                jsonArray.put(tmpFile.absolutePath)
+            }
+            result.success(jsonArray.toString())
+        }else{
+            result.error("Error", "not exist or not a directory", null)
+        }
     }
 
 
@@ -80,13 +100,14 @@ class FileChannel(val context:Context) : MethodChannel.MethodCallHandler{
         }
         val file = File(filePath)
         val isExist = file.exists()
+        val isDirectory = file.isDirectory
         jsonObject.put("isExist", isExist)
         jsonObject.put("isSelected", false)
-        jsonObject.put("isDirectory", if (isExist) { file.isDirectory } else false)
+        jsonObject.put("isDirectory", if (isExist) { isDirectory } else false)
         jsonObject.put("path", if (isExist){ file.absolutePath } else "")
         jsonObject.put("name", if (isExist){ file.name } else "")
-        jsonObject.put("fileSize", if (isExist){ file.length() }else 0L)
-        jsonObject.put("modifyTimeStamp", if (isExist){ file.lastModified() }else 0L)
+        jsonObject.put("fileSize", if (isExist){ file.length().toFileSizeString(isExist, if (isDirectory && isExist){ file.listFiles()?.size ?: -1 }else{ -1 }) }else "未知")
+        jsonObject.put("modifyTimeStamp", if (isExist){ file.lastModified().toDateString() }else "未知")
         result.success(jsonObject.toString())
     }
 
