@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
+import android.widget.Toast
 import com.creepersan.file_manager.formatter.toDateString
 import com.creepersan.file_manager.formatter.toFileSizeString
 import io.flutter.plugin.common.MethodCall
@@ -27,6 +28,7 @@ class FileChannel(val context:Context) : MethodChannel.MethodCallHandler{
         const val METHOD_CUT_FILE = "cutFile"
         const val METHOD_DELETE_FILE = "deleteFile"
         const val METHOD_RENAME_FILE = "renameFile"
+        const val METHOD_OPEN_FILE = "openFile"
     }
 
     override fun onMethodCall(call: MethodCall?, result: MethodChannel.Result?) {
@@ -42,6 +44,7 @@ class FileChannel(val context:Context) : MethodChannel.MethodCallHandler{
             METHOD_CUT_FILE -> cutFile(call, result)
             METHOD_DELETE_FILE -> deleteFile(call, result)
             METHOD_RENAME_FILE -> renameFile(call, result)
+            METHOD_OPEN_FILE -> openFile(call, result)
         }
     }
 
@@ -125,6 +128,25 @@ class FileChannel(val context:Context) : MethodChannel.MethodCallHandler{
 
     private fun renameFile(call: MethodCall, result: MethodChannel.Result){
 
+    }
+
+    private fun openFile(call: MethodCall, result: MethodChannel.Result){
+        val path = call.arguments as String
+        val file = File(path)
+        if (file.exists()){
+            if (file.isDirectory){
+                toast("正在打开一个文件夹")
+            }else{
+                toast("正在打开文件 $path")
+            }
+        }else{
+            toast("文件不存在")
+        }
+        result.success("")
+    }
+
+    private fun toast(msg:String){
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
     }
 
 

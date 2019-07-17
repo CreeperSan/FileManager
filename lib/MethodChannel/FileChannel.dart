@@ -15,6 +15,7 @@ class FileChannel extends BaseChannel{
   static const _METHOD_CUT_FILE = "cutFile";
   static const _METHOD_DELETE_FILE = "deleteFile";
   static const _METHOD_RENAME_FILE = "renameFile";
+  static const _METHOD_OPEN_FILE = "openFile";
 
   static MethodChannel _channel = MethodChannel(_CHANNEL_NAME);
   static FileChannel _instance;
@@ -46,6 +47,10 @@ class FileChannel extends BaseChannel{
     String filePathListJsonString = await _channel.invokeMethod(_METHOD_GET_DIRECTORY_FILE_LIST, path);
     List<dynamic> pathList = json.decode(filePathListJsonString);
     return pathList;
+  }
+
+  openFileAsync(String path) async {
+    await _channel.invokeMethod(_METHOD_OPEN_FILE, path);
   }
 
 

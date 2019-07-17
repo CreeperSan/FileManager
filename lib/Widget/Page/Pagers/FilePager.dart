@@ -91,7 +91,12 @@ class _FilePagerState extends State<FilePager>{
     widgetList.add(Icon(Icons.chevron_right));
     for(int i=0; i<fileStack.getSize(); i++){
       FolderFileList folderItem = fileStack.getFolderItem(i);
-      widgetList.add(FlatButton(onPressed: ()=>{}, child: Text("/${folderItem.getName()}")));
+      widgetList.add(
+        InkWell(onTap: ()=>{}, child: Row(children: <Widget>[
+          Text("/", style: TextStyle(color: Colors.blue)),
+          Text(folderItem.folderName, style: TextStyle(color: Colors.black))
+        ]))
+      );
     }
     return widgetList;
   }
@@ -245,7 +250,9 @@ class _FilePagerState extends State<FilePager>{
 
   Widget _getFileItemWidgett(FileItem fileItem){
     if(currentState == _stateSelecting){
-      return Row(children: <Widget>[
+      return GestureDetector(onTap: ()=>{
+        _openFile(fileItem)
+      }, child: Row(children: <Widget>[
         Container(width: 48, height: 48, child: fileItem.getFileIcon()),
         Expanded(child: Column(children: <Widget>[
           Row(children: <Widget>[
@@ -260,9 +267,11 @@ class _FilePagerState extends State<FilePager>{
         Checkbox(value: fileItem.isSelected, onChanged: (newState){
           setState(() { fileItem.isSelected = !fileItem.isSelected; });
         })
-      ]);
+      ]));
     }else{
-      return Row(children: <Widget>[
+      return GestureDetector(onTap: ()=>{
+        _openFile(fileItem)
+      }, child: Row(children: <Widget>[
         Container(width: 48, height: 48, child: fileItem.getFileIcon()),
         Expanded(child: Column(children: <Widget>[
           Row(children: <Widget>[
@@ -274,42 +283,7 @@ class _FilePagerState extends State<FilePager>{
             Expanded(child: Text(fileItem.getModifyTime(), textAlign: TextAlign.right)),
           ]))
         ]))
-      ]);
-    }
-  }
-
-  Widget _getFileItemWidget(String fileName, String fileSize, String permission, String time){
-    if(currentState == _stateSelecting){
-      return Row(children: <Widget>[
-        Container(width: 48, height: 48, child: Icon(Icons.insert_drive_file)),
-        Expanded(child: Column(children: <Widget>[
-          Row(children: <Widget>[
-            Text(fileName, style: TextStyle(fontSize: 16))
-          ]),
-          Padding(padding: EdgeInsets.only(right: 16), child: Row(children: <Widget>[
-            Expanded(child: Text(fileSize, textAlign: TextAlign.left)),
-            Expanded(child: Text(permission, textAlign: TextAlign.center)),
-            Expanded(child: Text(time, textAlign: TextAlign.right)),
-          ]))
-        ])),
-        Checkbox(value: true, onChanged: (newState){
-
-        })
-      ]);
-    }else{
-      return Row(children: <Widget>[
-        Container(width: 48, height: 48, child: Icon(Icons.insert_drive_file)),
-        Expanded(child: Column(children: <Widget>[
-          Row(children: <Widget>[
-            Text(fileName, style: TextStyle(fontSize: 16))
-          ]),
-          Padding(padding: EdgeInsets.only(right: 16), child: Row(children: <Widget>[
-            Expanded(child: Text(fileSize, textAlign: TextAlign.left)),
-            Expanded(child: Text(permission, textAlign: TextAlign.center)),
-            Expanded(child: Text(time, textAlign: TextAlign.right)),
-          ]))
-        ]))
-      ]);
+      ]));
     }
   }
 
@@ -325,6 +299,29 @@ class _FilePagerState extends State<FilePager>{
         child: Padding(
             padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             child: Column(children: <Widget>[Icon(icon), Text(name)]))));
+  }
+
+  /// 打开文件夹
+  void _openFile(FileItem file) async {
+    print("打开 ${file.path}");
+    if(file.isExist){
+      if(file.isDirectory){ // 打开目录
+        fileStack.pushFileItemByFileAsync(file);
+        setState(() {});
+      }else{ // 打开文件
+        _fileChannel.openFileAsync(file.path);
+      }
+    }else{
+      print("文件不存在");
+    }
+  }
+
+  /// 关闭顶层文件夹
+  void _closeDirectory(){
+    if(fileStack.isCanPopFileItem()){
+      fileStack.popFileItem();
+      setState(() {});
+    }
   }
 
 }
@@ -353,8 +350,17 @@ class FileStack{
     folderFileListStack.add(fileItem);
   }
 
-  void pushFileItemByPathAsync(String path) async {
-
+  void pushFileItemByFileAsync(FileItem file) async {
+    FileChannel fileChannel = FileChannel.getInstance();
+    FolderFileList folderFileList = FolderFileList(file.name, []);
+    List filePathList = await fileChannel.getDirectoryFileListAsync(file.path);
+    for(int i=0; i<filePathList.length ;i++){
+      String tmpPath = filePathList[i].toString();
+      FileItem fileItem = FileItem();
+      await fileItem.initFromPathAsync(tmpPath);
+      folderFileList.addFile(fileItem);
+    }
+    folderFileListStack.add(folderFileList);
   }
 
   FolderFileList popFileItem(){
