@@ -9,7 +9,7 @@
     <ImageView
             android:id="@+id/permissionDescriptionLogo"
             android:layout_marginTop="26dp"
-            android:src="@drawable/logo_title_text"
+            android:src="@drawable/img_logo_title_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

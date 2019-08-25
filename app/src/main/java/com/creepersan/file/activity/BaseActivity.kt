@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.creepersan.file.application.FileApplication
 import java.io.Serializable
 
 open class BaseActivity : AppCompatActivity(){
@@ -26,7 +27,7 @@ open class BaseActivity : AppCompatActivity(){
      * @param data 跳转过去所携带的参数
      * @param requestCode 如果是需要返回结果的，则可以带上这个
      */
-    protected fun <T : BaseActivity> toActivity(clazz:Class<T>, data:Map<String, Any>?=null, requestCode:Int=Int.MIN_VALUE){
+    protected fun <T : BaseActivity> toActivity(clazz:Class<T>, data:Map<String, Any>?=null, isFinish:Boolean=false, requestCode:Int=Int.MIN_VALUE){
         val intent = Intent(this, clazz)
         data?.forEach{ pair ->
             when(val value = pair.value){
@@ -56,6 +57,9 @@ open class BaseActivity : AppCompatActivity(){
         }else{
             startActivityForResult(intent, requestCode)
         }
+        if (isFinish){
+            finish()
+        }
     }
 
     /**
@@ -65,6 +69,22 @@ open class BaseActivity : AppCompatActivity(){
      */
     protected fun showToast(content:String, isShort:Boolean=true){
         Toast.makeText(this, content, if (isShort) Toast.LENGTH_SHORT else Toast.LENGTH_LONG ).show()
+    }
+
+    /**
+     * 字符串标志转字符串
+     * @return 字符串
+     */
+    protected fun Int.toResString():String{
+        return getString(this)
+    }
+
+    /**
+     * 获取Application实例
+     * @return 实例化对象
+     */
+    protected fun getFileApplication():FileApplication{
+        return FileApplication.getInstance()
     }
 
 }

@@ -11,6 +11,7 @@
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
+            android:name=".application.FileApplication"
             android:theme="@style/AppTheme">
 
 
@@ -22,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.MainActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".activity.PermissionDescriptionActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".activity.PermissionDescriptionActivity" android:screenOrientation="portrait" android:theme="@style/AppTheme.NoActionBar"/>
 
     </application>
 
