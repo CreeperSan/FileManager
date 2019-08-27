@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+            android:id="@+id/menuFileFragmentToolbarSearch"
+            android:title="@string/fileFragment_file_menuSearch"
+            android:icon="@drawable/ic_search_dart_blue"
+            app:showAsAction="ifRoom"/>
+
+    <item
+            android:id="@+id/menuFileFragmentToolbarRefresh"
+            android:title="@string/fileFragment_file_menuRefresh"
+            android:icon="@drawable/ic_refresh_dark_blue"
+            app:showAsAction="ifRoom"/>
+
+    <item
+            android:id="@+id/menuFileFragmentToolbarCreate"
+            android:title="@string/fileFragment_file_menuCreate"
+            app:showAsAction="never"/>
+
+
+</menu>

@@ -11,4 +11,9 @@
     <string name="permission_titleWriteStorage">写入文件</string>
     <string name="permission_contentWriteStorage">复制、剪切、删除文件</string>
 
+    <string name="fileFragment_file_title">文件</string>
+    <string name="fileFragment_file_menuSearch">搜索</string>
+    <string name="fileFragment_file_menuRefresh">刷新</string>
+    <string name="fileFragment_file_menuCreate">新建</string>
+
 </resources>

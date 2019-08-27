@@ -3,6 +3,7 @@ package com.creepersan.file.activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.creepersan.file.application.FileApplication
@@ -11,6 +12,7 @@ import java.io.Serializable
 open class BaseActivity : AppCompatActivity(){
 
     open fun getLayoutID() : Int = 0
+    open fun isLightTheme() : Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,6 +20,10 @@ open class BaseActivity : AppCompatActivity(){
         val layoutID = getLayoutID()
         if (layoutID != 0){
             setContentView(layoutID)
+        }
+        // 初始化状态栏颜色
+        if (isLightTheme()){
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
     }
 
