@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.creepersan.file.R
+import com.creepersan.file.activity.BaseActivity
 
 open class BaseFragment : Fragment() {
     protected lateinit var mRootView : View
@@ -18,6 +20,13 @@ open class BaseFragment : Fragment() {
             return mRootView
         }
         return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
+    /**
+     * 获取Activity
+     */
+    protected fun activity() : BaseActivity{
+        return activity as BaseActivity
     }
 
     /**

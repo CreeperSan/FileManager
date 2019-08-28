@@ -7,18 +7,6 @@
         android:layout_height="match_parent"
         tools:context=".activity.MainActivity">
 
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_gravity="start"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_gravity="end"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -36,5 +24,15 @@
 
     </LinearLayout>
 
+    <androidx.recyclerview.widget.RecyclerView
+            android:layout_gravity="start"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+            android:layout_gravity="end"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>

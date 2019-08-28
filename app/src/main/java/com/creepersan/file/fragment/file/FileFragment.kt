@@ -3,6 +3,7 @@ package com.creepersan.file.fragment.file
 import android.os.Bundle
 import android.view.View
 import com.creepersan.file.R
+import com.creepersan.file.activity.CreateFileDirectoryActivity
 import com.creepersan.file.fragment.BaseFragment
 import kotlinx.android.synthetic.main.fragment_main_file.*
 
@@ -32,10 +33,16 @@ class FileFragment : BaseFileFragment(){
         fileFragmentToolbar.setNavigationOnClickListener {
 
         }
+        fileFragmentToolbar.inflateMenu(R.menu.file_fragment_toolbar)
+        fileFragmentToolbar.setOnMenuItemClickListener {  menuItem ->
+            when(menuItem.itemId){
+                R.id.menuFileFragmentToolbarCreate -> {
+                    activity().toActivity(CreateFileDirectoryActivity::class.java)
+                }
+            }
+            true
+        }
     }
 
-    private fun onBackPressed(){
-
-    }
 
 }

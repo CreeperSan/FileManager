@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity() {
 
-    private val mPagerAdapter = MainFragmentPagerAdapter()
+    private val mPagerAdapter = MainFragmentPagerAdapter(supportFragmentManager)
 
     override fun getLayoutID(): Int = R.layout.activity_main
 

@@ -33,7 +33,7 @@ open class BaseActivity : AppCompatActivity(){
      * @param data 跳转过去所携带的参数
      * @param requestCode 如果是需要返回结果的，则可以带上这个
      */
-    protected fun <T : BaseActivity> toActivity(clazz:Class<T>, data:Map<String, Any>?=null, isFinish:Boolean=false, requestCode:Int=Int.MIN_VALUE){
+    fun <T : BaseActivity> toActivity(clazz:Class<T>, data:Map<String, Any>?=null, isFinish:Boolean=false, requestCode:Int=Int.MIN_VALUE){
         val intent = Intent(this, clazz)
         data?.forEach{ pair ->
             when(val value = pair.value){
