@@ -10,7 +10,6 @@
     <style name="AppTheme.NoActionBar.WhiteSystemBar">
         <item name="android:statusBarColor">#f8faf7</item>
         <item name="android:navigationBarColor">#f8faf7</item>
-        <item name="android:background">#f1f5f9</item>
         <item name="android:titleTextColor">#263048</item>
         <item name="android:actionMenuTextColor">#263048</item>
         <item name="windowActionBar">false</item>
@@ -21,7 +20,6 @@
     <style name="AppTheme.NoActionBar">
         <item name="android:statusBarColor">#f2f5f8</item>
         <item name="android:navigationBarColor">#f2f5f8</item>
-        <item name="android:background">#f1f5f9</item>
         <item name="android:titleTextColor">#263048</item>
         <item name="android:actionMenuTextColor">#263048</item>
         <item name="windowActionBar">false</item>

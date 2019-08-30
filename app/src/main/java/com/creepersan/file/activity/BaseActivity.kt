@@ -1,11 +1,14 @@
 package com.creepersan.file.activity
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.creepersan.file.R
 import com.creepersan.file.application.FileApplication
 import java.io.Serializable
 
@@ -25,6 +28,15 @@ open class BaseActivity : AppCompatActivity(){
         if (isLightTheme()){
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
+        // 初始化背景颜色
+        window.setBackgroundDrawableResource(getBackground())
+    }
+
+    /**
+     * 设置背景颜色【资源文件ID】
+     */
+    open fun getBackground():Int{
+        return R.color.activityBackgroundColor
     }
 
     /**

@@ -7,7 +7,7 @@
     <color name="titleTextColor">#2f3e5f</color>
 
     <color name="white">#FFFFFF</color>
-
+    <color name="activityBackgroundColor">#f1f5f9</color>
 
     <color name="themeBlue">#3d73dd</color>
     <color name="themeBlueDark">#2467ca</color>

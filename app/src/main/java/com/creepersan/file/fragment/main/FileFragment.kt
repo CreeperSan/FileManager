@@ -1,10 +1,9 @@
-package com.creepersan.file.fragment.file
+package com.creepersan.file.fragment.main
 
 import android.os.Bundle
 import android.view.View
 import com.creepersan.file.R
 import com.creepersan.file.activity.CreateFileDirectoryActivity
-import com.creepersan.file.fragment.BaseFragment
 import kotlinx.android.synthetic.main.fragment_main_file.*
 
 class FileFragment : BaseFileFragment(){

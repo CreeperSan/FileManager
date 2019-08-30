@@ -1,10 +1,9 @@
 package com.creepersan.file.activity
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.creepersan.file.R
 import com.creepersan.file.adapter.MainFragmentPagerAdapter
-import com.creepersan.file.fragment.file.FileFragment
+import com.creepersan.file.fragment.main.FileFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity() {
