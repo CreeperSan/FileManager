@@ -7,6 +7,8 @@ import java.util.ArrayList
 class FileInfo{
     var path = ""
         private set
+    var fullName = ""
+        private set
     var name = ""
         private set
     var modifyTime = 0L
@@ -30,6 +32,7 @@ class FileInfo{
     constructor(file: File){
         this.path = file.path
         this.name = file.nameWithoutExtension
+        this.fullName = file.name
         this.extensionName = file.extension
         this.nameWithoutExtension = file.nameWithoutExtension
         this.modifyTime = file.lastModified()
