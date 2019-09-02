@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="PageHintView">
+        <attr name="image" format="reference" />
+        <attr name="hintText" format="string|reference"/>
+        <attr name="buttonText" format="string|reference"/>
+    </declare-styleable>
+
+</resources>

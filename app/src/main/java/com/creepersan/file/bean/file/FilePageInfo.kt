@@ -1,6 +1,6 @@
 package com.creepersan.file.bean.file
 
-import com.creepersan.file.manager.StorageManager
+import com.creepersan.file.manager.FileManager
 import java.io.File
 import java.util.*
 
@@ -8,7 +8,7 @@ class FilePageInfo{
 
     private val mDirectoryStack = LinkedList<DirectoryInfo>()
 
-    constructor():this(StorageManager.getExternalStoragePath())
+    constructor():this(FileManager.getExternalStoragePath())
     constructor(directoryPath:String):this(DirectoryInfo(directoryPath))
     constructor(directoryInfo:DirectoryInfo){
         mDirectoryStack.clear()
@@ -49,6 +49,10 @@ class FilePageInfo{
 
     fun getCurrentDirectoryInfo():DirectoryInfo{
         return mDirectoryStack.last
+    }
+
+    fun canPopDirectory():Boolean{
+        return mDirectoryStack.size > 1
     }
 
 }

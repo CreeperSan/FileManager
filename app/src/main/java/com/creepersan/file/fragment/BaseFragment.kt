@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.creepersan.file.R
 import com.creepersan.file.activity.BaseActivity
@@ -43,6 +44,28 @@ open class BaseFragment : Fragment() {
      */
     protected fun Int.toResString() : String{
         return getString(this)
+    }
+
+    fun View.visible(){
+        this.visibility = View.VISIBLE
+    }
+
+    fun View.invisible(){
+        this.visibility = View.INVISIBLE
+    }
+
+    fun View.gone(){
+        this.visibility = View.INVISIBLE
+    }
+
+
+    /**
+     * 显示Toast
+     * @param content 显示的文本
+     * @param isShort 是否短时间的toast
+     */
+    protected fun showToast(content:String, isShort:Boolean=true){
+        Toast.makeText(activity, content, if (isShort) Toast.LENGTH_SHORT else Toast.LENGTH_LONG ).show()
     }
 
 }

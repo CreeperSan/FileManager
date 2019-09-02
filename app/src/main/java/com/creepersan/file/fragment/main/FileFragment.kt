@@ -48,7 +48,12 @@ class FileFragment : BaseFileFragment(){
      */
     private fun initToolbar(){
         fileFragmentToolbar.setNavigationOnClickListener {
-
+            if (mFilePageInfo.canPopDirectory()){
+                mFilePageInfo.popDirectory()
+                mAdapter.notifyDataSetChanged()
+            }else{
+                showToast("已回到首页")
+            }
         }
         fileFragmentToolbar.inflateMenu(R.menu.file_fragment_toolbar)
         fileFragmentToolbar.setOnMenuItemClickListener {  menuItem ->
@@ -114,7 +119,15 @@ class FileFragment : BaseFileFragment(){
         }
 
         override fun getItemCount(): Int {
-            return mFilePageInfo.getCurrentPageFileCount()
+            val count = mFilePageInfo.getCurrentPageFileCount()
+            if (count <= 0){
+                fileFragmentPageHintView.visible()
+                fileFragmentRecyclerView.gone()
+            }else{
+                fileFragmentPageHintView.gone()
+                fileFragmentRecyclerView.visible()
+            }
+            return count
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -123,10 +136,17 @@ class FileFragment : BaseFileFragment(){
                 holder is DirectoryViewHolder -> {
                     holder.setTitle(fileInfo.fullName)
                     holder.setInfo(fileInfo.modifyTime.toString())
+                    holder.setOnClickListener(View.OnClickListener {
+                        mFilePageInfo.pushDirectory(fileInfo)
+                        mAdapter.notifyDataSetChanged()
+                    })
                 }
                 holder is FileViewHolder -> {
                     holder.setTitle(fileInfo.fullName)
                     holder.setInfo(fileInfo.modifyTime.toString())
+                    holder.setOnClickListener(View.OnClickListener {
+
+                    })
                 }
             }
         }
@@ -145,6 +165,10 @@ class FileFragment : BaseFileFragment(){
         fun setInfo(info:String){
             infoTextView.text = info
         }
+
+        fun setOnClickListener(onClickListener:View.OnClickListener){
+            itemView.setOnClickListener(onClickListener)
+        }
     }
 
     private inner class FileViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(layoutInflater.inflate(R.layout.item_file_file, parent, false)){
@@ -158,6 +182,10 @@ class FileFragment : BaseFileFragment(){
 
         fun setInfo(info:String){
             infoTextView.text = info
+        }
+
+        fun setOnClickListener(onClickListener:View.OnClickListener){
+            itemView.setOnClickListener(onClickListener)
         }
 
     }
