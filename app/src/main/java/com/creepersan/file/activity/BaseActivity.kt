@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.creepersan.file.R
 import com.creepersan.file.application.FileApplication
+import com.creepersan.file.manager.ToastManager
 import java.io.Serializable
 
 open class BaseActivity : AppCompatActivity(){
@@ -86,7 +87,7 @@ open class BaseActivity : AppCompatActivity(){
      * @param isShort 是否短时间的toast
      */
     protected fun showToast(content:String, isShort:Boolean=true){
-        Toast.makeText(this, content, if (isShort) Toast.LENGTH_SHORT else Toast.LENGTH_LONG ).show()
+        ToastManager.show(content, isShort)
     }
 
     /**

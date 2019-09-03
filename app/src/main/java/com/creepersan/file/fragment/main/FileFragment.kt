@@ -22,7 +22,6 @@ class FileFragment : BaseFileFragment(){
 
     private val mFilePageInfo = FilePageInfo()
     private val mAdapter = FileAdapter()
-    private val mLayoutManager = FileListLayoutManager()
 
 
     override fun getLayoutID(): Int {
@@ -48,12 +47,7 @@ class FileFragment : BaseFileFragment(){
      */
     private fun initToolbar(){
         fileFragmentToolbar.setNavigationOnClickListener {
-            if (mFilePageInfo.canPopDirectory()){
-                mFilePageInfo.popDirectory()
-                mAdapter.notifyDataSetChanged()
-            }else{
-                showToast("已回到首页")
-            }
+            onBackPressed()
         }
         fileFragmentToolbar.inflateMenu(R.menu.file_fragment_toolbar)
         fileFragmentToolbar.setOnMenuItemClickListener {  menuItem ->
@@ -67,10 +61,20 @@ class FileFragment : BaseFileFragment(){
     }
 
     private fun initRecyclerView(){
-        fileFragmentRecyclerView.layoutManager = mLayoutManager
+        fileFragmentRecyclerView.layoutManager = FileListLayoutManager()
         fileFragmentRecyclerView.adapter = mAdapter
     }
 
+    /**********************************************************************************************/
+    override fun onBackPressed(): Boolean {
+        if (mFilePageInfo.canPopDirectory()){
+            mFilePageInfo.popDirectory()
+            mAdapter.notifyDataSetChanged()
+            return true
+        }else{
+            return false
+        }
+    }
 
 
 

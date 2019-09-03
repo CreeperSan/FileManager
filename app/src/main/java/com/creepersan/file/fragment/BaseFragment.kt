@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.creepersan.file.R
 import com.creepersan.file.activity.BaseActivity
+import com.creepersan.file.manager.ToastManager
 
 open class BaseFragment : Fragment() {
     protected lateinit var mRootView : View
@@ -65,7 +66,7 @@ open class BaseFragment : Fragment() {
      * @param isShort 是否短时间的toast
      */
     protected fun showToast(content:String, isShort:Boolean=true){
-        Toast.makeText(activity, content, if (isShort) Toast.LENGTH_SHORT else Toast.LENGTH_LONG ).show()
+        ToastManager.show(content, isShort)
     }
 
 }

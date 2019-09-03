@@ -24,4 +24,16 @@ class MainActivity : BaseActivity() {
         mainViewPager.offscreenPageLimit = Int.MAX_VALUE
         mainViewPager.adapter = mPagerAdapter
     }
+
+    override fun onBackPressed() {
+        mPagerAdapter.getFileFragment(mainViewPager.currentItem)?.apply {
+            if (this.onBackPressed()){
+                return
+            }else{
+                mPagerAdapter.removeFragment(this)
+                return
+            }
+        }
+        super.onBackPressed()
+    }
 }
