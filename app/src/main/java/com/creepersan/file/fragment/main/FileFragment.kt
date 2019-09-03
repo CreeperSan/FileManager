@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.creepersan.file.R
 import com.creepersan.file.activity.CreateFileDirectoryActivity
 import com.creepersan.file.bean.file.FilePageInfo
+import com.creepersan.file.dialog.*
+import com.creepersan.file.manager.ToastManager
 import kotlinx.android.synthetic.main.fragment_main_file.*
 import java.lang.RuntimeException
 
@@ -40,6 +42,7 @@ class FileFragment : BaseFileFragment(){
         super.onViewCreated(view, savedInstanceState)
         initToolbar()
         initRecyclerView()
+        initFloatingActionButton()
     }
 
     /**
@@ -55,6 +58,10 @@ class FileFragment : BaseFileFragment(){
                 R.id.menuFileFragmentToolbarCreate -> {
                     activity().toActivity(CreateFileDirectoryActivity::class.java)
                 }
+                R.id.menuFileFragmentToolbarSearch -> {
+                    FileFragmentSearchDialog(activity())
+                        .show()
+                }
             }
             true
         }
@@ -63,6 +70,24 @@ class FileFragment : BaseFileFragment(){
     private fun initRecyclerView(){
         fileFragmentRecyclerView.layoutManager = FileListLayoutManager()
         fileFragmentRecyclerView.adapter = mAdapter
+    }
+
+    private fun initFloatingActionButton(){
+        fileFragmentFloatingActionButton.setOnClickListener {
+            BaseBottomSelectionDialog(activity())
+                .setItemList(arrayListOf(
+                    BaseBottomSelectionDialogItem(0, R.drawable.ic_arrow_back_dark_blue, "操作1"),
+                    BaseBottomSelectionDialogItem(1, R.drawable.ic_arrow_down_dart_blue, "操作2"),
+                    BaseBottomSelectionDialogItem(2, R.drawable.ic_directory_dark_blue, "操作3"),
+                    BaseBottomSelectionDialogItem(3, R.drawable.ic_launcher_background, "操作4")
+                ))
+                .setItemClickListener(object : BaseBottomSelectItemClickListener{
+                    override fun onItemClick(id: Int, item: BaseBottomSelectionDialogItem, dialog: BaseDialog) {
+                        ToastManager.show("Click ${item.title}")
+                    }
+                })
+                .show()
+        }
     }
 
     /**********************************************************************************************/

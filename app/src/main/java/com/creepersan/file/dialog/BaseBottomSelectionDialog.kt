@@ -3,6 +3,7 @@ package com.creepersan.file.dialog
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -17,20 +18,35 @@ import com.creepersan.file.common.view_holder.BaseViewHolder
 import com.creepersan.file.manager.TypedValueManager
 import java.util.ArrayList
 
-class BaseBottomSelectionDialog(context: Context) : BaseDialog(context) {
-    private val mRecyclerView : RecyclerView = dialogView as RecyclerView
+class BaseBottomSelectionDialog(context: Context) : BaseDialog(context, position = POSITION_BOTTOM) {
+    private val mRecyclerView : RecyclerView = dialogView.findViewById(R.id.dialogBaseBottomSelectionRecyclerView)
     private val mAdapter = BaseBottomSelectionDialogItemAdapter()
     private val mItemList = ArrayList<BaseBottomSelectionDialogItem>()
+    private var mItemClickListener : BaseBottomSelectItemClickListener? = null
 
     override fun getLayoutID(): Int = R.layout.dialog_base_bottom_selection
 
-    init {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // 初始化
         initRecyclerView()
     }
 
     private fun initRecyclerView(){
         mRecyclerView.layoutManager = LinearLayoutManager(context)
         mRecyclerView.adapter = mAdapter
+    }
+
+    fun setItemList(itemList : ArrayList<BaseBottomSelectionDialogItem>):BaseBottomSelectionDialog{
+        mItemList.clear()
+        mItemList.addAll(itemList)
+        mAdapter.notifyDataSetChanged()
+        return this
+    }
+
+    fun setItemClickListener(mItemClickListener : BaseBottomSelectItemClickListener?):BaseBottomSelectionDialog{
+        this.mItemClickListener = mItemClickListener
+        return this
     }
 
     /**
@@ -51,19 +67,27 @@ class BaseBottomSelectionDialog(context: Context) : BaseDialog(context) {
             holder.setHintIcon(item.hintIcon, item.hintIconSize, item.hintIconTintColor)
             holder.setTitle(item.title, item.titleTextSize, item.titleTextColor)
             holder.setHint(item.hintText, item.hintTextSize, item.hintTextColor)
+            // 点击时间
+            holder.itemView.setOnClickListener {
+                mItemClickListener?.onItemClick(holder.adapterPosition, item, this@BaseBottomSelectionDialog)
+            }
         }
 
     }
+}
+
+interface BaseBottomSelectItemClickListener{
+    fun onItemClick(id:Int, item:BaseBottomSelectionDialogItem, dialog:BaseDialog)
 }
 
 /**
  * 底部弹窗的子项ViewHolder
  */
 private class BaseBottomSelectionDialogViewHolder(context:Context, parent:ViewGroup) : BaseViewHolder(context, R.layout.item_base_bottom_selection_dialog, parent){
-    val iconImageView = itemView.findViewById<ImageView>(R.id.itemBaseBottomSelectionDialogIcon)
-    val titleTextView = itemView.findViewById<TextView>(R.id.itemBaseBottomSelectionDialogTitle)
-    val hintTextView = itemView.findViewById<TextView>(R.id.itemBaseBottomSelectionDialogHintText)
-    val hintImageView = itemView.findViewById<ImageView>(R.id.itemBaseBottomSelectionDialogHintIcon)
+    private val iconImageView = itemView.findViewById<ImageView>(R.id.itemBaseBottomSelectionDialogIcon)
+    private val titleTextView = itemView.findViewById<TextView>(R.id.itemBaseBottomSelectionDialogTitle)
+    private val hintTextView = itemView.findViewById<TextView>(R.id.itemBaseBottomSelectionDialogHintText)
+    private val hintImageView = itemView.findViewById<ImageView>(R.id.itemBaseBottomSelectionDialogHintIcon)
 
     fun setIcon(icon:Int, size:Int, color:Int){
         setImageViewParams(iconImageView, icon, size, color)

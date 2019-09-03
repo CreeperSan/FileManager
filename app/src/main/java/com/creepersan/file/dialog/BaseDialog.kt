@@ -2,32 +2,68 @@ package com.creepersan.file.dialog
 
 import android.app.Dialog
 import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
+import android.graphics.drawable.ColorDrawable
+import android.os.Bundle
+import android.view.*
 
-open class BaseDialog : Dialog{
-    protected var dialogView : View? = null
+abstract class BaseDialog(context: Context,
+                      protected var position: Int = POSITION_CENTER
+) : Dialog(context) {
 
-    constructor(context:Context):super(context)
-    constructor(dialogView:View):super(dialogView.context){
-        this.dialogView = dialogView
+    companion object{
+        const val POSITION_CENTER = 0
+        const val POSITION_BOTTOM = 1
+        const val POSITION_TOP = 2
     }
 
-    open fun getLayoutID():Int = 0
+    protected lateinit var dialogView : View
+
+    abstract fun getLayoutID():Int
 
     init {
         initLayout()
-        onLayoutInflated()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // 设置View
+        setContentView(dialogView)
+        // 初始化
+        initPosition()
+        initBackgroundColor()
+        initLayoutParams()
     }
 
     private fun initLayout(){
-        layoutInflater
-        val layoutID = getLayoutID()
-        if (layoutID != 0){
-            dialogView = layoutInflater.inflate(layoutID, null)
+        dialogView = layoutInflater.inflate(getLayoutID(), null)
+    }
+
+    private fun initPosition(){
+        window?.apply {
+            when(position){
+                POSITION_CENTER -> {
+                    this.setGravity(Gravity.CENTER)
+                }
+                POSITION_BOTTOM -> {
+                    this.setGravity(Gravity.CENTER or Gravity.BOTTOM)
+                }
+                POSITION_TOP -> {
+                    this.setGravity(Gravity.CENTER or Gravity.TOP)
+                }
+            }
         }
     }
 
-    open fun onLayoutInflated(){}
+    private fun initBackgroundColor(){
+        window?.setBackgroundDrawableResource(android.R.color.transparent);
+    }
+
+    private fun initLayoutParams(){
+        window?.apply {
+            val layoutParams = attributes
+            layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT
+            attributes = layoutParams
+        }
+    }
 
 }
