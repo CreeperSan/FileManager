@@ -18,7 +18,7 @@ import com.creepersan.file.common.view_holder.BaseViewHolder
 import com.creepersan.file.manager.TypedValueManager
 import java.util.ArrayList
 
-class BaseBottomSelectionDialog(context: Context) : BaseDialog(context, position = POSITION_BOTTOM) {
+class BaseBottomSelectionDialog(context: Context) : BaseDialog(context, position = POSITION_BOTTOM, animation = ANIMATION_BOTTOM) {
     private val mRecyclerView : RecyclerView = dialogView.findViewById(R.id.dialogBaseBottomSelectionRecyclerView)
     private val mAdapter = BaseBottomSelectionDialogItemAdapter()
     private val mItemList = ArrayList<BaseBottomSelectionDialogItem>()
@@ -69,7 +69,7 @@ class BaseBottomSelectionDialog(context: Context) : BaseDialog(context, position
             holder.setHint(item.hintText, item.hintTextSize, item.hintTextColor)
             // 点击时间
             holder.itemView.setOnClickListener {
-                mItemClickListener?.onItemClick(holder.adapterPosition, item, this@BaseBottomSelectionDialog)
+                mItemClickListener?.onItemClick(item.id, item, this@BaseBottomSelectionDialog)
             }
         }
 

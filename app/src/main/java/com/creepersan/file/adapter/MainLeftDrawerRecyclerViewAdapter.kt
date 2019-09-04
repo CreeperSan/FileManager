@@ -8,10 +8,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.creepersan.file.R
+import com.creepersan.file.activity.MainFragmentListObserver
 import com.creepersan.file.common.view_holder.BaseViewHolder
+import com.creepersan.file.fragment.main.BaseMainFragment
 import java.util.ArrayList
 
-class MainLeftDrawerRecyclerViewAdapter(private val mainFragmentPagerAdapter: MainFragmentPagerAdapter) : RecyclerView.Adapter<BaseViewHolder>(){
+class MainLeftDrawerRecyclerViewAdapter(private val mainFragmentPagerAdapter: MainFragmentPagerAdapter,private val observer: MainFragmentListObserver) : RecyclerView.Adapter<BaseViewHolder>(),
+    MainFragmentListObserver.Subscriber {
+
     companion object{
         private const val VIEW_TYPE_UNDEFINE = -1
         private const val VIEW_TYPE_HEADER = 0
@@ -20,17 +24,18 @@ class MainLeftDrawerRecyclerViewAdapter(private val mainFragmentPagerAdapter: Ma
         private const val VIEW_TYPE_SELECTION_CLOSABLE = 3
     }
 
+    init {
+        observer.subscribe(this)
+    }
+
     private val mItemList = ArrayList<BaseMainLeftDrawerItem>()
 
-    fun notifyFragmentListChange(){
-        notifyDataSetChanged()
+    override fun onListChange(fragmentList: ArrayList<BaseMainFragment>) {
         mItemList.clear()
         mItemList.add(MainLeftDrawerHeaderItem())
         mItemList.add(MainLeftDrawerTitleItem("已打开的窗口"))
-        Log.e("TAG", "${mainFragmentPagerAdapter.getFragmentSize()}")
-        for (i in 0 until mainFragmentPagerAdapter.getFragmentSize()){
-            Log.e("TAG", "findOne")
-            mainFragmentPagerAdapter.getFragment(i)?.apply {
+        for (i in 0 until observer.getSize()){
+            observer.getFragment(i).apply {
                 mItemList.add(MainLeftDrawerSelectionItem(
                     this.getIcon(),
                     this.getName(),
@@ -115,7 +120,6 @@ class MainLeftDrawerHeaderItemView(viewGroup: ViewGroup) : BaseViewHolder(R.layo
         headerImageView.setImageResource(resID)
     }
 }
-
 class MainLeftDrawerTitleItemView(viewGroup: ViewGroup) : BaseViewHolder(R.layout.item_main_left_drawer_title, viewGroup) {
     private val titleTextView = itemView.findViewById<TextView>(R.id.itemMainLeftDrawerTitleTitleTextView)
 
@@ -123,7 +127,6 @@ class MainLeftDrawerTitleItemView(viewGroup: ViewGroup) : BaseViewHolder(R.layou
         titleTextView.text = title
     }
 }
-
 class MainLeftDrawerSelectionItemView(viewGroup: ViewGroup) : BaseViewHolder(R.layout.item_main_left_drawer_selection, viewGroup) {
     private val iconImageView = itemView.findViewById<ImageView>(R.id.itemMainLeftDrawerSelectionIcon)
     private val titleTextView = itemView.findViewById<TextView>(R.id.itemMainLeftDrawerSelectionTitle)
@@ -140,7 +143,6 @@ class MainLeftDrawerSelectionItemView(viewGroup: ViewGroup) : BaseViewHolder(R.l
         itemView.setOnClickListener(listener)
     }
 }
-
 class MainLeftDrawerSelectionClosableItemView(viewGroup: ViewGroup) : BaseViewHolder(R.layout.item_main_left_drawer_selection_closable, viewGroup) {
     private val iconImageView = itemView.findViewById<ImageView>(R.id.itemMainLeftDrawerClosableSelectionIcon)
     private val titleTextView = itemView.findViewById<TextView>(R.id.itemMainLeftDrawerClosableSelectionTitle)

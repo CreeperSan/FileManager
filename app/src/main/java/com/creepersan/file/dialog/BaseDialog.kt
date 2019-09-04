@@ -5,15 +5,22 @@ import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.*
+import com.creepersan.file.R
 
 abstract class BaseDialog(context: Context,
-                      protected var position: Int = POSITION_CENTER
+                        protected var position: Int = POSITION_CENTER,
+                        protected var animation: Int = ANIMATION_NONE
 ) : Dialog(context) {
 
     companion object{
         const val POSITION_CENTER = 0
         const val POSITION_BOTTOM = 1
         const val POSITION_TOP = 2
+
+        const val ANIMATION_NONE = 0
+        const val ANIMATION_TOP = 1
+        const val ANIMATION_CENTER = 2
+        const val ANIMATION_BOTTOM = 3
     }
 
     protected lateinit var dialogView : View
@@ -32,6 +39,7 @@ abstract class BaseDialog(context: Context,
         initPosition()
         initBackgroundColor()
         initLayoutParams()
+        initWindowAnimation()
     }
 
     private fun initLayout(){
@@ -66,4 +74,19 @@ abstract class BaseDialog(context: Context,
         }
     }
 
+    private fun initWindowAnimation(){
+        window?.apply {
+            when(animation){
+                ANIMATION_TOP -> {
+                    this.setWindowAnimations(R.style.windowAnimationTop)
+                }
+                ANIMATION_CENTER -> {
+                    this.setWindowAnimations(R.style.windowAnimationCenter)
+                }
+                ANIMATION_BOTTOM -> {
+                    this.setWindowAnimations(R.style.windowAnimationBottom)
+                }
+            }
+        }
+    }
 }

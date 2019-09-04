@@ -12,6 +12,7 @@ import com.creepersan.file.activity.CreateFileDirectoryActivity
 import com.creepersan.file.bean.file.FileInfo
 import com.creepersan.file.bean.file.FilePageInfo
 import com.creepersan.file.dialog.*
+import com.creepersan.file.global.GlobalClipBoard
 import com.creepersan.file.manager.ToastManager
 import kotlinx.android.synthetic.main.fragment_main_file.*
 import java.lang.RuntimeException
@@ -48,7 +49,7 @@ class FileFragment : BaseMainFragment(){
     }
 
     override fun getIcon(): Int {
-        return R.mipmap.ic_launcher_round
+        return R.drawable.ic_directory_dark_blue
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,16 +63,22 @@ class FileFragment : BaseMainFragment(){
         // 底部弹出的文件操作对话框
         mSelectMoreOperationDialog = BaseBottomSelectionDialog(mainActivity())
             .setItemList(arrayListOf(
-                BaseBottomSelectionDialogItem(DIALOG_SELECTION_COPY, R.drawable.ic_arrow_back_dark_blue, "复制"),
-                BaseBottomSelectionDialogItem(DIALOG_SELECTION_CUT, R.drawable.ic_arrow_back_dark_blue, "剪切"),
-                BaseBottomSelectionDialogItem(DIALOG_SELECTION_PASTE, R.drawable.ic_arrow_back_dark_blue, "粘贴"),
-                BaseBottomSelectionDialogItem(DIALOG_SELECTION_DELETE, R.drawable.ic_arrow_back_dark_blue, "删除"),
-                BaseBottomSelectionDialogItem(DIALOG_SELECTION_RENAME, R.drawable.ic_arrow_back_dark_blue, "重命名"),
-                BaseBottomSelectionDialogItem(DIALOG_SELECTION_INFO, R.drawable.ic_arrow_back_dark_blue, "详情")
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_COPY, R.drawable.ic_content_copy, "复制"),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_CUT, R.drawable.ic_content_cut, "剪切"),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_PASTE, R.drawable.ic_content_paste, "粘贴"),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_DELETE, R.drawable.ic_delete, "删除"),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_RENAME, R.drawable.ic_rename, "重命名"),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_INFO, R.drawable.ic_info, "详情")
             ))
             .setItemClickListener(object : BaseBottomSelectItemClickListener{
                 override fun onItemClick(id: Int, item: BaseBottomSelectionDialogItem, dialog: BaseDialog) {
                     ToastManager.show("Click ${item.title}")
+                    when(id){
+                        DIALOG_SELECTION_COPY -> {
+                            GlobalClipBoard.setFileInfo(mSelectedPathFileInfoListMap.values.toList())
+                            setNotSelecting()
+                        }
+                    }
                 }
             })
         // 上面弹出的搜索对话框

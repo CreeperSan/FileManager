@@ -6,29 +6,36 @@ import androidx.viewpager.widget.ViewPager
 import com.creepersan.file.R
 import com.creepersan.file.adapter.MainFragmentPagerAdapter
 import com.creepersan.file.adapter.MainLeftDrawerRecyclerViewAdapter
+import com.creepersan.file.adapter.MainRightDrawerRecyclerViewAdapter
+import com.creepersan.file.fragment.BaseFragment
 import com.creepersan.file.fragment.main.BaseMainFragment
 import com.creepersan.file.fragment.main.FileFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
 
-    private val mPagerAdapter = MainFragmentPagerAdapter(supportFragmentManager)
-    private val mLeftDrawerAdapter = MainLeftDrawerRecyclerViewAdapter(mPagerAdapter)
+    private val mFragmentListObserver = MainFragmentListObserver()
+    private val mPagerAdapter = MainFragmentPagerAdapter(supportFragmentManager, mFragmentListObserver)
+    private val mLeftDrawerAdapter = MainLeftDrawerRecyclerViewAdapter(mPagerAdapter, mFragmentListObserver)
+    private val mRightDrawerAdapter = MainRightDrawerRecyclerViewAdapter()
 
     override fun getLayoutID(): Int = R.layout.activity_main
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initFragment()
         initViewPager()
         initLeftDrawer()
         initRightDrawer()
         initFloatingActionButton()
     }
 
+    private fun initFragment(){
+        mFragmentListObserver.addFragment(FileFragment(), FileFragment(), FileFragment())
+    }
+
     private fun initViewPager(){
-        mPagerAdapter.addFragment(FileFragment())
-        mPagerAdapter.addFragment(FileFragment())
-        mPagerAdapter.addFragment(FileFragment())
         mainViewPager.offscreenPageLimit = Int.MAX_VALUE
         mainViewPager.adapter = mPagerAdapter
 
@@ -38,11 +45,11 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     private fun initLeftDrawer(){
         mainLeftDrawerRecyclerView.layoutManager = LinearLayoutManager(this)
         mainLeftDrawerRecyclerView.adapter = mLeftDrawerAdapter
-        mLeftDrawerAdapter.notifyFragmentListChange()
     }
 
     private fun initRightDrawer(){
-
+        mainRightDrawerRecyclerView.layoutManager = LinearLayoutManager(this)
+        mainRightDrawerRecyclerView.adapter = mRightDrawerAdapter
     }
 
     private fun initFloatingActionButton(){
@@ -50,7 +57,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
 
     override fun onBackPressed() {
-        mPagerAdapter.getFragment(mainViewPager.currentItem)?.apply {
+        mFragmentListObserver.getFragment(mainViewPager.currentItem).apply {
             if (this.onBackPressed()){
                 return
             }else{
@@ -62,22 +69,18 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
 
     internal fun closeFragment(fragment:BaseMainFragment){
-        mPagerAdapter.removeFragment(fragment)
+        mFragmentListObserver.removeFragment(fragment)
         refreshFloatingActionButton()
     }
 
     internal fun refreshFloatingActionButton(){
         // 防止为空FragmentList
-        if (mPagerAdapter.getFragmentSize() <= 0){
+        if (mFragmentListObserver.getSize() <= 0){
             mainFloatingActionButton.hide()
             return
         }
         // 防止为空的Fragment
-        val baseMainFragment = mPagerAdapter.getFragment(mainViewPager.currentItem)
-        if (baseMainFragment == null){
-            mainFloatingActionButton.hide()
-            return
-        }
+        val baseMainFragment = mFragmentListObserver.getFragment(mainViewPager.currentItem)
         // 设置
         if (baseMainFragment.getFloatingActionButtonIsVisible()){
             mainFloatingActionButton.setImageResource(baseMainFragment.getFloatingActionButtonIcon())
@@ -98,4 +101,65 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     override fun onPageSelected(position: Int) {
         refreshFloatingActionButton()
     }
+}
+
+class MainFragmentListObserver{
+    private val mFragmentList = ArrayList<BaseMainFragment>()
+    private val mSubscriberList = ArrayList<Subscriber>()
+
+    fun getFragment(position:Int):BaseMainFragment {
+        return mFragmentList[position]
+    }
+
+    fun getSize():Int{
+        return mFragmentList.size
+    }
+
+    fun subscribe(subscriber: Subscriber){
+        if (!mSubscriberList.contains(subscriber)){
+            mSubscriberList.add(subscriber)
+        }
+    }
+
+    fun unsubscribe(subscriber: Subscriber){
+        mSubscriberList.remove(subscriber)
+    }
+
+    fun addFragment(vararg fragment: BaseMainFragment){
+        addFragment(fragment.toList())
+    }
+
+    fun removeFragment(vararg fragment:BaseMainFragment){
+        removeFragment(fragment.toList())
+    }
+
+    private fun notifyFragmentListChange(){
+        mSubscriberList.forEach {  subscriber ->
+            subscriber.onListChange(mFragmentList)
+        }
+    }
+
+    fun addFragment(fragmentList:List<BaseMainFragment>){
+        fragmentList.forEach{ fragment ->
+            if (!mFragmentList.contains(fragment)){
+                mFragmentList.add(fragment)
+            }
+        }
+        notifyFragmentListChange()
+    }
+
+    fun removeFragment(fragmentList:List<BaseMainFragment>){
+        mFragmentList.removeAll(fragmentList)
+        notifyFragmentListChange()
+    }
+
+    fun clearFragment(){
+        mFragmentList.clear()
+        notifyFragmentListChange()
+    }
+
+    interface Subscriber{
+        fun onListChange(fragmentList:ArrayList<BaseMainFragment>)
+    }
+
 }

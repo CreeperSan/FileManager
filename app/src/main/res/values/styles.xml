@@ -26,4 +26,17 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="windowAnimationBottom">
+        <item name="android:windowEnterAnimation">@anim/window_bottom_in</item>
+        <item name="android:windowExitAnimation">@anim/window_bottom_exit</item>
+    </style>
+    <style name="windowAnimationCenter">
+        <item name="android:windowEnterAnimation">@anim/window_center_in</item>
+        <item name="android:windowExitAnimation">@anim/window_center_exit</item>
+    </style>
+    <style name="windowAnimationTop">
+        <item name="android:windowEnterAnimation">@anim/window_top_in</item>
+        <item name="android:windowExitAnimation">@anim/window_top_exit</item>
+    </style>
+
 </resources>
