@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.creepersan.file.R
 import com.creepersan.file.application.FileApplication
+import com.creepersan.file.manager.ResourceManager
 import com.creepersan.file.manager.ToastManager
 import java.io.Serializable
 
@@ -95,7 +96,7 @@ open class BaseActivity : AppCompatActivity(){
      * @return 字符串
      */
     protected fun Int.toResString():String{
-        return getString(this)
+        return ResourceManager.getString(this)
     }
 
     /**

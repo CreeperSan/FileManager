@@ -1,6 +1,5 @@
 package com.creepersan.file.fragment.main
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -10,20 +9,34 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.creepersan.file.R
 import com.creepersan.file.activity.CreateFileDirectoryActivity
+import com.creepersan.file.bean.file.FileInfo
 import com.creepersan.file.bean.file.FilePageInfo
 import com.creepersan.file.dialog.*
 import com.creepersan.file.manager.ToastManager
 import kotlinx.android.synthetic.main.fragment_main_file.*
 import java.lang.RuntimeException
+import java.util.*
 
-class FileFragment : BaseFileFragment(){
+class FileFragment : BaseMainFragment(){
     companion object{
         private const val TYPE_FILE = 0
         private const val TYPE_DIRECTORY = 1
+
+        private const val DIALOG_SELECTION_INFO = 0
+        private const val DIALOG_SELECTION_COPY = 1
+        private const val DIALOG_SELECTION_PASTE = 2
+        private const val DIALOG_SELECTION_CUT = 3
+        private const val DIALOG_SELECTION_DELETE = 4
+        private const val DIALOG_SELECTION_RENAME = 5
     }
 
+    private var isSelecting = false
+
+    private val mSelectedPathFileInfoListMap = LinkedHashMap<String, FileInfo>()
     private val mFilePageInfo = FilePageInfo()
     private val mAdapter = FileAdapter()
+    private lateinit var mSelectMoreOperationDialog : BaseBottomSelectionDialog
+    private lateinit var mSearchDialog : FileFragmentSearchDialog
 
 
     override fun getLayoutID(): Int {
@@ -40,9 +53,29 @@ class FileFragment : BaseFileFragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initDialog()
         initToolbar()
         initRecyclerView()
-        initFloatingActionButton()
+    }
+
+    private fun initDialog(){
+        // 底部弹出的文件操作对话框
+        mSelectMoreOperationDialog = BaseBottomSelectionDialog(mainActivity())
+            .setItemList(arrayListOf(
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_COPY, R.drawable.ic_arrow_back_dark_blue, "复制"),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_CUT, R.drawable.ic_arrow_back_dark_blue, "剪切"),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_PASTE, R.drawable.ic_arrow_back_dark_blue, "粘贴"),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_DELETE, R.drawable.ic_arrow_back_dark_blue, "删除"),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_RENAME, R.drawable.ic_arrow_back_dark_blue, "重命名"),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_INFO, R.drawable.ic_arrow_back_dark_blue, "详情")
+            ))
+            .setItemClickListener(object : BaseBottomSelectItemClickListener{
+                override fun onItemClick(id: Int, item: BaseBottomSelectionDialogItem, dialog: BaseDialog) {
+                    ToastManager.show("Click ${item.title}")
+                }
+            })
+        // 上面弹出的搜索对话框
+        mSearchDialog = FileFragmentSearchDialog(mainActivity())
     }
 
     /**
@@ -50,21 +83,23 @@ class FileFragment : BaseFileFragment(){
      */
     private fun initToolbar(){
         fileFragmentToolbar.setNavigationOnClickListener {
-            onBackPressed()
+            if (!onBackPressed()){
+                closeFragment()
+            }
         }
         fileFragmentToolbar.inflateMenu(R.menu.file_fragment_toolbar)
         fileFragmentToolbar.setOnMenuItemClickListener {  menuItem ->
             when(menuItem.itemId){
                 R.id.menuFileFragmentToolbarCreate -> {
-                    activity().toActivity(CreateFileDirectoryActivity::class.java)
+                    mainActivity().toActivity(CreateFileDirectoryActivity::class.java)
                 }
                 R.id.menuFileFragmentToolbarSearch -> {
-                    FileFragmentSearchDialog(activity())
-                        .show()
+                    mSearchDialog.show()
                 }
             }
             true
         }
+        refreshToolbarTitle()
     }
 
     private fun initRecyclerView(){
@@ -72,32 +107,76 @@ class FileFragment : BaseFileFragment(){
         fileFragmentRecyclerView.adapter = mAdapter
     }
 
-    private fun initFloatingActionButton(){
-        fileFragmentFloatingActionButton.setOnClickListener {
-            BaseBottomSelectionDialog(activity())
-                .setItemList(arrayListOf(
-                    BaseBottomSelectionDialogItem(0, R.drawable.ic_arrow_back_dark_blue, "操作1"),
-                    BaseBottomSelectionDialogItem(1, R.drawable.ic_arrow_down_dart_blue, "操作2"),
-                    BaseBottomSelectionDialogItem(2, R.drawable.ic_directory_dark_blue, "操作3"),
-                    BaseBottomSelectionDialogItem(3, R.drawable.ic_launcher_background, "操作4")
-                ))
-                .setItemClickListener(object : BaseBottomSelectItemClickListener{
-                    override fun onItemClick(id: Int, item: BaseBottomSelectionDialogItem, dialog: BaseDialog) {
-                        ToastManager.show("Click ${item.title}")
-                    }
-                })
-                .show()
+    private fun refreshToolbarTitle(){
+        if (isSelecting){
+            fileFragmentToolbar.title = "已选择 ${mSelectedPathFileInfoListMap.size} / ${mFilePageInfo.getCurrentPageFileCount()}"
+        }else{
+            fileFragmentToolbar.title = mFilePageInfo.getCurrentDirectoryInfo().directory.fullName
+        }
+    }
+
+    private fun FileInfo.isSelected():Boolean{
+        return mSelectedPathFileInfoListMap.containsKey(this.path)
+    }
+
+    private fun setSelecting(){
+        isSelecting = true
+        notifyFloatingActionButtonUpdate()
+        refreshToolbarTitle()
+    }
+
+    private fun setNotSelecting(){
+        isSelecting = false
+        mSelectedPathFileInfoListMap.clear()
+        mAdapter.notifyDataSetChanged()
+        notifyFloatingActionButtonUpdate()
+        refreshToolbarTitle()
+    }
+
+    private fun setFileInfoToggleSelect(fileInfo: FileInfo){
+        if (fileInfo.isSelected()){
+            mSelectedPathFileInfoListMap.remove(fileInfo.path)
+        }else{
+            mSelectedPathFileInfoListMap[fileInfo.path] = fileInfo
+        }
+        // 如果全部都没选上，就退出
+        if (mSelectedPathFileInfoListMap.size <= 0){
+            setNotSelecting()
+        }
+        // 更新标题
+        refreshToolbarTitle()
+    }
+
+    override fun getFloatingActionButtonIsVisible(): Boolean {
+        return isSelecting
+    }
+
+    override fun getFloatingActionButtonIcon(): Int {
+        return R.drawable.ic_more_dot_vertical
+    }
+
+    override fun getFloatingActionButtonClickListener(): View.OnClickListener? {
+        return View.OnClickListener {
+            mSelectMoreOperationDialog.show()
         }
     }
 
     /**********************************************************************************************/
     override fun onBackPressed(): Boolean {
-        if (mFilePageInfo.canPopDirectory()){
-            mFilePageInfo.popDirectory()
-            mAdapter.notifyDataSetChanged()
-            return true
-        }else{
-            return false
+        return when{
+            isSelecting -> {
+                setNotSelecting()
+                true
+            }
+            mFilePageInfo.canPopDirectory() -> {
+                mFilePageInfo.popDirectory()
+                mAdapter.notifyDataSetChanged()
+                refreshToolbarTitle()
+                true
+            }
+            else -> {
+                false
+            }
         }
     }
 
@@ -148,6 +227,7 @@ class FileFragment : BaseFileFragment(){
         }
 
         override fun getItemCount(): Int {
+            // 文件列表
             val count = mFilePageInfo.getCurrentPageFileCount()
             if (count <= 0){
                 fileFragmentPageHintView.visible()
@@ -156,26 +236,70 @@ class FileFragment : BaseFileFragment(){
                 fileFragmentPageHintView.gone()
                 fileFragmentRecyclerView.visible()
             }
+            // 左上角导航图标
+            if (mFilePageInfo.canPopDirectory()){
+                fileFragmentToolbar.setNavigationIcon(R.drawable.ic_arrow_back_dark_blue)
+            }else{
+                fileFragmentToolbar.setNavigationIcon(R.drawable.ic_close)
+            }
             return count
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val fileInfo = mFilePageInfo.getCurrentPageFile(position)
+            val pos = holder.adapterPosition
             when{
                 holder is DirectoryViewHolder -> {
                     holder.setTitle(fileInfo.fullName)
                     holder.setInfo(fileInfo.modifyTime.toString())
                     holder.setOnClickListener(View.OnClickListener {
-                        mFilePageInfo.pushDirectory(fileInfo)
-                        mAdapter.notifyDataSetChanged()
+                        if (isSelecting){
+                            setFileInfoToggleSelect(fileInfo)
+                            mAdapter.notifyItemChanged(pos)
+                        }else{
+                            mFilePageInfo.pushDirectory(fileInfo)
+                            mAdapter.notifyDataSetChanged()
+                            refreshToolbarTitle()
+                        }
                     })
+                    holder.setOnLongClickListener(View.OnLongClickListener {
+                        setFileInfoToggleSelect(fileInfo)
+                        setSelecting()
+                        mAdapter.notifyItemChanged(pos)
+                        true
+                    })
+                    if (fileInfo.isSelected()){
+                        holder.setBackground(R.drawable.bg_file_select)
+                        holder.setIcon(R.drawable.ic_check)
+                    }else{
+                        holder.setBackground(R.drawable.bg_file_directory)
+                        holder.setIcon(R.drawable.ic_directory_dark_blue)
+                    }
                 }
                 holder is FileViewHolder -> {
                     holder.setTitle(fileInfo.fullName)
                     holder.setInfo(fileInfo.modifyTime.toString())
                     holder.setOnClickListener(View.OnClickListener {
+                        if (isSelecting){
+                            setFileInfoToggleSelect(fileInfo)
+                            mAdapter.notifyItemChanged(pos)
+                        }else{
 
+                        }
                     })
+                    holder.setOnLongClickListener(View.OnLongClickListener {
+                        setFileInfoToggleSelect(fileInfo)
+                        setSelecting()
+                        mAdapter.notifyItemChanged(pos)
+                        true
+                    })
+                    if (fileInfo.isSelected()){
+                        holder.setBackground(R.drawable.bg_file_select)
+                        holder.setIcon(R.drawable.ic_check)
+                    }else{
+                        holder.setBackground(R.drawable.bg_file_file)
+                        holder.setIcon(R.drawable.ic_file_grey)
+                    }
                 }
             }
         }
@@ -187,6 +311,10 @@ class FileFragment : BaseFileFragment(){
         private val titleTextView = itemView.findViewById<TextView>(R.id.itemFileDirectoryTitle)
         private val infoTextView = itemView.findViewById<TextView>(R.id.itemFileDirectoryInfo)
 
+        fun setIcon(resID:Int){
+            iconImageView.setImageResource(resID)
+        }
+
         fun setTitle(title:String){
             titleTextView.text = title
         }
@@ -197,6 +325,14 @@ class FileFragment : BaseFileFragment(){
 
         fun setOnClickListener(onClickListener:View.OnClickListener){
             itemView.setOnClickListener(onClickListener)
+        }
+
+        fun setOnLongClickListener(onLongClickListener:View.OnLongClickListener){
+            itemView.setOnLongClickListener(onLongClickListener)
+        }
+
+        fun setBackground(resID:Int){
+            itemView.setBackgroundResource(resID)
         }
     }
 
@@ -205,6 +341,10 @@ class FileFragment : BaseFileFragment(){
         private val titleTextView = itemView.findViewById<TextView>(R.id.itemFileFileFileName)
         private val infoTextView = itemView.findViewById<TextView>(R.id.itemFileFileFileDescription)
 
+        fun setIcon(resID:Int){
+            iconImageView.setImageResource(resID)
+        }
+
         fun setTitle(title:String){
             titleTextView.text = title
         }
@@ -215,6 +355,14 @@ class FileFragment : BaseFileFragment(){
 
         fun setOnClickListener(onClickListener:View.OnClickListener){
             itemView.setOnClickListener(onClickListener)
+        }
+
+        fun setOnLongClickListener(onLongClickListener:View.OnLongClickListener){
+            itemView.setOnLongClickListener(onLongClickListener)
+        }
+
+        fun setBackground(resID:Int){
+            itemView.setBackgroundResource(resID)
         }
 
     }

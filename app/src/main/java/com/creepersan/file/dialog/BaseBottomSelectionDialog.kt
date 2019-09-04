@@ -54,7 +54,7 @@ class BaseBottomSelectionDialog(context: Context) : BaseDialog(context, position
      */
     private inner class BaseBottomSelectionDialogItemAdapter : RecyclerView.Adapter<BaseBottomSelectionDialogViewHolder>(){
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseBottomSelectionDialogViewHolder {
-            return BaseBottomSelectionDialogViewHolder(context, parent)
+            return BaseBottomSelectionDialogViewHolder(parent)
         }
 
         override fun getItemCount(): Int {
@@ -83,7 +83,7 @@ interface BaseBottomSelectItemClickListener{
 /**
  * 底部弹窗的子项ViewHolder
  */
-private class BaseBottomSelectionDialogViewHolder(context:Context, parent:ViewGroup) : BaseViewHolder(context, R.layout.item_base_bottom_selection_dialog, parent){
+private class BaseBottomSelectionDialogViewHolder(parent:ViewGroup) : BaseViewHolder(R.layout.item_base_bottom_selection_dialog, parent){
     private val iconImageView = itemView.findViewById<ImageView>(R.id.itemBaseBottomSelectionDialogIcon)
     private val titleTextView = itemView.findViewById<TextView>(R.id.itemBaseBottomSelectionDialogTitle)
     private val hintTextView = itemView.findViewById<TextView>(R.id.itemBaseBottomSelectionDialogHintText)
@@ -121,7 +121,7 @@ private class BaseBottomSelectionDialogViewHolder(context:Context, parent:ViewGr
         layoutParams.height = size
         imageView.layoutParams = layoutParams
         imageView.setImageResource(icon)
-        imageView.setImageTintList(ColorStateList.valueOf(color))
+        imageView.imageTintList = ColorStateList.valueOf(color)
     }
 
     private fun setHintTextView(textView:TextView, text:String, size:Int, color:Int){

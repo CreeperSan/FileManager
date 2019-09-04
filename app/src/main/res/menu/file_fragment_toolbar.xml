@@ -4,12 +4,6 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-            android:id="@+id/menuFileFragmentToolbarSelect"
-            android:title="@string/fileFragment_file_menuSearch"
-            android:icon="@drawable/ic_select_dart_blue"
-            app:showAsAction="ifRoom"/>
-
-    <item
             android:id="@+id/menuFileFragmentToolbarSearch"
             android:title="@string/fileFragment_file_menuSearch"
             android:icon="@drawable/ic_search_dart_blue"

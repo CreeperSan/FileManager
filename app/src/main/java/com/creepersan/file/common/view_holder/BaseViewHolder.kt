@@ -10,6 +10,6 @@ open class BaseViewHolder : RecyclerView.ViewHolder {
 
     constructor(itemView: View) : super(itemView)
     constructor(context:Context, layoutID:Int) : super(LayoutInflater.from(context).inflate(layoutID, null))
-    constructor(context:Context, layoutID:Int, parent:ViewGroup) : super(LayoutInflater.from(context).inflate(layoutID, parent, false))
+    constructor(layoutID:Int, parent:ViewGroup) : super(LayoutInflater.from(parent.context).inflate(layoutID, parent, false))
 
 }

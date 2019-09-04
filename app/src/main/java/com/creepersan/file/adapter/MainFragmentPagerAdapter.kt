@@ -2,21 +2,20 @@ package com.creepersan.file.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.PagerAdapter
-import com.creepersan.file.fragment.main.BaseFileFragment
+import com.creepersan.file.fragment.main.BaseMainFragment
 import java.util.ArrayList
 
-class MainFragmentPagerAdapter(fragmentManager: FragmentManager) : FragmentStatePagerAdapter(fragmentManager){
-    private val mFragmentList = ArrayList<BaseFileFragment>()
+class MainFragmentPagerAdapter(fragmentManager: FragmentManager) : FragmentStatePagerAdapter(fragmentManager, BEHAVIOR_SET_USER_VISIBLE_HINT){
+    private val mFragmentList = ArrayList<BaseMainFragment>()
 
-    fun addFragment(fragment:BaseFileFragment){
+    fun addFragment(fragment:BaseMainFragment){
         mFragmentList.add(fragment)
         notifyDataSetChanged()
     }
 
-    fun removeFragment(fragment:BaseFileFragment){
+    fun removeFragment(fragment:BaseMainFragment){
         mFragmentList.remove(fragment)
         notifyDataSetChanged()
     }
@@ -33,10 +32,14 @@ class MainFragmentPagerAdapter(fragmentManager: FragmentManager) : FragmentState
         return PagerAdapter.POSITION_NONE
     }
 
-    fun getFileFragment(pos:Int):BaseFileFragment?{
+    fun getFragment(pos:Int):BaseMainFragment?{
         if (pos in 0 until mFragmentList.size){
             return mFragmentList[pos]
         }
         return null
+    }
+
+    fun getFragmentSize():Int{
+        return mFragmentList.size
     }
 }

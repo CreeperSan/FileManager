@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.creepersan.file.R
 import com.creepersan.file.activity.BaseActivity
+import com.creepersan.file.manager.ResourceManager
 import com.creepersan.file.manager.ToastManager
 
 open class BaseFragment : Fragment() {
@@ -44,7 +45,7 @@ open class BaseFragment : Fragment() {
      * @return 字符串
      */
     protected fun Int.toResString() : String{
-        return getString(this)
+        return ResourceManager.getString(this)
     }
 
     fun View.visible(){
