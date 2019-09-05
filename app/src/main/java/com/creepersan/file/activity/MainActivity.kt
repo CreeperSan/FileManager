@@ -10,6 +10,7 @@ import com.creepersan.file.adapter.MainRightDrawerRecyclerViewAdapter
 import com.creepersan.file.fragment.BaseFragment
 import com.creepersan.file.fragment.main.BaseMainFragment
 import com.creepersan.file.fragment.main.FileFragment
+import com.creepersan.file.global.GlobalClipBoard
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -19,6 +20,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     private val mPagerAdapter = MainFragmentPagerAdapter(supportFragmentManager, mFragmentListObserver)
     private val mLeftDrawerAdapter = MainLeftDrawerRecyclerViewAdapter(mPagerAdapter, mFragmentListObserver)
     private val mRightDrawerAdapter = MainRightDrawerRecyclerViewAdapter()
+    private val mNotifier = MainActivityNotifier()
 
     override fun getLayoutID(): Int = R.layout.activity_main
 
@@ -50,6 +52,10 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     private fun initRightDrawer(){
         mainRightDrawerRecyclerView.layoutManager = LinearLayoutManager(this)
         mainRightDrawerRecyclerView.adapter = mRightDrawerAdapter
+
+        mainRightDrawerClearAll.setOnClickListener {
+            GlobalClipBoard.cleatFileInfo()
+        }
     }
 
     private fun initFloatingActionButton(){
@@ -61,11 +67,14 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
             if (this.onBackPressed()){
                 return
             }else{
-                closeFragment(this)
-                return
+                if (mFragmentListObserver.getSize() > 1){
+                    closeFragment(this)
+                    return
+                }else{
+                    super.onBackPressed()
+                }
             }
         }
-        super.onBackPressed()
     }
 
     internal fun closeFragment(fragment:BaseMainFragment){
@@ -100,6 +109,15 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
     override fun onPageSelected(position: Int) {
         refreshFloatingActionButton()
+    }
+
+    /* 通知MainActivity操作的类 */
+    inner class MainActivityNotifier{
+
+        fun notifyFloatingActionButtonChange(){
+            refreshFloatingActionButton()
+        }
+
     }
 }
 

@@ -44,7 +44,6 @@ class FileInfo{
             this.isExist && !this.isDirectory -> file.length()
             else -> 0L
         }
-        this.size = file.length()
     }
 
 }

@@ -13,6 +13,7 @@ import com.creepersan.file.bean.file.FileInfo
 import com.creepersan.file.bean.file.FilePageInfo
 import com.creepersan.file.dialog.*
 import com.creepersan.file.global.GlobalClipBoard
+import com.creepersan.file.manager.FormatManager
 import com.creepersan.file.manager.ToastManager
 import kotlinx.android.synthetic.main.fragment_main_file.*
 import java.lang.RuntimeException
@@ -258,7 +259,7 @@ class FileFragment : BaseMainFragment(){
             when{
                 holder is DirectoryViewHolder -> {
                     holder.setTitle(fileInfo.fullName)
-                    holder.setInfo(fileInfo.modifyTime.toString())
+                    holder.setInfo("${fileInfo.size} 项  ${FormatManager.getFormatTime(fileInfo.modifyTime)}")
                     holder.setOnClickListener(View.OnClickListener {
                         if (isSelecting){
                             setFileInfoToggleSelect(fileInfo)
@@ -285,7 +286,7 @@ class FileFragment : BaseMainFragment(){
                 }
                 holder is FileViewHolder -> {
                     holder.setTitle(fileInfo.fullName)
-                    holder.setInfo(fileInfo.modifyTime.toString())
+                    holder.setInfo("${FormatManager.getFormatSize(fileInfo.size)}  ${FormatManager.getFormatTime(fileInfo.modifyTime)}")
                     holder.setOnClickListener(View.OnClickListener {
                         if (isSelecting){
                             setFileInfoToggleSelect(fileInfo)
