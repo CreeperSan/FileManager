@@ -5,19 +5,19 @@
 
     <item
             android:id="@+id/menuFileFragmentToolbarSearch"
-            android:title="@string/fileFragment_file_menuSearch"
+            android:title="@string/fileFragment_menuSearch"
             android:icon="@drawable/ic_search_dart_blue"
             app:showAsAction="ifRoom"/>
 
     <item
             android:id="@+id/menuFileFragmentToolbarRefresh"
-            android:title="@string/fileFragment_file_menuRefresh"
+            android:title="@string/fileFragment_menuRefresh"
             android:icon="@drawable/ic_refresh_dark_blue"
             app:showAsAction="ifRoom"/>
 
     <item
             android:id="@+id/menuFileFragmentToolbarCreate"
-            android:title="@string/fileFragment_file_menuCreate"
+            android:title="@string/fileFragment_menuCreate"
             app:showAsAction="never"/>
 
 

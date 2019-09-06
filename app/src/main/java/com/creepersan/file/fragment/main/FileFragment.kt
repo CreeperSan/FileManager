@@ -14,6 +14,7 @@ import com.creepersan.file.bean.file.FilePageInfo
 import com.creepersan.file.dialog.*
 import com.creepersan.file.global.GlobalClipBoard
 import com.creepersan.file.manager.FormatManager
+import com.creepersan.file.manager.ResourceManager
 import com.creepersan.file.manager.ToastManager
 import kotlinx.android.synthetic.main.fragment_main_file.*
 import java.lang.RuntimeException
@@ -26,6 +27,7 @@ class FileFragment : BaseMainFragment(){
 
         private const val DIALOG_SELECTION_INFO = 0
         private const val DIALOG_SELECTION_COPY = 1
+        private const val DIALOG_SELECTION_COPY_APPEND = 6
         private const val DIALOG_SELECTION_PASTE = 2
         private const val DIALOG_SELECTION_CUT = 3
         private const val DIALOG_SELECTION_DELETE = 4
@@ -46,7 +48,7 @@ class FileFragment : BaseMainFragment(){
     }
 
     override fun getName(): String {
-        return R.string.fileFragment_file_title.toResString()
+        return R.string.fileFragment_title.toResString()
     }
 
     override fun getIcon(): Int {
@@ -64,12 +66,13 @@ class FileFragment : BaseMainFragment(){
         // 底部弹出的文件操作对话框
         mSelectMoreOperationDialog = BaseBottomSelectionDialog(mainActivity())
             .setItemList(arrayListOf(
-                BaseBottomSelectionDialogItem(DIALOG_SELECTION_COPY, R.drawable.ic_content_copy, "复制"),
-                BaseBottomSelectionDialogItem(DIALOG_SELECTION_CUT, R.drawable.ic_content_cut, "剪切"),
-                BaseBottomSelectionDialogItem(DIALOG_SELECTION_PASTE, R.drawable.ic_content_paste, "粘贴"),
-                BaseBottomSelectionDialogItem(DIALOG_SELECTION_DELETE, R.drawable.ic_delete, "删除"),
-                BaseBottomSelectionDialogItem(DIALOG_SELECTION_RENAME, R.drawable.ic_rename, "重命名"),
-                BaseBottomSelectionDialogItem(DIALOG_SELECTION_INFO, R.drawable.ic_info, "详情")
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_COPY, R.drawable.ic_content_copy, ResourceManager.getString(R.string.fileFragment_dialogOperationCopy)),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_COPY_APPEND, R.drawable.ic_content_copy, ResourceManager.getString(R.string.fileFragment_dialogOperationCopyAppend)),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_CUT, R.drawable.ic_content_cut, ResourceManager.getString(R.string.fileFragment_dialogOperationCut)),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_PASTE, R.drawable.ic_content_paste, ResourceManager.getString(R.string.fileFragment_dialogOperationPaste)),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_DELETE, R.drawable.ic_delete, ResourceManager.getString(R.string.fileFragment_dialogOperationDelete)),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_RENAME, R.drawable.ic_rename, ResourceManager.getString(R.string.fileFragment_dialogOperationRename)),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_INFO, R.drawable.ic_info, ResourceManager.getString(R.string.fileFragment_dialogOperationDetail))
             ))
             .setItemClickListener(object : BaseBottomSelectItemClickListener{
                 override fun onItemClick(id: Int, item: BaseBottomSelectionDialogItem, dialog: BaseDialog) {
@@ -117,7 +120,7 @@ class FileFragment : BaseMainFragment(){
 
     private fun refreshToolbarTitle(){
         if (isSelecting){
-            fileFragmentToolbar.title = "已选择 ${mSelectedPathFileInfoListMap.size} / ${mFilePageInfo.getCurrentPageFileCount()}"
+            fileFragmentToolbar.title = String.format(ResourceManager.getString(R.string.fileFragment_titleSelectMode), mSelectedPathFileInfoListMap.size, mFilePageInfo.getCurrentPageFileCount())
         }else{
             fileFragmentToolbar.title = mFilePageInfo.getCurrentDirectoryInfo().directory.fullName
         }

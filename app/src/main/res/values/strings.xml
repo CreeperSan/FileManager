@@ -11,9 +11,17 @@
     <string name="permission_titleWriteStorage">写入文件</string>
     <string name="permission_contentWriteStorage">复制、剪切、删除文件</string>
 
-    <string name="fileFragment_file_title">文件</string>
-    <string name="fileFragment_file_menuSearch">搜索</string>
-    <string name="fileFragment_file_menuRefresh">刷新</string>
-    <string name="fileFragment_file_menuCreate">新建</string>
+    <string name="fileFragment_title">文件</string>
+    <string name="fileFragment_menuSearch">搜索</string>
+    <string name="fileFragment_menuRefresh">刷新</string>
+    <string name="fileFragment_menuCreate">新建</string>
+    <string name="fileFragment_dialogOperationCopy">复制</string>
+    <string name="fileFragment_dialogOperationCopyAppend">追加复制</string>
+    <string name="fileFragment_dialogOperationCut">剪切</string>
+    <string name="fileFragment_dialogOperationPaste">粘贴</string>
+    <string name="fileFragment_dialogOperationDelete">删除</string>
+    <string name="fileFragment_dialogOperationRename">重命名</string>
+    <string name="fileFragment_dialogOperationDetail">详情</string>
+    <string name="fileFragment_titleSelectMode">已选择 %s / %s</string>
 
 </resources>

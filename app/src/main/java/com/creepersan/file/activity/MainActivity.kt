@@ -1,13 +1,15 @@
 package com.creepersan.file.activity
 
 import android.os.Bundle
+import android.view.Gravity
+import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager.widget.ViewPager
 import com.creepersan.file.R
 import com.creepersan.file.adapter.MainFragmentPagerAdapter
 import com.creepersan.file.adapter.MainLeftDrawerRecyclerViewAdapter
 import com.creepersan.file.adapter.MainRightDrawerRecyclerViewAdapter
-import com.creepersan.file.fragment.BaseFragment
+import com.creepersan.file.application.FileApplication
 import com.creepersan.file.fragment.main.BaseMainFragment
 import com.creepersan.file.fragment.main.FileFragment
 import com.creepersan.file.global.GlobalClipBoard
@@ -15,12 +17,11 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
-
+    private val mNotifier = Controller()
     private val mFragmentListObserver = MainFragmentListObserver()
     private val mPagerAdapter = MainFragmentPagerAdapter(supportFragmentManager, mFragmentListObserver)
-    private val mLeftDrawerAdapter = MainLeftDrawerRecyclerViewAdapter(mPagerAdapter, mFragmentListObserver)
+    private val mLeftDrawerAdapter = MainLeftDrawerRecyclerViewAdapter(mPagerAdapter, mFragmentListObserver, mNotifier)
     private val mRightDrawerAdapter = MainRightDrawerRecyclerViewAdapter()
-    private val mNotifier = MainActivityNotifier()
 
     override fun getLayoutID(): Int = R.layout.activity_main
 
@@ -63,17 +64,21 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
 
     override fun onBackPressed() {
-        mFragmentListObserver.getFragment(mainViewPager.currentItem).apply {
-            if (this.onBackPressed()){
-                return
-            }else{
-                if (mFragmentListObserver.getSize() > 1){
-                    closeFragment(this)
+        if (mFragmentListObserver.getSize() > 0){
+            mFragmentListObserver.getFragment(mainViewPager.currentItem).apply {
+                if (this.onBackPressed()){
                     return
                 }else{
-                    super.onBackPressed()
+                    if (mFragmentListObserver.getSize() > 1){
+                        closeFragment(this)
+                        return
+                    }else{
+                        super.onBackPressed()
+                    }
                 }
             }
+        }else{
+            super.onBackPressed()
         }
     }
 
@@ -112,10 +117,30 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
 
     /* 通知MainActivity操作的类 */
-    inner class MainActivityNotifier{
+    inner class Controller{
 
         fun notifyFloatingActionButtonChange(){
             refreshFloatingActionButton()
+        }
+
+        fun setCurrentPage(index:Int){
+            mainViewPager.setCurrentItem(index, true)
+        }
+
+        fun closePage(index:Int){
+            if (mFragmentListObserver.getSize() <= 1){
+                FileApplication.getInstance().exit()
+            }else if (index >= 0 && index < mFragmentListObserver.getSize()){
+                mFragmentListObserver.removeFragment(index)
+            }
+        }
+
+        fun closeLeftDrawer(){
+            mainDrawerLayout.closeDrawer(GravityCompat.START)
+        }
+
+        fun closeRightDrawer(){
+            mainDrawerLayout.closeDrawer(GravityCompat.END)
         }
 
     }
@@ -149,6 +174,10 @@ class MainFragmentListObserver{
 
     fun removeFragment(vararg fragment:BaseMainFragment){
         removeFragment(fragment.toList())
+    }
+
+    fun removeFragment(index:Int){
+        removeFragment(mFragmentList[index])
     }
 
     private fun notifyFragmentListChange(){

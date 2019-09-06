@@ -1,6 +1,5 @@
 package com.creepersan.file.adapter
 
-import android.content.Context
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -8,12 +7,18 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.creepersan.file.R
+import com.creepersan.file.activity.MainActivity
 import com.creepersan.file.activity.MainFragmentListObserver
+import com.creepersan.file.application.FileApplication
 import com.creepersan.file.common.view_holder.BaseViewHolder
 import com.creepersan.file.fragment.main.BaseMainFragment
 import java.util.ArrayList
 
-class MainLeftDrawerRecyclerViewAdapter(private val mainFragmentPagerAdapter: MainFragmentPagerAdapter,private val observer: MainFragmentListObserver) : RecyclerView.Adapter<BaseViewHolder>(),
+class MainLeftDrawerRecyclerViewAdapter(
+    private val mainFragmentPagerAdapter: MainFragmentPagerAdapter,
+    private val observer: MainFragmentListObserver,
+    private val mainActivityController:MainActivity.Controller
+) : RecyclerView.Adapter<BaseViewHolder>(),
     MainFragmentListObserver.Subscriber {
 
     companion object{
@@ -22,6 +27,7 @@ class MainLeftDrawerRecyclerViewAdapter(private val mainFragmentPagerAdapter: Ma
         private const val VIEW_TYPE_TITLE = 1
         private const val VIEW_TYPE_SELECTION = 2
         private const val VIEW_TYPE_SELECTION_CLOSABLE = 3
+        private const val VIEW_TYPE_APP_SELECTION = 4
     }
 
     init {
@@ -44,6 +50,16 @@ class MainLeftDrawerRecyclerViewAdapter(private val mainFragmentPagerAdapter: Ma
                 Log.e("TAG", "AddOne")
             }
         }
+        mItemList.add(MainLeftDrawerTitleItem("应用程序"))
+        mItemList.add(MainLeftDrawerAppSelectionItem(R.drawable.ic_setting, "设置", View.OnClickListener {
+
+        }))
+        mItemList.add(MainLeftDrawerAppSelectionItem(R.drawable.ic_info_outline, "关于", View.OnClickListener {
+
+        }))
+        mItemList.add(MainLeftDrawerAppSelectionItem(R.drawable.ic_exit, "退出", View.OnClickListener {
+            FileApplication.getInstance().exit()
+        }))
         notifyDataSetChanged()
     }
 
@@ -54,16 +70,18 @@ class MainLeftDrawerRecyclerViewAdapter(private val mainFragmentPagerAdapter: Ma
             item is MainLeftDrawerTitleItem -> VIEW_TYPE_TITLE
             item is MainLeftDrawerSelectionItem && item.isClosable -> VIEW_TYPE_SELECTION_CLOSABLE
             item is MainLeftDrawerSelectionItem && !item.isClosable -> VIEW_TYPE_SELECTION
+            item is MainLeftDrawerAppSelectionItem -> VIEW_TYPE_APP_SELECTION
             else -> VIEW_TYPE_UNDEFINE
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         return when(viewType){
-            VIEW_TYPE_SELECTION_CLOSABLE -> MainLeftDrawerSelectionClosableItemView(parent)
+            VIEW_TYPE_SELECTION_CLOSABLE -> MainLeftDrawerPagerItemView(parent)
             VIEW_TYPE_SELECTION -> MainLeftDrawerSelectionItemView(parent)
             VIEW_TYPE_TITLE -> MainLeftDrawerTitleItemView(parent)
             VIEW_TYPE_HEADER -> MainLeftDrawerHeaderItemView(parent)
+            VIEW_TYPE_APP_SELECTION -> MainLeftDrawerAppSelectionItemView(parent)
             else -> throw Error("未知类型")
         }
     }
@@ -89,16 +107,24 @@ class MainLeftDrawerRecyclerViewAdapter(private val mainFragmentPagerAdapter: Ma
 
                 })
             }
-            holder is MainLeftDrawerSelectionClosableItemView -> {
+            holder is MainLeftDrawerPagerItemView -> {
+                val fragmentPosition = holder.adapterPosition - 2
                 val item = mItemList.get(position) as MainLeftDrawerSelectionItem
                 holder.setTitle(item.title)
                 holder.setIcon(item.icon)
                 holder.setOnClickListener(View.OnClickListener {
-
+                    mainActivityController.setCurrentPage(fragmentPosition)
+                    mainActivityController.closeLeftDrawer()
                 })
-                holder.setOnClickListener(View.OnClickListener {
-
+                holder.setOnCloseClickListener(View.OnClickListener {
+                    mainActivityController.closePage(fragmentPosition) // 减2是因为
                 })
+            }
+            holder is MainLeftDrawerAppSelectionItemView -> {
+                val item = mItemList.get(position) as MainLeftDrawerAppSelectionItem
+                holder.setIcon(item.iconID)
+                holder.setTitle(item.title)
+                holder.setOnClickListener(item.clickListener)
             }
         }
     }
@@ -111,6 +137,7 @@ open class BaseMainLeftDrawerItem
 class MainLeftDrawerHeaderItem : BaseMainLeftDrawerItem()
 class MainLeftDrawerTitleItem(var title:String) : BaseMainLeftDrawerItem()
 class MainLeftDrawerSelectionItem(var icon:Int, var title:String, val isClosable:Boolean=false) : BaseMainLeftDrawerItem()
+class MainLeftDrawerAppSelectionItem(var iconID: Int, var title:String, var clickListener: View.OnClickListener) : BaseMainLeftDrawerItem()
 
 /******************************** ViewHolder ******************************************************/
 class MainLeftDrawerHeaderItemView(viewGroup: ViewGroup) : BaseViewHolder(R.layout.item_main_left_drawer_header, viewGroup) {
@@ -143,7 +170,7 @@ class MainLeftDrawerSelectionItemView(viewGroup: ViewGroup) : BaseViewHolder(R.l
         itemView.setOnClickListener(listener)
     }
 }
-class MainLeftDrawerSelectionClosableItemView(viewGroup: ViewGroup) : BaseViewHolder(R.layout.item_main_left_drawer_selection_closable, viewGroup) {
+class MainLeftDrawerPagerItemView(viewGroup: ViewGroup) : BaseViewHolder(R.layout.item_main_left_drawer_selection_closable, viewGroup) {
     private val iconImageView = itemView.findViewById<ImageView>(R.id.itemMainLeftDrawerClosableSelectionIcon)
     private val titleTextView = itemView.findViewById<TextView>(R.id.itemMainLeftDrawerClosableSelectionTitle)
     private val closeImageView = itemView.findViewById<ImageView>(R.id.itemMainLeftDrawerClosableSelectionClose)
@@ -162,5 +189,21 @@ class MainLeftDrawerSelectionClosableItemView(viewGroup: ViewGroup) : BaseViewHo
 
     fun setOnCloseClickListener(listener : View.OnClickListener){
         closeImageView.setOnClickListener(listener)
+    }
+}
+class MainLeftDrawerAppSelectionItemView(viewGroup: ViewGroup) : BaseViewHolder(R.layout.item_main_left_drawer_app_selection, viewGroup){
+    private val iconImageView = itemView.findViewById<ImageView>(R.id.itemMainLeftDrawerAppSelectionIcon)
+    private val titleTextView = itemView.findViewById<TextView>(R.id.itemMainLeftDrawerAppSelectionTitle)
+
+    fun setIcon(iconID:Int){
+        iconImageView.setImageResource(iconID)
+    }
+
+    fun setTitle(title:String){
+        titleTextView.text = title
+    }
+
+    fun setOnClickListener(listener:View.OnClickListener){
+        itemView.setOnClickListener(listener)
     }
 }
