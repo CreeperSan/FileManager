@@ -4,7 +4,7 @@ import android.view.View
 import com.creepersan.file.activity.MainActivity
 import com.creepersan.file.fragment.BaseFragment
 
-abstract class BaseMainFragment : BaseFragment(){
+abstract class BaseMainFragment(protected val activityNotify: MainActivity.Controller) : BaseFragment(){
 
     abstract fun getName() : String
 
@@ -12,13 +12,7 @@ abstract class BaseMainFragment : BaseFragment(){
 
     open fun onBackPressed() : Boolean = false
 
-    protected fun mainActivity():MainActivity{
-        return activity as MainActivity
-    }
-
-    protected fun notifyFloatingActionButtonUpdate(){
-        mainActivity().refreshFloatingActionButton()
-    }
+    /**********************************************************************************************/
 
     open fun getFloatingActionButtonIcon():Int = 0
 
@@ -28,7 +22,15 @@ abstract class BaseMainFragment : BaseFragment(){
 
     open fun getFloatingActionButtonLongClickListener() : View.OnLongClickListener? = null
 
+    /**********************************************************************************************/
+
+    open fun onPageClose(){}
+
+    open fun onPageVisible(){}
+
+    open fun onPageInvisible(){}
+
     protected fun closeFragment(){
-        mainActivity().closeFragment(this)
+        activityNotify.closePage(this)
     }
 }

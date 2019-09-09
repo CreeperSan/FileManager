@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:maxWidth="360dp">
+
+    <LinearLayout
+        android:background="@drawable/bg_dialog_default"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <include
+            android:id="@+id/dialogCommonSimpleAlertTitle"
+            layout="@layout/include_dialog_common_simple_title" />
+
+        <TextView
+            android:id="@+id/dialogCommonSimpleAlertTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="6dp"
+            android:textColor="@color/black"
+            tools:text="你确定要执行这项操作吗？此操作不可逆，别怪我没告诉你噢。你确定要执行这项操作吗？此操作不可逆，别怪我没告诉你噢。你确定要执行这项操作吗？此操作不可逆，别怪我没告诉你噢。" />
+
+        <include
+            android:id="@+id/dialogCommonSimpleAlertAction"
+            layout="@layout/include_dialog_common_simple_action" />
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -5,7 +5,6 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.util.TypedValue
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -15,6 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.creepersan.file.R
 import com.creepersan.file.common.view_holder.BaseViewHolder
+import com.creepersan.file.extension.gone
+import com.creepersan.file.extension.visible
 import com.creepersan.file.manager.TypedValueManager
 import java.util.ArrayList
 
@@ -99,18 +100,18 @@ private class BaseBottomSelectionDialogViewHolder(parent:ViewGroup) : BaseViewHo
 
     fun setHint(text:String, size:Int, color:Int){
         if (text.isEmpty()){
-            hintTextView.visibility = View.GONE
+            hintTextView.gone()
         }else{
-            hintTextView.visibility = View.VISIBLE
+            hintTextView.visible()
             setHintTextView(hintTextView, text, size, color)
         }
     }
 
     fun setHintIcon(icon:Int, size:Int, color:Int){
         if (icon == 0){
-            hintImageView.visibility = View.GONE
+            hintImageView.gone()
         }else{
-            hintImageView.visibility = View.VISIBLE
+            hintImageView.visible()
             setImageViewParams(hintImageView, icon, size, color)
         }
     }

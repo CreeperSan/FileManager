@@ -15,12 +15,20 @@ class MainFragmentPagerAdapter(fragmentManager: FragmentManager,private val obse
         observer.subscribe(this)
     }
 
+    fun init(){
+
+    }
+
+    fun destroy(){
+        observer.unsubscribe(this)
+    }
+
     override fun onListChange(fragmentList: ArrayList<BaseMainFragment>) {
         notifyDataSetChanged()
     }
 
     override fun getItem(position: Int): Fragment {
-        return observer.getFragment(position)
+        return observer.getFragment(position)!!
     }
 
     override fun getCount(): Int {

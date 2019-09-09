@@ -18,10 +18,23 @@
     <string name="fileFragment_dialogOperationCopy">复制</string>
     <string name="fileFragment_dialogOperationCopyAppend">追加复制</string>
     <string name="fileFragment_dialogOperationCut">剪切</string>
+    <string name="fileFragment_dialogOperationCutAppend">追加剪切</string>
     <string name="fileFragment_dialogOperationPaste">粘贴</string>
     <string name="fileFragment_dialogOperationDelete">删除</string>
     <string name="fileFragment_dialogOperationRename">重命名</string>
     <string name="fileFragment_dialogOperationDetail">详情</string>
     <string name="fileFragment_titleSelectMode">已选择 %s / %s</string>
+    <string name="fileFragment_dialogSimpleAlertDeleteTitle">删除文件</string>
+    <string name="fileFragment_dialogSimpleAlertDeleteHint">确认要删除 %s 吗？此操作不可逆！</string>
+    <string name="fileFragment_dialogSimpleAlertDeleteHintMultiUnit">%d 个文件</string>
+    <string name="fileFragment_dialogSimpleAlertDeleteToastNoSelectFile">尚未选择文件</string>
+    <string name="fileFragment_dialogFileDetailCategoryType">类型</string>
+    <string name="fileFragment_dialogFileDetailCategorySize">大小</string>
+    <string name="fileFragment_dialogFileDetailCategoryModifyTime">修改时间</string>
+    <string name="fileFragment_dialogFileDetailCategoryReadWritePermission">读写权限</string>
+    <string name="fileFragment_dialogFileDetailCategoryIsHidden">是否隐藏</string>
+    <string name="fileFragment_dialogFileDetailCategoryIsPath">路径</string>
 
+    <string name="common_dialogPositive">确定</string>
+    <string name="common_dialogNegative">取消</string>
 </resources>

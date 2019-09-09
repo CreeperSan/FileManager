@@ -7,6 +7,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.creepersan.file.R
+import com.creepersan.file.extension.gone
+import com.creepersan.file.extension.visible
 
 class PageHintView : LinearLayout{
     private val mRootView : View
@@ -40,9 +42,9 @@ class PageHintView : LinearLayout{
         mHintTextView.text = mHintTextString
         mButtonTextView.text = mButtonTextString
         if (mButtonTextString == ""){
-            mButtonTextView.visibility = View.GONE
+            mButtonTextView.gone()
         }else{
-            mButtonTextView.visibility = View.VISIBLE
+            mButtonTextView.visible()
         }
     }
 

@@ -5,14 +5,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.creepersan.file.R
 import com.creepersan.file.activity.CreateFileDirectoryActivity
+import com.creepersan.file.activity.MainActivity
 import com.creepersan.file.bean.file.FileInfo
 import com.creepersan.file.bean.file.FilePageInfo
 import com.creepersan.file.dialog.*
-import com.creepersan.file.global.GlobalClipBoard
+import com.creepersan.file.extension.gone
+import com.creepersan.file.extension.visible
+import com.creepersan.file.global.GlobalFileInfoClipBoard
 import com.creepersan.file.manager.FormatManager
 import com.creepersan.file.manager.ResourceManager
 import com.creepersan.file.manager.ToastManager
@@ -20,18 +24,20 @@ import kotlinx.android.synthetic.main.fragment_main_file.*
 import java.lang.RuntimeException
 import java.util.*
 
-class FileFragment : BaseMainFragment(){
+class FileFragment(activityNotify: MainActivity.Controller) : BaseMainFragment(activityNotify), View.OnClickListener, View.OnLongClickListener, GlobalFileInfoClipBoard.GlobalClipBoardObserver{
+
     companion object{
         private const val TYPE_FILE = 0
         private const val TYPE_DIRECTORY = 1
 
         private const val DIALOG_SELECTION_INFO = 0
         private const val DIALOG_SELECTION_COPY = 1
-        private const val DIALOG_SELECTION_COPY_APPEND = 6
-        private const val DIALOG_SELECTION_PASTE = 2
-        private const val DIALOG_SELECTION_CUT = 3
-        private const val DIALOG_SELECTION_DELETE = 4
-        private const val DIALOG_SELECTION_RENAME = 5
+        private const val DIALOG_SELECTION_COPY_APPEND = 2
+        private const val DIALOG_SELECTION_PASTE = 3
+        private const val DIALOG_SELECTION_CUT = 4
+        private const val DIALOG_SELECTION_CUT_APPEND = 5
+        private const val DIALOG_SELECTION_DELETE = 6
+        private const val DIALOG_SELECTION_RENAME = 7
     }
 
     private var isSelecting = false
@@ -41,6 +47,7 @@ class FileFragment : BaseMainFragment(){
     private val mAdapter = FileAdapter()
     private lateinit var mSelectMoreOperationDialog : BaseBottomSelectionDialog
     private lateinit var mSearchDialog : FileFragmentSearchDialog
+    private lateinit var mSimpleAlertDialog : SimpleAlertDialog
 
 
     override fun getLayoutID(): Int {
@@ -57,18 +64,24 @@ class FileFragment : BaseMainFragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initClipBoardEvent()
         initDialog()
         initToolbar()
         initRecyclerView()
     }
 
+    private fun initClipBoardEvent(){
+        GlobalFileInfoClipBoard.subscribe(this)
+    }
+
     private fun initDialog(){
         // 底部弹出的文件操作对话框
-        mSelectMoreOperationDialog = BaseBottomSelectionDialog(mainActivity())
+        mSelectMoreOperationDialog = BaseBottomSelectionDialog(activityNotify.context())
             .setItemList(arrayListOf(
                 BaseBottomSelectionDialogItem(DIALOG_SELECTION_COPY, R.drawable.ic_content_copy, ResourceManager.getString(R.string.fileFragment_dialogOperationCopy)),
                 BaseBottomSelectionDialogItem(DIALOG_SELECTION_COPY_APPEND, R.drawable.ic_content_copy, ResourceManager.getString(R.string.fileFragment_dialogOperationCopyAppend)),
                 BaseBottomSelectionDialogItem(DIALOG_SELECTION_CUT, R.drawable.ic_content_cut, ResourceManager.getString(R.string.fileFragment_dialogOperationCut)),
+                BaseBottomSelectionDialogItem(DIALOG_SELECTION_CUT_APPEND, R.drawable.ic_content_cut, ResourceManager.getString(R.string.fileFragment_dialogOperationCutAppend)),
                 BaseBottomSelectionDialogItem(DIALOG_SELECTION_PASTE, R.drawable.ic_content_paste, ResourceManager.getString(R.string.fileFragment_dialogOperationPaste)),
                 BaseBottomSelectionDialogItem(DIALOG_SELECTION_DELETE, R.drawable.ic_delete, ResourceManager.getString(R.string.fileFragment_dialogOperationDelete)),
                 BaseBottomSelectionDialogItem(DIALOG_SELECTION_RENAME, R.drawable.ic_rename, ResourceManager.getString(R.string.fileFragment_dialogOperationRename)),
@@ -76,17 +89,71 @@ class FileFragment : BaseMainFragment(){
             ))
             .setItemClickListener(object : BaseBottomSelectItemClickListener{
                 override fun onItemClick(id: Int, item: BaseBottomSelectionDialogItem, dialog: BaseDialog) {
-                    ToastManager.show("Click ${item.title}")
+                    mSelectMoreOperationDialog.hide()
                     when(id){
-                        DIALOG_SELECTION_COPY -> {
-                            GlobalClipBoard.setFileInfo(mSelectedPathFileInfoListMap.values.toList())
+                        DIALOG_SELECTION_COPY -> { //////////////////////////////////////////////////
+                            GlobalFileInfoClipBoard.setFileInfo(GlobalFileInfoClipBoard.ACTION_COPY, mSelectedPathFileInfoListMap.values.toList())
                             setNotSelecting()
+                        }
+                        DIALOG_SELECTION_COPY_APPEND -> { //////////////////////////////////////////////////
+                            GlobalFileInfoClipBoard.addFileInfo(GlobalFileInfoClipBoard.ACTION_COPY, mSelectedPathFileInfoListMap.values.toList())
+                            setNotSelecting()
+                        }
+                        DIALOG_SELECTION_CUT -> { //////////////////////////////////////////////////
+                            GlobalFileInfoClipBoard.setFileInfo(GlobalFileInfoClipBoard.ACTION_CUT, mSelectedPathFileInfoListMap.values.toList())
+                            setNotSelecting()
+                        }
+                        DIALOG_SELECTION_CUT_APPEND -> { //////////////////////////////////////////////////
+                            GlobalFileInfoClipBoard.addFileInfo(GlobalFileInfoClipBoard.ACTION_CUT, mSelectedPathFileInfoListMap.values.toList())
+                            setNotSelecting()
+                        }
+                        DIALOG_SELECTION_PASTE -> { //////////////////////////////////////////////////
+
+                        }
+                        DIALOG_SELECTION_DELETE -> { //////////////////////////////////////////////////
+                            when{
+                                mSelectedPathFileInfoListMap.isEmpty() -> {
+                                    ToastManager.show(R.string.fileFragment_dialogSimpleAlertDeleteToastNoSelectFile)
+                                    return
+                                }
+                                mSelectedPathFileInfoListMap.size == 1 -> {
+                                    val fileInfo = mSelectedPathFileInfoListMap.values.toList()[0]
+                                    mSimpleAlertDialog.setMessage(String.format(ResourceManager.getString(R.string.fileFragment_dialogSimpleAlertDeleteHint), fileInfo.fullName))
+                                }
+                                mSelectedPathFileInfoListMap.size > 1 -> {
+                                    val fileCount = mSelectedPathFileInfoListMap.size
+                                    mSimpleAlertDialog.setMessage(
+                                        String.format(ResourceManager.getString(R.string.fileFragment_dialogSimpleAlertDeleteHint),
+                                            String.format(ResourceManager.getString(R.string.fileFragment_dialogSimpleAlertDeleteHintMultiUnit), fileCount)
+                                        )
+                                    )
+                                }
+                            }
+                            mSimpleAlertDialog.setDialogTitle(R.string.fileFragment_dialogSimpleAlertDeleteTitle)
+                            mSimpleAlertDialog.setPositiveAction(R.string.common_dialogPositive, View.OnClickListener {
+                                ToastManager.show("删除中...")
+                                setNotSelecting()
+                                mSimpleAlertDialog.hide()
+                            })
+                            mSimpleAlertDialog.setNegativeAction(R.string.common_dialogNegative, View.OnClickListener {
+                                setNotSelecting()
+                                mSimpleAlertDialog.hide()
+                            })
+                            mSimpleAlertDialog.show()
+                        }
+                        DIALOG_SELECTION_RENAME -> { //////////////////////////////////////////////////
+
+                        }
+                        DIALOG_SELECTION_INFO -> { //////////////////////////////////////////////////
+                            FileDetailDialog(activityNotify.context()).show()
                         }
                     }
                 }
             })
         // 上面弹出的搜索对话框
-        mSearchDialog = FileFragmentSearchDialog(mainActivity())
+        mSearchDialog = FileFragmentSearchDialog(activityNotify.context())
+        // 中间的弹窗对话框
+        mSimpleAlertDialog = SimpleAlertDialog(activityNotify.context())
     }
 
     /**
@@ -102,7 +169,7 @@ class FileFragment : BaseMainFragment(){
         fileFragmentToolbar.setOnMenuItemClickListener {  menuItem ->
             when(menuItem.itemId){
                 R.id.menuFileFragmentToolbarCreate -> {
-                    mainActivity().toActivity(CreateFileDirectoryActivity::class.java)
+                    activity().toActivity(CreateFileDirectoryActivity::class.java)
                 }
                 R.id.menuFileFragmentToolbarSearch -> {
                     mSearchDialog.show()
@@ -132,7 +199,7 @@ class FileFragment : BaseMainFragment(){
 
     private fun setSelecting(){
         isSelecting = true
-        notifyFloatingActionButtonUpdate()
+        activityNotify.notifyFloatingActionButtonChange()
         refreshToolbarTitle()
     }
 
@@ -140,7 +207,7 @@ class FileFragment : BaseMainFragment(){
         isSelecting = false
         mSelectedPathFileInfoListMap.clear()
         mAdapter.notifyDataSetChanged()
-        notifyFloatingActionButtonUpdate()
+        activityNotify.notifyFloatingActionButtonChange()
         refreshToolbarTitle()
     }
 
@@ -158,18 +225,49 @@ class FileFragment : BaseMainFragment(){
         refreshToolbarTitle()
     }
 
+    /********************************* GlobalClipBoardEvent ***************************************/
+
+    override fun onClipboardChange() {
+
+    }
+
+    /********************************* FloatingActionButton ***************************************/
+
     override fun getFloatingActionButtonIsVisible(): Boolean {
-        return isSelecting
+        return isSelecting || GlobalFileInfoClipBoard.isNotEmpty()
     }
 
     override fun getFloatingActionButtonIcon(): Int {
-        return R.drawable.ic_more_dot_vertical
+        if (isSelecting){
+            return R.drawable.ic_content_copy
+        }else if (GlobalFileInfoClipBoard.isNotEmpty()){
+            return R.drawable.ic_content_paste
+        }else {
+            return R.drawable.ic_more_dot_vertical
+        }
     }
 
     override fun getFloatingActionButtonClickListener(): View.OnClickListener? {
-        return View.OnClickListener {
-            mSelectMoreOperationDialog.show()
+        return this
+    }
+
+    override fun getFloatingActionButtonLongClickListener(): View.OnLongClickListener? {
+        return this
+    }
+
+    override fun onClick(p0: View?) {
+        if (isSelecting){
+            GlobalFileInfoClipBoard.setFileInfo(GlobalFileInfoClipBoard.ACTION_COPY, mSelectedPathFileInfoListMap.values.toList())
+            setNotSelecting()
+        }else if (GlobalFileInfoClipBoard.isNotEmpty()){
+            GlobalFileInfoClipBoard.getCopiedFileInfoList()
+            GlobalFileInfoClipBoard.clearFileInfo()
         }
+    }
+
+    override fun onLongClick(p0: View?): Boolean {
+        mSelectMoreOperationDialog.show()
+        return true
     }
 
     /**********************************************************************************************/
@@ -282,9 +380,11 @@ class FileFragment : BaseMainFragment(){
                     if (fileInfo.isSelected()){
                         holder.setBackground(R.drawable.bg_file_select)
                         holder.setIcon(R.drawable.ic_check)
+                        holder.setInfoTextColor(ResourceManager.getColor(R.color.textHintColorLight))
                     }else{
                         holder.setBackground(R.drawable.bg_file_directory)
                         holder.setIcon(R.drawable.ic_directory_dark_blue)
+                        holder.setInfoTextColor(ResourceManager.getColor(R.color.textHintColorDark))
                     }
                 }
                 holder is FileViewHolder -> {
@@ -307,9 +407,11 @@ class FileFragment : BaseMainFragment(){
                     if (fileInfo.isSelected()){
                         holder.setBackground(R.drawable.bg_file_select)
                         holder.setIcon(R.drawable.ic_check)
+                        holder.setInfoTextColor(ResourceManager.getColor(R.color.textHintColorLight))
                     }else{
                         holder.setBackground(R.drawable.bg_file_file)
                         holder.setIcon(R.drawable.ic_file_grey)
+                        holder.setInfoTextColor(ResourceManager.getColor(R.color.textHintColorDark))
                     }
                 }
             }
@@ -324,6 +426,10 @@ class FileFragment : BaseMainFragment(){
 
         fun setIcon(resID:Int){
             iconImageView.setImageResource(resID)
+        }
+
+        fun setInfoTextColor(color:Int){
+            infoTextView.setTextColor(color)
         }
 
         fun setTitle(title:String){
@@ -354,6 +460,10 @@ class FileFragment : BaseMainFragment(){
 
         fun setIcon(resID:Int){
             iconImageView.setImageResource(resID)
+        }
+
+        fun setInfoTextColor(@ColorInt color:Int){
+            infoTextView.setTextColor(color)
         }
 
         fun setTitle(title:String){

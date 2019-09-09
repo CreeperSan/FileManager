@@ -107,19 +107,4 @@ open class BaseActivity : AppCompatActivity(){
         return FileApplication.getInstance()
     }
 
-    /**
-     * 设置控件是否可见
-     */
-    fun View.visible(){
-        this.visibility = View.VISIBLE
-    }
-
-    fun View.invisible(){
-        this.visibility = View.INVISIBLE
-    }
-
-    fun View.gone(){
-        this.visibility = View.INVISIBLE
-    }
-
 }

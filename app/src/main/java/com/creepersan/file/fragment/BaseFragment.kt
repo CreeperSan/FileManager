@@ -48,19 +48,6 @@ open class BaseFragment : Fragment() {
         return ResourceManager.getString(this)
     }
 
-    fun View.visible(){
-        this.visibility = View.VISIBLE
-    }
-
-    fun View.invisible(){
-        this.visibility = View.INVISIBLE
-    }
-
-    fun View.gone(){
-        this.visibility = View.INVISIBLE
-    }
-
-
     /**
      * 显示Toast
      * @param content 显示的文本

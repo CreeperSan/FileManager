@@ -34,6 +34,10 @@ class MainLeftDrawerRecyclerViewAdapter(
         observer.subscribe(this)
     }
 
+    fun destroy(){
+        observer.unsubscribe(this)
+    }
+
     private val mItemList = ArrayList<BaseMainLeftDrawerItem>()
 
     override fun onListChange(fragmentList: ArrayList<BaseMainFragment>) {
@@ -41,7 +45,7 @@ class MainLeftDrawerRecyclerViewAdapter(
         mItemList.add(MainLeftDrawerHeaderItem())
         mItemList.add(MainLeftDrawerTitleItem("已打开的窗口"))
         for (i in 0 until observer.getSize()){
-            observer.getFragment(i).apply {
+            observer.getFragment(i)?.apply {
                 mItemList.add(MainLeftDrawerSelectionItem(
                     this.getIcon(),
                     this.getName(),
@@ -93,14 +97,14 @@ class MainLeftDrawerRecyclerViewAdapter(
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         when{
             holder is MainLeftDrawerHeaderItemView -> {
-                val item = mItemList.get(position) as MainLeftDrawerHeaderItem
+                val item = mItemList[position] as MainLeftDrawerHeaderItem
             }
             holder is MainLeftDrawerTitleItemView -> {
-                val item = mItemList.get(position) as MainLeftDrawerTitleItem
+                val item = mItemList[position] as MainLeftDrawerTitleItem
                 holder.setTitle(item.title)
             }
             holder is MainLeftDrawerSelectionItemView -> {
-                val item = mItemList.get(position) as MainLeftDrawerSelectionItem
+                val item = mItemList[position] as MainLeftDrawerSelectionItem
                 holder.setTitle(item.title)
                 holder.setIcon(item.icon)
                 holder.setOnClickListener(View.OnClickListener {

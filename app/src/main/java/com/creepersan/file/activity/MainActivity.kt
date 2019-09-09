@@ -1,7 +1,7 @@
 package com.creepersan.file.activity
 
+import android.content.Context
 import android.os.Bundle
-import android.view.Gravity
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager.widget.ViewPager
@@ -12,7 +12,7 @@ import com.creepersan.file.adapter.MainRightDrawerRecyclerViewAdapter
 import com.creepersan.file.application.FileApplication
 import com.creepersan.file.fragment.main.BaseMainFragment
 import com.creepersan.file.fragment.main.FileFragment
-import com.creepersan.file.global.GlobalClipBoard
+import com.creepersan.file.global.GlobalFileInfoClipBoard
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -34,8 +34,15 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         initFloatingActionButton()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mPagerAdapter.destroy()
+        mLeftDrawerAdapter.destroy()
+        mRightDrawerAdapter.destroy()
+    }
+
     private fun initFragment(){
-        mFragmentListObserver.addFragment(FileFragment(), FileFragment(), FileFragment())
+        mFragmentListObserver.addFragment(FileFragment(mNotifier), FileFragment(mNotifier), FileFragment(mNotifier))
     }
 
     private fun initViewPager(){
@@ -55,7 +62,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         mainRightDrawerRecyclerView.adapter = mRightDrawerAdapter
 
         mainRightDrawerClearAll.setOnClickListener {
-            GlobalClipBoard.cleatFileInfo()
+            GlobalFileInfoClipBoard.clearFileInfo()
         }
     }
 
@@ -65,7 +72,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
 
     override fun onBackPressed() {
         if (mFragmentListObserver.getSize() > 0){
-            mFragmentListObserver.getFragment(mainViewPager.currentItem).apply {
+            mFragmentListObserver.getFragment(mainViewPager.currentItem)?.apply {
                 if (this.onBackPressed()){
                     return
                 }else{
@@ -82,7 +89,8 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         }
     }
 
-    internal fun closeFragment(fragment:BaseMainFragment){
+    private fun closeFragment(fragment:BaseMainFragment){
+        fragment.onPageClose()
         mFragmentListObserver.removeFragment(fragment)
         refreshFloatingActionButton()
     }
@@ -96,7 +104,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         // 防止为空的Fragment
         val baseMainFragment = mFragmentListObserver.getFragment(mainViewPager.currentItem)
         // 设置
-        if (baseMainFragment.getFloatingActionButtonIsVisible()){
+        if (baseMainFragment?.getFloatingActionButtonIsVisible() == true){
             mainFloatingActionButton.setImageResource(baseMainFragment.getFloatingActionButtonIcon())
             mainFloatingActionButton.setOnClickListener(baseMainFragment.getFloatingActionButtonClickListener())
             mainFloatingActionButton.setOnLongClickListener(baseMainFragment.getFloatingActionButtonLongClickListener())
@@ -106,6 +114,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         }
     }
 
+    private var mPrevVisiblePage = 0
     override fun onPageScrollStateChanged(state: Int) {
 
     }
@@ -113,11 +122,19 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
 
     }
     override fun onPageSelected(position: Int) {
+        if (mPrevVisiblePage != position){
+            mFragmentListObserver.getFragment(mPrevVisiblePage)?.onPageInvisible()
+            mFragmentListObserver.getFragment(position)?.onPageVisible()
+            mPrevVisiblePage = position
+        }
         refreshFloatingActionButton()
     }
 
     /* 通知MainActivity操作的类 */
     inner class Controller{
+        fun context():Context{
+            return this@MainActivity
+        }
 
         fun notifyFloatingActionButtonChange(){
             refreshFloatingActionButton()
@@ -135,6 +152,10 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
             }
         }
 
+        fun closePage(fragment:BaseMainFragment){
+            closeFragment(fragment)
+        }
+
         fun closeLeftDrawer(){
             mainDrawerLayout.closeDrawer(GravityCompat.START)
         }
@@ -150,7 +171,10 @@ class MainFragmentListObserver{
     private val mFragmentList = ArrayList<BaseMainFragment>()
     private val mSubscriberList = ArrayList<Subscriber>()
 
-    fun getFragment(position:Int):BaseMainFragment {
+    fun getFragment(position:Int):BaseMainFragment? {
+        if (position < 0 || position >= mFragmentList.size ){
+            return null
+        }
         return mFragmentList[position]
     }
 

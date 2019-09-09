@@ -25,6 +25,18 @@
             android:layout_width="36dp"
             android:layout_height="36dp"/>
 
+    <ImageView
+        android:tint="@color/white"
+        android:src="@drawable/ic_content_cut"
+        android:padding="10dp"
+        app:layout_constraintTop_toTopOf="@id/itemMainRightDrawerItemIcon"
+        app:layout_constraintBottom_toBottomOf="@id/itemMainRightDrawerItemIcon"
+        app:layout_constraintStart_toStartOf="@id/itemMainRightDrawerItemIcon"
+        app:layout_constraintEnd_toEndOf="@id/itemMainRightDrawerItemIcon"
+        android:id="@+id/itemMainRightDrawerItemIconCoverImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"/>
+
     <TextView
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"

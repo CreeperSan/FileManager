@@ -46,4 +46,13 @@ class FileInfo{
         }
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (other is FileInfo){
+            return this.path == other.path
+        }else if (other is File){
+            return File(this.path).absolutePath == other.absolutePath
+        }
+        return false
+    }
+
 }

@@ -13,5 +13,8 @@
 
     <color name="themeBlue">#3d73dd</color>
     <color name="themeBlueDark">#2467ca</color>
+    <color name="textHintColorLight">#666666</color>
+    <color name="textHintColorDark">#b4bac6</color>
+    <color name="divider">#999999</color>
 
 </resources>
