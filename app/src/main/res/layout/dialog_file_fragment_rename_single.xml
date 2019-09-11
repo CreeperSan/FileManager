@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_dialog_default"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/dialogFileFragmentRenameSingleIncludeTitle"
+            layout="@layout/include_dialog_common_simple_title" />
+
+        <EditText
+            android:id="@+id/dialogFileFragmentRenameSingleEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="@string/fileFragment_dialogRenameSingleEnterFileNameHint" />
+
+        <include
+            android:id="@+id/dialogFileFragmentRenameSingleIncludeAction"
+            layout="@layout/include_dialog_common_simple_action" />
+
+    </LinearLayout>
+
+</FrameLayout>

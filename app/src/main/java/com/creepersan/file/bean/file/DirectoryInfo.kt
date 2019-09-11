@@ -12,9 +12,13 @@ class DirectoryInfo {
     constructor(directory:FileInfo){
         this.directory = directory
         if (directory.isExist && directory.isDirectory){
-            this.fileList.clear()
-            this.fileList.addAll(FileManager.listFileInfo(this.directory))
+            refresh()
         }
+    }
+
+    fun refresh(){
+        fileList.clear()
+        this.fileList.addAll(FileManager.listFileInfo(this.directory))
     }
 
 

@@ -2,6 +2,7 @@ package com.creepersan.file.dialog
 
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.*
@@ -89,4 +90,27 @@ abstract class BaseDialog(context: Context,
             }
         }
     }
+
+    fun setDismissListener(listener:DialogInterface.OnDismissListener?):BaseDialog{
+        setOnDismissListener(listener)
+        return this
+    }
+
+    fun setCancelListener(listener:DialogInterface.OnCancelListener?):BaseDialog{
+        setOnCancelListener(listener)
+        return this
+    }
+
+    override fun hide() {
+        closeDialog()
+    }
+
+    fun closeDialog(){
+        cancel()
+    }
+
+    fun showDialog(){
+        show()
+    }
+
 }

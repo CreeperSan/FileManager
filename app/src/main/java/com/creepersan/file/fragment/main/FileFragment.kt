@@ -1,5 +1,6 @@
 package com.creepersan.file.fragment.main
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -45,10 +46,13 @@ class FileFragment(activityNotify: MainActivity.Controller) : BaseMainFragment(a
     private val mSelectedPathFileInfoListMap = LinkedHashMap<String, FileInfo>()
     private val mFilePageInfo = FilePageInfo()
     private val mAdapter = FileAdapter()
+
     private lateinit var mSelectMoreOperationDialog : BaseBottomSelectionDialog
     private lateinit var mSearchDialog : FileFragmentSearchDialog
     private lateinit var mSimpleAlertDialog : SimpleAlertDialog
-
+    private lateinit var mFileDetailDialog : FileDetailDialog
+    private lateinit var mFileRenameSingleDialog : FileRenameSingleDialog
+    private lateinit var mFileRenameMultiDialog : FileRenameMultiDialog
 
     override fun getLayoutID(): Int {
         return R.layout.fragment_main_file
@@ -76,7 +80,7 @@ class FileFragment(activityNotify: MainActivity.Controller) : BaseMainFragment(a
 
     private fun initDialog(){
         // 底部弹出的文件操作对话框
-        mSelectMoreOperationDialog = BaseBottomSelectionDialog(activityNotify.context())
+        mSelectMoreOperationDialog = BaseBottomSelectionDialog(activity())
             .setItemList(arrayListOf(
                 BaseBottomSelectionDialogItem(DIALOG_SELECTION_COPY, R.drawable.ic_content_copy, ResourceManager.getString(R.string.fileFragment_dialogOperationCopy)),
                 BaseBottomSelectionDialogItem(DIALOG_SELECTION_COPY_APPEND, R.drawable.ic_content_copy, ResourceManager.getString(R.string.fileFragment_dialogOperationCopyAppend)),
@@ -89,7 +93,7 @@ class FileFragment(activityNotify: MainActivity.Controller) : BaseMainFragment(a
             ))
             .setItemClickListener(object : BaseBottomSelectItemClickListener{
                 override fun onItemClick(id: Int, item: BaseBottomSelectionDialogItem, dialog: BaseDialog) {
-                    mSelectMoreOperationDialog.hide()
+                    mSelectMoreOperationDialog.cancel()
                     when(id){
                         DIALOG_SELECTION_COPY -> { //////////////////////////////////////////////////
                             GlobalFileInfoClipBoard.setFileInfo(GlobalFileInfoClipBoard.ACTION_COPY, mSelectedPathFileInfoListMap.values.toList())
@@ -133,27 +137,91 @@ class FileFragment(activityNotify: MainActivity.Controller) : BaseMainFragment(a
                             mSimpleAlertDialog.setPositiveAction(R.string.common_dialogPositive, View.OnClickListener {
                                 ToastManager.show("删除中...")
                                 setNotSelecting()
-                                mSimpleAlertDialog.hide()
+                                mSimpleAlertDialog.cancel()
                             })
                             mSimpleAlertDialog.setNegativeAction(R.string.common_dialogNegative, View.OnClickListener {
                                 setNotSelecting()
-                                mSimpleAlertDialog.hide()
+                                mSimpleAlertDialog.cancel()
                             })
                             mSimpleAlertDialog.show()
                         }
                         DIALOG_SELECTION_RENAME -> { //////////////////////////////////////////////////
+                            when{
+                                mSelectedPathFileInfoListMap.isEmpty() -> {
+                                    ToastManager.show(R.string.fileFragment_dialogRenameSingleNotSelectedFileHint)
+                                }
+                                mSelectedPathFileInfoListMap.size == 1 -> {
+                                    val fileInfo = mSelectedPathFileInfoListMap.values.toList()[0]
+                                    mFileRenameSingleDialog.setFileInfo(fileInfo, object : FileRenameSingleDialog.OnResultCallback{
+                                        override fun onResult() {
+                                            mFileRenameSingleDialog.cancel()
+                                        }
 
+                                        override fun onFail(fileInfo: FileInfo) {
+                                            ToastManager.show(R.string.fileFragment_dialogRenameSingleFailHint)
+                                        }
+
+                                        override fun onSuccess(fileInfo: FileInfo, newFileInfo: FileInfo) {
+                                            ToastManager.show(R.string.fileFragment_dialogRenameSingleSuccessHint)
+                                            mFilePageInfo.refreshTop()
+                                            mAdapter.notifyDataSetChanged()
+                                        }
+
+                                    }).show()
+                                }
+                                mSelectedPathFileInfoListMap.size > 1 -> {
+                                    mFileRenameMultiDialog
+                                        .setFileInfoList(mSelectedPathFileInfoListMap.values.toList())
+                                        .setResultCallback(object : FileRenameMultiDialog.OnResultCallback{
+                                            override fun onResult() {
+                                                mFileRenameMultiDialog.closeDialog()
+                                            }
+
+                                            override fun onSuccess() {
+                                                ToastManager.show(R.string.fileFragment_dialogRenameMultiSuccessHint)
+                                                mFilePageInfo.refreshTop()
+                                                mAdapter.notifyDataSetChanged()
+                                            }
+
+                                            override fun onPartlySuccess() {
+                                                ToastManager.show(R.string.fileFragment_dialogRenameMultiPartlySuccessHint)
+                                                mFilePageInfo.refreshTop()
+                                                mAdapter.notifyDataSetChanged()
+                                            }
+
+                                            override fun onFail() {
+                                                ToastManager.show(R.string.fileFragment_dialogRenameMultiFailHint)
+                                            }
+
+                                        })
+                                        .showDialog()
+                                }
+                            }
                         }
                         DIALOG_SELECTION_INFO -> { //////////////////////////////////////////////////
-                            FileDetailDialog(activityNotify.context()).show()
+                            mFileDetailDialog
+                                .setFileInfo(mSelectedPathFileInfoListMap.values.toList())
+                                .show()
                         }
                     }
                 }
             })
         // 上面弹出的搜索对话框
-        mSearchDialog = FileFragmentSearchDialog(activityNotify.context())
+        mSearchDialog = FileFragmentSearchDialog(activity())
         // 中间的弹窗对话框
-        mSimpleAlertDialog = SimpleAlertDialog(activityNotify.context())
+        mSimpleAlertDialog = SimpleAlertDialog(activity())
+        // 文件详情对话框
+        mFileDetailDialog = FileDetailDialog(activity())
+        // 单个文件重命名对话框
+        mFileRenameSingleDialog = FileRenameSingleDialog(activity())
+        mFileRenameSingleDialog.setCancelListener(DialogInterface.OnCancelListener {
+            setNotSelecting()
+        })
+        // 多个文件重命名对话框
+        mFileRenameMultiDialog = FileRenameMultiDialog(activity())
+        mFileRenameMultiDialog.setOnCancelListener(DialogInterface.OnCancelListener {
+            setNotSelecting()
+        })
     }
 
     /**
@@ -173,6 +241,10 @@ class FileFragment(activityNotify: MainActivity.Controller) : BaseMainFragment(a
                 }
                 R.id.menuFileFragmentToolbarSearch -> {
                     mSearchDialog.show()
+                }
+                R.id.menuFileFragmentToolbarRefresh -> {
+                    mFilePageInfo.refreshTop()
+                    mAdapter.notifyDataSetChanged()
                 }
             }
             true
@@ -228,7 +300,7 @@ class FileFragment(activityNotify: MainActivity.Controller) : BaseMainFragment(a
     /********************************* GlobalClipBoardEvent ***************************************/
 
     override fun onClipboardChange() {
-
+        activityNotify.notifyFloatingActionButtonChange()
     }
 
     /********************************* FloatingActionButton ***************************************/

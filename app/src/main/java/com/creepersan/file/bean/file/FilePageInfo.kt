@@ -55,4 +55,8 @@ class FilePageInfo{
         return mDirectoryStack.size > 1
     }
 
+    fun refreshTop(){
+        mDirectoryStack.last.refresh()
+    }
+
 }

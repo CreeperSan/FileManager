@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_dialog_default">
+
+        <include
+            android:id="@+id/dialogFileFragmentRenameMultiIncludeTitle"
+            layout="@layout/include_dialog_common_simple_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/dialogFileFragmentRenameMultiFileNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/fileFragment_dialogRenameMultiFileNameLabel"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="@id/dialogFileFragmentRenameMultiFileNameEditText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/dialogFileFragmentRenameMultiFileNameEditText" />
+
+        <EditText
+            android:id="@+id/dialogFileFragmentRenameMultiFileNameEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
+            android:hint="@string/fileFragment_dialogRenameMultiFileNameHint"
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/dialogFileFragmentRenameMultiFileNameTextView"
+            app:layout_constraintTop_toBottomOf="@id/dialogFileFragmentRenameMultiIncludeTitle" />
+
+        <TextView
+            android:id="@+id/dialogFileFragmentRenameMultiExtensionNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/fileFragment_dialogRenameMultiExtensionNameLabel"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="@id/dialogFileFragmentRenameMultiExtensionNameEditText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/dialogFileFragmentRenameMultiExtensionNameEditText" />
+
+        <EditText
+            android:id="@+id/dialogFileFragmentRenameMultiExtensionNameEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:hint="@string/fileFragment_dialogRenameMultiExtensionNameHint"
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/dialogFileFragmentRenameMultiExtensionNameTextView"
+            app:layout_constraintTop_toBottomOf="@id/dialogFileFragmentRenameMultiFileNameEditText" />
+
+
+        <include
+            android:id="@+id/dialogFileFragmentRenameMultiIncludeAction"
+            layout="@layout/include_dialog_common_simple_action"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dialogFileFragmentRenameMultiExtensionNameEditText" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

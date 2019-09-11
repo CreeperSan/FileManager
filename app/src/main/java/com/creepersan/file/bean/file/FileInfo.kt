@@ -40,7 +40,7 @@ class FileInfo{
         this.isDirectory = file.isDirectory
         this.size = when{
             !this.isExist -> 0L
-            this.isExist && this.isDirectory -> file.listFiles().size.toLong()
+            this.isExist && this.isDirectory -> file.listFiles()?.size?.toLong() ?: 0L
             this.isExist && !this.isDirectory -> file.length()
             else -> 0L
         }

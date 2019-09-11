@@ -59,7 +59,7 @@
             android:layout_width="96dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="类型"
+            android:text="@string/fileFragment_dialogFileDetailCategoryType"
             android:textColor="@color/black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/dialogFileFragmentFileDetailValueType" />
@@ -70,18 +70,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:text="文本文档"
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/dialogFileFragmentFileDetailCategoryType"
-            app:layout_constraintTop_toBottomOf="@id/dialogFileFragmentFileDetailDividerName" />
+            app:layout_constraintTop_toBottomOf="@id/dialogFileFragmentFileDetailDividerName"
+            tools:text="文本文档" />
 
         <TextView
             android:id="@+id/dialogFileFragmentFileDetailCategorySize"
             android:layout_width="96dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="大小"
+            android:text="@string/fileFragment_dialogFileDetailCategorySize"
             android:textColor="@color/black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/dialogFileFragmentFileDetailValueSize" />
@@ -92,18 +92,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:layout_marginEnd="16dp"
-            android:text="49.20B ( 102952610021511字节 )"
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/dialogFileFragmentFileDetailCategoryType"
-            app:layout_constraintTop_toBottomOf="@id/dialogFileFragmentFileDetailValueType" />
+            app:layout_constraintTop_toBottomOf="@id/dialogFileFragmentFileDetailValueType"
+            tools:text="49.20B ( 102952610021511字节 )" />
 
         <TextView
             android:id="@+id/dialogFileFragmentFileDetailCategoryModifyTime"
             android:layout_width="96dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="修改时间"
+            android:text="@string/fileFragment_dialogFileDetailCategoryModifyTime"
             android:textColor="@color/black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/dialogFileFragmentFileDetailValueModifyTime" />
@@ -114,18 +114,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:layout_marginEnd="16dp"
-            android:text="2019/09/09 12:16:27"
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/dialogFileFragmentFileDetailCategoryType"
-            app:layout_constraintTop_toBottomOf="@id/dialogFileFragmentFileDetailValueSize" />
+            app:layout_constraintTop_toBottomOf="@id/dialogFileFragmentFileDetailValueSize"
+            tools:text="2019/09/09 12:16:27" />
 
         <TextView
             android:id="@+id/dialogFileFragmentFileDetailCategoryReadWritePermission"
             android:layout_width="96dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="读写权限"
+            android:text="@string/fileFragment_dialogFileDetailCategoryReadWritePermission"
             android:textColor="@color/black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/dialogFileFragmentFileDetailValueReadWritePermission" />
@@ -136,18 +136,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:layout_marginEnd="16dp"
-            android:text="可读可写不可执行"
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/dialogFileFragmentFileDetailCategoryType"
-            app:layout_constraintTop_toBottomOf="@id/dialogFileFragmentFileDetailValueModifyTime" />
+            app:layout_constraintTop_toBottomOf="@id/dialogFileFragmentFileDetailValueModifyTime"
+            tools:text="可读可写不可执行" />
 
         <TextView
             android:id="@+id/dialogFileFragmentFileDetailCategoryIsHidden"
             android:layout_width="96dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="是否隐藏"
+            android:text="@string/fileFragment_dialogFileDetailCategoryIsHidden"
             android:textColor="@color/black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/dialogFileFragmentFileDetailValueHidden" />
@@ -158,18 +158,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:layout_marginEnd="16dp"
-            android:text="是"
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/dialogFileFragmentFileDetailCategoryType"
-            app:layout_constraintTop_toBottomOf="@id/dialogFileFragmentFileDetailValueReadWritePermission" />
+            app:layout_constraintTop_toBottomOf="@id/dialogFileFragmentFileDetailValueReadWritePermission"
+            tools:text="是" />
 
         <TextView
             android:id="@+id/dialogFileFragmentFileDetailCategoryPath"
             android:layout_width="96dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="路径"
+            android:text="@string/fileFragment_dialogFileDetailCategoryIsPath"
             android:textColor="@color/black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/dialogFileFragmentFileDetailValuePath" />
@@ -180,11 +180,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:layout_marginEnd="16dp"
-            android:text="/storage/emulated/0/test.json"
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/dialogFileFragmentFileDetailCategoryType"
-            app:layout_constraintTop_toBottomOf="@id/dialogFileFragmentFileDetailValueHidden" />
+            app:layout_constraintTop_toBottomOf="@id/dialogFileFragmentFileDetailValueHidden"
+            tools:text="/storage/emulated/0/test.json" />
 
         <View
             android:id="@+id/dialogFileFragmentFileDetailDividerSimpleInfo"
@@ -195,6 +195,7 @@
             app:layout_constraintTop_toBottomOf="@id/dialogFileFragmentFileDetailValuePath" />
 
         <include
+            android:id="@+id/dialogFileFragmentFileDetailIncludeActionButton"
             layout="@layout/include_dialog_common_simple_action"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
