@@ -7,13 +7,22 @@ import kotlinx.android.synthetic.main.activity_create_file_directory.*
 
 class CreateFileDirectoryActivity : BaseActivity() {
 
+    companion object{
+        const val INTENT_KEY_DIRECTORY_PATH = "directory_path"
+    }
+
     override fun getLayoutID(): Int {
         return R.layout.activity_create_file_directory
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initIntent()
         initToolbar()
+    }
+
+    private fun initIntent(){
+
     }
 
     private fun initToolbar(){

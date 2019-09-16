@@ -17,11 +17,15 @@ import com.creepersan.file.bean.file.FilePageInfo
 import com.creepersan.file.dialog.*
 import com.creepersan.file.extension.gone
 import com.creepersan.file.extension.visible
+import com.creepersan.file.global.CopiedFileInfo
 import com.creepersan.file.global.GlobalFileInfoClipBoard
+import com.creepersan.file.manager.FileManager
 import com.creepersan.file.manager.FormatManager
 import com.creepersan.file.manager.ResourceManager
 import com.creepersan.file.manager.ToastManager
 import kotlinx.android.synthetic.main.fragment_main_file.*
+import java.io.File
+import java.lang.Exception
 import java.lang.RuntimeException
 import java.util.*
 
@@ -328,12 +332,59 @@ class FileFragment(activityNotify: MainActivity.Controller) : BaseMainFragment(a
     }
 
     override fun onClick(p0: View?) {
-        if (isSelecting){
-            GlobalFileInfoClipBoard.setFileInfo(GlobalFileInfoClipBoard.ACTION_COPY, mSelectedPathFileInfoListMap.values.toList())
-            setNotSelecting()
-        }else if (GlobalFileInfoClipBoard.isNotEmpty()){
-            GlobalFileInfoClipBoard.getCopiedFileInfoList()
-            GlobalFileInfoClipBoard.clearFileInfo()
+        when{
+            isSelecting -> { // 浮动按钮是选择
+                GlobalFileInfoClipBoard.setFileInfo(GlobalFileInfoClipBoard.ACTION_COPY, mSelectedPathFileInfoListMap.values.toList())
+                setNotSelecting()
+            }
+            GlobalFileInfoClipBoard.isNotEmpty() -> { // 浮动按钮是粘贴
+                val copiedFileInfoList = GlobalFileInfoClipBoard.getCopiedFileInfoList()
+                var failCount = 0
+                val allCount = copiedFileInfoList.size
+                    copiedFileInfoList.forEach { copiedFileInfo ->
+                    val sourceFileInfo = copiedFileInfo.fileInfo
+                    val targetFileInfo = FileInfo("${mFilePageInfo.getCurrentDirectoryInfo().directory.path}/${sourceFileInfo.fullName}")
+                    val sourceFile = File(sourceFileInfo.path)
+                    val targetFile = File(targetFileInfo.path)
+                    if (sourceFileInfo.path == targetFileInfo.path){ // 同一个文件，直接跳过
+                        failCount += 1
+                        return
+                    }
+                    if (targetFileInfo.isExist){ // 文件已经存在，暂时是直接跳过
+                        failCount += 1
+                        return
+                    }
+                    when(copiedFileInfo.action){
+                        GlobalFileInfoClipBoard.ACTION_CUT -> {
+                            if (!sourceFile.renameTo(targetFile)){
+                                failCount += 1
+                            }
+                        }
+                        GlobalFileInfoClipBoard.ACTION_COPY -> {
+                            try {
+                                sourceFile.copyTo(targetFile, false)
+                            }catch (e:FileSystemException){
+                                failCount += 1
+                            }
+                        }
+                    }
+                }
+                GlobalFileInfoClipBoard.clearFileInfo()
+                when{
+                    failCount == 0 -> {
+                        ToastManager.show("操作成功")
+                    }
+                    failCount in 1 until allCount -> {
+                        ToastManager.show("操作完成，部分操作失败")
+                    }
+                    failCount >= failCount -> {
+                        ToastManager.show("操作失败")
+                    }
+                    else -> {
+                        ToastManager.show("操作完成")
+                    }
+                }
+            }
         }
     }
 
