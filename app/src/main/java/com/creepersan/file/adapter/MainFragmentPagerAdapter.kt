@@ -11,6 +11,10 @@ import java.util.ArrayList
 class MainFragmentPagerAdapter(fragmentManager: FragmentManager,private val observer: MainFragmentListObserver) : FragmentStatePagerAdapter(fragmentManager, BEHAVIOR_SET_USER_VISIBLE_HINT),
     MainFragmentListObserver.Subscriber {
 
+    override fun onWindowUpdate(fragmentList: ArrayList<BaseMainFragment>, index: Int) {
+
+    }
+
     init {
         observer.subscribe(this)
     }

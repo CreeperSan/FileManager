@@ -20,7 +20,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     private val mNotifier = Controller()
     private val mFragmentListObserver = MainFragmentListObserver()
     private val mPagerAdapter = MainFragmentPagerAdapter(supportFragmentManager, mFragmentListObserver)
-    private val mLeftDrawerAdapter = MainLeftDrawerRecyclerViewAdapter(mPagerAdapter, mFragmentListObserver, mNotifier)
+    private val mLeftDrawerAdapter = MainLeftDrawerRecyclerViewAdapter(mFragmentListObserver, mNotifier)
     private val mRightDrawerAdapter = MainRightDrawerRecyclerViewAdapter()
 
     override fun getLayoutID(): Int = R.layout.activity_main
@@ -42,7 +42,11 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
 
     private fun initFragment(){
-        mFragmentListObserver.addFragment(FileFragment(mNotifier), FileFragment(mNotifier), FileFragment(mNotifier))
+        mFragmentListObserver.addFragment(
+            FileFragment(mNotifier, mFragmentListObserver),
+            FileFragment(mNotifier, mFragmentListObserver),
+            FileFragment(mNotifier, mFragmentListObserver)
+        )
     }
 
     private fun initViewPager(){
@@ -53,6 +57,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
 
     private fun initLeftDrawer(){
+        mLeftDrawerAdapter.initBaseData()
         mainLeftDrawerRecyclerView.layoutManager = LinearLayoutManager(this)
         mainLeftDrawerRecyclerView.adapter = mLeftDrawerAdapter
     }
@@ -164,6 +169,10 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
             mainDrawerLayout.closeDrawer(GravityCompat.END)
         }
 
+        fun getSelfIndex(fragment:BaseMainFragment):Int{
+            return mFragmentListObserver.getIndex(fragment)
+        }
+
     }
 }
 
@@ -204,6 +213,10 @@ class MainFragmentListObserver{
         removeFragment(mFragmentList[index])
     }
 
+    fun getIndex(fragment:BaseMainFragment):Int{
+        return mFragmentList.indexOf(fragment)
+    }
+
     private fun notifyFragmentListChange(){
         mSubscriberList.forEach {  subscriber ->
             subscriber.onListChange(mFragmentList)
@@ -229,8 +242,15 @@ class MainFragmentListObserver{
         notifyFragmentListChange()
     }
 
+    fun notifyWindowUpdate(index:Int){
+        mSubscriberList.forEach {  subscriber ->
+            subscriber.onWindowUpdate(mFragmentList, index)
+        }
+    }
+
     interface Subscriber{
         fun onListChange(fragmentList:ArrayList<BaseMainFragment>)
+        fun onWindowUpdate(fragmentList:ArrayList<BaseMainFragment>, index:Int)
     }
 
 }

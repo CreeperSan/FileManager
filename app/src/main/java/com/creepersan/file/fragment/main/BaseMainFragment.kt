@@ -2,9 +2,10 @@ package com.creepersan.file.fragment.main
 
 import android.view.View
 import com.creepersan.file.activity.MainActivity
+import com.creepersan.file.activity.MainFragmentListObserver
 import com.creepersan.file.fragment.BaseFragment
 
-abstract class BaseMainFragment(protected val activityNotify: MainActivity.Controller) : BaseFragment(){
+abstract class BaseMainFragment(protected val activityNotify: MainActivity.Controller, protected val fragmentListObserver: MainFragmentListObserver) : BaseFragment(){
 
     abstract fun getName() : String
 

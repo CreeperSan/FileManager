@@ -15,7 +15,6 @@ import com.creepersan.file.fragment.main.BaseMainFragment
 import java.util.ArrayList
 
 class MainLeftDrawerRecyclerViewAdapter(
-    private val mainFragmentPagerAdapter: MainFragmentPagerAdapter,
     private val observer: MainFragmentListObserver,
     private val mainActivityController:MainActivity.Controller
 ) : RecyclerView.Adapter<BaseViewHolder>(),
@@ -34,37 +33,44 @@ class MainLeftDrawerRecyclerViewAdapter(
         observer.subscribe(this)
     }
 
+    fun initBaseData(){
+        mItemList.addOpenedWindowTopItem(MainLeftDrawerHeaderItem())
+        mItemList.addOpenedWindowTopItem(MainLeftDrawerTitleItem("已打开的窗口"))
+        mItemList.addOpenedWindowBottomItem(MainLeftDrawerTitleItem("应用程序"))
+        mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_setting, "设置", View.OnClickListener {
+
+        }))
+        mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_info_outline, "关于", View.OnClickListener {
+
+        }))
+        mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_exit, "退出", View.OnClickListener {
+            FileApplication.getInstance().exit()
+        }))
+    }
+
     fun destroy(){
         observer.unsubscribe(this)
     }
 
-    private val mItemList = ArrayList<BaseMainLeftDrawerItem>()
+    private val mItemList = DrawerItemList()
 
     override fun onListChange(fragmentList: ArrayList<BaseMainFragment>) {
-        mItemList.clear()
-        mItemList.add(MainLeftDrawerHeaderItem())
-        mItemList.add(MainLeftDrawerTitleItem("已打开的窗口"))
+        mItemList.clearWindowItem()
         for (i in 0 until observer.getSize()){
             observer.getFragment(i)?.apply {
-                mItemList.add(MainLeftDrawerSelectionItem(
+                mItemList.addOpenedWindowItem(MainLeftDrawerSelectionItem(
                     this.getIcon(),
                     this.getName(),
                     true
                 ))
-                Log.e("TAG", "AddOne")
             }
         }
-        mItemList.add(MainLeftDrawerTitleItem("应用程序"))
-        mItemList.add(MainLeftDrawerAppSelectionItem(R.drawable.ic_setting, "设置", View.OnClickListener {
-
-        }))
-        mItemList.add(MainLeftDrawerAppSelectionItem(R.drawable.ic_info_outline, "关于", View.OnClickListener {
-
-        }))
-        mItemList.add(MainLeftDrawerAppSelectionItem(R.drawable.ic_exit, "退出", View.OnClickListener {
-            FileApplication.getInstance().exit()
-        }))
         notifyDataSetChanged()
+    }
+
+    override fun onWindowUpdate(fragmentList: ArrayList<BaseMainFragment>, index: Int) {
+
+        notifyItemChanged(mItemList.windowIndexToGeneralIndex(index))
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -90,8 +96,9 @@ class MainLeftDrawerRecyclerViewAdapter(
         }
     }
 
+
     override fun getItemCount(): Int {
-        return mItemList.size
+        return mItemList.size()
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
@@ -210,4 +217,53 @@ class MainLeftDrawerAppSelectionItemView(viewGroup: ViewGroup) : BaseViewHolder(
     fun setOnClickListener(listener:View.OnClickListener){
         itemView.setOnClickListener(listener)
     }
+}
+
+class DrawerItemList{
+    private val mTopItemList = ArrayList<BaseMainLeftDrawerItem>() // 用于储存一打开窗口内容上面的
+    private val mOpenedWindowItemList = ArrayList<BaseMainLeftDrawerItem>() // 用于储存已打开窗口子项
+    private val mBottomItemList = ArrayList<BaseMainLeftDrawerItem>() // 用于储存已打开窗口子项内容下面的
+
+    fun clear(){
+        mTopItemList.clear()
+        mOpenedWindowItemList.clear()
+        mBottomItemList.clear()
+    }
+
+    fun windowIndexToGeneralIndex(windowIndex:Int):Int{
+        return windowIndex + mTopItemList.size
+    }
+
+    fun clearWindowItem(){
+        mOpenedWindowItemList.clear()
+    }
+
+    fun addOpenedWindowTopItem(item:BaseMainLeftDrawerItem){
+        mTopItemList.add(item)
+    }
+
+    fun addOpenedWindowItem(item:BaseMainLeftDrawerItem){
+        mOpenedWindowItemList.add(item)
+    }
+
+    fun addOpenedWindowBottomItem(item:BaseMainLeftDrawerItem){
+        mBottomItemList.add(item)
+    }
+
+    operator fun get(index:Int):BaseMainLeftDrawerItem{
+        val topSize = mTopItemList.size
+        val windowSize = mOpenedWindowItemList.size
+        val bottomSize = mBottomItemList.size
+        return when{
+            index < topSize -> mTopItemList[index]
+            index < topSize + windowSize -> mOpenedWindowItemList[index - topSize]
+            index < topSize + windowSize + bottomSize-> mBottomItemList[index - topSize - windowSize]
+            else -> throw IndexOutOfBoundsException("DrawerItemList下标越界 index=$index size=${size()}")
+        }
+    }
+
+    fun size():Int{
+        return mTopItemList.size + mOpenedWindowItemList.size + mBottomItemList.size
+    }
+
 }

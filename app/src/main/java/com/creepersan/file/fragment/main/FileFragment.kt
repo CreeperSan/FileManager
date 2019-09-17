@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.creepersan.file.R
 import com.creepersan.file.activity.CreateFileDirectoryActivity
 import com.creepersan.file.activity.MainActivity
+import com.creepersan.file.activity.MainFragmentListObserver
 import com.creepersan.file.bean.file.FileInfo
 import com.creepersan.file.bean.file.FilePageInfo
 import com.creepersan.file.dialog.*
@@ -29,7 +30,7 @@ import java.lang.Exception
 import java.lang.RuntimeException
 import java.util.*
 
-class FileFragment(activityNotify: MainActivity.Controller) : BaseMainFragment(activityNotify), View.OnClickListener, View.OnLongClickListener, GlobalFileInfoClipBoard.GlobalClipBoardObserver{
+class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver: MainFragmentListObserver) : BaseMainFragment(activityNotify, fragmentListObserver), View.OnClickListener, View.OnLongClickListener, GlobalFileInfoClipBoard.GlobalClipBoardObserver{
 
     companion object{
         private const val TYPE_FILE = 0
@@ -63,7 +64,11 @@ class FileFragment(activityNotify: MainActivity.Controller) : BaseMainFragment(a
     }
 
     override fun getName(): String {
-        return R.string.fileFragment_title.toResString()
+        val directoryName = mFilePageInfo.getCurrentDirectoryInfo().directory.fullName
+        if (directoryName.isEmpty()){
+            return R.string.fileFragment_title.toResString()
+        }
+        return directoryName
     }
 
     override fun getIcon(): Int {
@@ -404,6 +409,7 @@ class FileFragment(activityNotify: MainActivity.Controller) : BaseMainFragment(a
                 mFilePageInfo.popDirectory()
                 mAdapter.notifyDataSetChanged()
                 refreshToolbarTitle()
+                refreshContentPager()
                 true
             }
             else -> {
@@ -458,24 +464,7 @@ class FileFragment(activityNotify: MainActivity.Controller) : BaseMainFragment(a
             }
         }
 
-        override fun getItemCount(): Int {
-            // 文件列表
-            val count = mFilePageInfo.getCurrentPageFileCount()
-            if (count <= 0){
-                fileFragmentPageHintView.visible()
-                fileFragmentRecyclerView.gone()
-            }else{
-                fileFragmentPageHintView.gone()
-                fileFragmentRecyclerView.visible()
-            }
-            // 左上角导航图标
-            if (mFilePageInfo.canPopDirectory()){
-                fileFragmentToolbar.setNavigationIcon(R.drawable.ic_arrow_back_dark_blue)
-            }else{
-                fileFragmentToolbar.setNavigationIcon(R.drawable.ic_close)
-            }
-            return count
-        }
+        override fun getItemCount(): Int = mFilePageInfo.getCurrentPageFileCount()
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val fileInfo = mFilePageInfo.getCurrentPageFile(position)
@@ -492,6 +481,8 @@ class FileFragment(activityNotify: MainActivity.Controller) : BaseMainFragment(a
                             mFilePageInfo.pushDirectory(fileInfo)
                             mAdapter.notifyDataSetChanged()
                             refreshToolbarTitle()
+                            refreshContentPager()
+                            fragmentListObserver.notifyWindowUpdate(activityNotify.getSelfIndex(this@FileFragment))
                         }
                     })
                     holder.setOnLongClickListener(View.OnLongClickListener {
@@ -539,7 +530,23 @@ class FileFragment(activityNotify: MainActivity.Controller) : BaseMainFragment(a
                 }
             }
         }
+    }
 
+    private fun refreshContentPager(){
+        val count = mFilePageInfo.getCurrentPageFileCount()
+        if (count <= 0){
+            fileFragmentPageHintView.visible()
+            fileFragmentRecyclerView.gone()
+        }else{
+            fileFragmentPageHintView.gone()
+            fileFragmentRecyclerView.visible()
+        }
+        // 左上角导航图标
+        if (mFilePageInfo.canPopDirectory()){
+            fileFragmentToolbar.setNavigationIcon(R.drawable.ic_arrow_back_dark_blue)
+        }else{
+            fileFragmentToolbar.setNavigationIcon(R.drawable.ic_close)
+        }
     }
 
     private inner class DirectoryViewHolder(parent:ViewGroup) : RecyclerView.ViewHolder(layoutInflater.inflate(R.layout.item_file_directory, parent, false)){
