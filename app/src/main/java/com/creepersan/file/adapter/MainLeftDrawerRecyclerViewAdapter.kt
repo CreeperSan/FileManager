@@ -7,18 +7,20 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.creepersan.file.R
+import com.creepersan.file.activity.FragmentPageObserver
+import com.creepersan.file.activity.FragmentPagerSubscriber
 import com.creepersan.file.activity.MainActivity
-import com.creepersan.file.activity.MainFragmentListObserver
 import com.creepersan.file.application.FileApplication
 import com.creepersan.file.common.view_holder.BaseViewHolder
 import com.creepersan.file.fragment.main.BaseMainFragment
+import java.lang.Exception
 import java.util.ArrayList
 
 class MainLeftDrawerRecyclerViewAdapter(
-    private val observer: MainFragmentListObserver,
+    private val observer: FragmentPageObserver,
     private val mainActivityController:MainActivity.Controller
 ) : RecyclerView.Adapter<BaseViewHolder>(),
-    MainFragmentListObserver.Subscriber {
+    FragmentPagerSubscriber {
 
     companion object{
         private const val VIEW_TYPE_UNDEFINE = -1
@@ -31,6 +33,23 @@ class MainLeftDrawerRecyclerViewAdapter(
 
     init {
         observer.subscribe(this)
+    }
+
+    override fun onPageUpdate(index: Int, observer: FragmentPageObserver) {
+        notifyItemChanged(mItemList.windowIndexToGeneralIndex(index))
+    }
+
+    override fun onPageChange(observer: FragmentPageObserver) {
+        mItemList.clearWindowItem()
+        for (i in 0 until observer.getSize()){
+            val fragment = observer.getFragment(i)
+            mItemList.addOpenedWindowItem(MainLeftDrawerSelectionItem(
+                fragment.getIcon(),
+                fragment.getName(),
+                true
+            ))
+        }
+        notifyDataSetChanged()
     }
 
     fun initBaseData(){
@@ -53,25 +72,6 @@ class MainLeftDrawerRecyclerViewAdapter(
     }
 
     private val mItemList = DrawerItemList()
-
-    override fun onListChange(fragmentList: ArrayList<BaseMainFragment>) {
-        mItemList.clearWindowItem()
-        for (i in 0 until observer.getSize()){
-            observer.getFragment(i)?.apply {
-                mItemList.addOpenedWindowItem(MainLeftDrawerSelectionItem(
-                    this.getIcon(),
-                    this.getName(),
-                    true
-                ))
-            }
-        }
-        notifyDataSetChanged()
-    }
-
-    override fun onWindowUpdate(fragmentList: ArrayList<BaseMainFragment>, index: Int) {
-
-        notifyItemChanged(mItemList.windowIndexToGeneralIndex(index))
-    }
 
     override fun getItemViewType(position: Int): Int {
         val item = mItemList[position]
@@ -119,8 +119,13 @@ class MainLeftDrawerRecyclerViewAdapter(
                 })
             }
             holder is MainLeftDrawerPagerItemView -> {
-                val fragmentPosition = holder.adapterPosition - 2
+                val fragmentPosition = mItemList.generalIndexToFragmentIndex(position)
                 val item = mItemList.get(position) as MainLeftDrawerSelectionItem
+                try {
+                    item.title = observer.getFragment(mItemList.generalIndexToFragmentIndex(position)).getName()
+                }catch (e:Exception){
+                    e.printStackTrace()
+                }
                 holder.setTitle(item.title)
                 holder.setIcon(item.icon)
                 holder.setOnClickListener(View.OnClickListener {
@@ -232,6 +237,10 @@ class DrawerItemList{
 
     fun windowIndexToGeneralIndex(windowIndex:Int):Int{
         return windowIndex + mTopItemList.size
+    }
+
+    fun generalIndexToFragmentIndex(generalIndex:Int):Int{
+        return generalIndex - mTopItemList.size
     }
 
     fun clearWindowItem(){

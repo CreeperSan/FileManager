@@ -11,26 +11,23 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.creepersan.file.R
 import com.creepersan.file.activity.CreateFileDirectoryActivity
+import com.creepersan.file.activity.FragmentPageObserver
 import com.creepersan.file.activity.MainActivity
-import com.creepersan.file.activity.MainFragmentListObserver
 import com.creepersan.file.bean.file.FileInfo
 import com.creepersan.file.bean.file.FilePageInfo
 import com.creepersan.file.dialog.*
 import com.creepersan.file.extension.gone
 import com.creepersan.file.extension.visible
-import com.creepersan.file.global.CopiedFileInfo
 import com.creepersan.file.global.GlobalFileInfoClipBoard
-import com.creepersan.file.manager.FileManager
 import com.creepersan.file.manager.FormatManager
 import com.creepersan.file.manager.ResourceManager
 import com.creepersan.file.manager.ToastManager
 import kotlinx.android.synthetic.main.fragment_main_file.*
 import java.io.File
-import java.lang.Exception
 import java.lang.RuntimeException
 import java.util.*
 
-class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver: MainFragmentListObserver) : BaseMainFragment(activityNotify, fragmentListObserver), View.OnClickListener, View.OnLongClickListener, GlobalFileInfoClipBoard.GlobalClipBoardObserver{
+class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver: FragmentPageObserver) : BaseMainFragment(activityNotify, fragmentListObserver), View.OnClickListener, View.OnLongClickListener, GlobalFileInfoClipBoard.GlobalClipBoardObserver{
 
     companion object{
         private const val TYPE_FILE = 0
@@ -410,6 +407,7 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
                 mAdapter.notifyDataSetChanged()
                 refreshToolbarTitle()
                 refreshContentPager()
+                fragmentListObserver.notifyFragmentUpdate(fragmentListObserver.getIndex(this@FileFragment))
                 true
             }
             else -> {
@@ -482,7 +480,7 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
                             mAdapter.notifyDataSetChanged()
                             refreshToolbarTitle()
                             refreshContentPager()
-                            fragmentListObserver.notifyWindowUpdate(activityNotify.getSelfIndex(this@FileFragment))
+                            fragmentListObserver.notifyFragmentUpdate(fragmentListObserver.getIndex(this@FileFragment))
                         }
                     })
                     holder.setOnLongClickListener(View.OnLongClickListener {

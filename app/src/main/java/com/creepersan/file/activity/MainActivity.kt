@@ -18,20 +18,20 @@ import java.util.*
 
 class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     private val mNotifier = Controller()
-    private val mFragmentListObserver = MainFragmentListObserver()
-    private val mPagerAdapter = MainFragmentPagerAdapter(supportFragmentManager, mFragmentListObserver)
-    private val mLeftDrawerAdapter = MainLeftDrawerRecyclerViewAdapter(mFragmentListObserver, mNotifier)
+    private val mPagerAdapter by lazy { MainFragmentPagerAdapter(supportFragmentManager, mFragmentPageObserver) }
+    private val mLeftDrawerAdapter by lazy { MainLeftDrawerRecyclerViewAdapter(mFragmentPageObserver, mNotifier) }
     private val mRightDrawerAdapter = MainRightDrawerRecyclerViewAdapter()
+    private val mFragmentPageObserver = FragmentPageObserver()
 
     override fun getLayoutID(): Int = R.layout.activity_main
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initFragment()
         initViewPager()
         initLeftDrawer()
         initRightDrawer()
         initFloatingActionButton()
+        initFragment()
     }
 
     override fun onDestroy() {
@@ -42,10 +42,10 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
 
     private fun initFragment(){
-        mFragmentListObserver.addFragment(
-            FileFragment(mNotifier, mFragmentListObserver),
-            FileFragment(mNotifier, mFragmentListObserver),
-            FileFragment(mNotifier, mFragmentListObserver)
+        mFragmentPageObserver.addFragment(
+            FileFragment(mNotifier, mFragmentPageObserver),
+            FileFragment(mNotifier, mFragmentPageObserver),
+            FileFragment(mNotifier, mFragmentPageObserver)
         )
     }
 
@@ -76,17 +76,16 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
 
     override fun onBackPressed() {
-        if (mFragmentListObserver.getSize() > 0){
-            mFragmentListObserver.getFragment(mainViewPager.currentItem)?.apply {
-                if (this.onBackPressed()){
+        if (mFragmentPageObserver.getSize() > 0){
+            val fragment = mFragmentPageObserver.getFragment(mainViewPager.currentItem)
+            if (fragment.onBackPressed()){
+                return
+            }else{
+                if (mFragmentPageObserver.getSize() > 1){
+                    closeFragment(fragment)
                     return
                 }else{
-                    if (mFragmentListObserver.getSize() > 1){
-                        closeFragment(this)
-                        return
-                    }else{
-                        super.onBackPressed()
-                    }
+                    super.onBackPressed()
                 }
             }
         }else{
@@ -96,20 +95,20 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
 
     private fun closeFragment(fragment:BaseMainFragment){
         fragment.onPageClose()
-        mFragmentListObserver.removeFragment(fragment)
+        mFragmentPageObserver.removeFragment(fragment)
         refreshFloatingActionButton()
     }
 
     internal fun refreshFloatingActionButton(){
         // 防止为空FragmentList
-        if (mFragmentListObserver.getSize() <= 0){
+        if (mFragmentPageObserver.getSize() <= 0){
             mainFloatingActionButton.hide()
             return
         }
         // 防止为空的Fragment
-        val baseMainFragment = mFragmentListObserver.getFragment(mainViewPager.currentItem)
+        val baseMainFragment = mFragmentPageObserver.getFragment(mainViewPager.currentItem)
         // 设置
-        if (baseMainFragment?.getFloatingActionButtonIsVisible() == true){
+        if (baseMainFragment.getFloatingActionButtonIsVisible()){
             mainFloatingActionButton.setImageResource(baseMainFragment.getFloatingActionButtonIcon())
             mainFloatingActionButton.setOnClickListener(baseMainFragment.getFloatingActionButtonClickListener())
             mainFloatingActionButton.setOnLongClickListener(baseMainFragment.getFloatingActionButtonLongClickListener())
@@ -128,8 +127,8 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
     override fun onPageSelected(position: Int) {
         if (mPrevVisiblePage != position){
-            mFragmentListObserver.getFragment(mPrevVisiblePage)?.onPageInvisible()
-            mFragmentListObserver.getFragment(position)?.onPageVisible()
+            mFragmentPageObserver.getFragment(mPrevVisiblePage).onPageInvisible()
+            mFragmentPageObserver.getFragment(position).onPageVisible()
             mPrevVisiblePage = position
         }
         refreshFloatingActionButton()
@@ -150,10 +149,10 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         }
 
         fun closePage(index:Int){
-            if (mFragmentListObserver.getSize() <= 1){
+            if (mFragmentPageObserver.getSize() <= 1){
                 FileApplication.getInstance().exit()
-            }else if (index >= 0 && index < mFragmentListObserver.getSize()){
-                mFragmentListObserver.removeFragment(index)
+            }else if (index >= 0 && index < mFragmentPageObserver.getSize()){
+                mFragmentPageObserver.removeFragment(index)
             }
         }
 
@@ -170,70 +169,34 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         }
 
         fun getSelfIndex(fragment:BaseMainFragment):Int{
-            return mFragmentListObserver.getIndex(fragment)
+            return mFragmentPageObserver.getIndex(fragment)
         }
 
     }
 }
 
-class MainFragmentListObserver{
+class FragmentPageObserver{
     private val mFragmentList = ArrayList<BaseMainFragment>()
-    private val mSubscriberList = ArrayList<Subscriber>()
+    private val mSubscriberList = ArrayList<FragmentPagerSubscriber>()
 
-    fun getFragment(position:Int):BaseMainFragment? {
-        if (position < 0 || position >= mFragmentList.size ){
-            return null
-        }
-        return mFragmentList[position]
-    }
+    fun getFragment(position:Int):BaseMainFragment = mFragmentList[position]
 
-    fun getSize():Int{
-        return mFragmentList.size
-    }
+    fun getSize():Int = mFragmentList.size
 
-    fun subscribe(subscriber: Subscriber){
-        if (!mSubscriberList.contains(subscriber)){
-            mSubscriberList.add(subscriber)
-        }
-    }
-
-    fun unsubscribe(subscriber: Subscriber){
-        mSubscriberList.remove(subscriber)
-    }
+    fun getIndex(fragment:BaseMainFragment):Int = mFragmentList.indexOf(fragment)
 
     fun addFragment(vararg fragment: BaseMainFragment){
-        addFragment(fragment.toList())
+        mFragmentList.addAll(fragment)
+        notifyFragmentListChange()
     }
 
     fun removeFragment(vararg fragment:BaseMainFragment){
-        removeFragment(fragment.toList())
+        mFragmentList.removeAll(fragment.toList())
+        notifyFragmentListChange()
     }
 
     fun removeFragment(index:Int){
         removeFragment(mFragmentList[index])
-    }
-
-    fun getIndex(fragment:BaseMainFragment):Int{
-        return mFragmentList.indexOf(fragment)
-    }
-
-    private fun notifyFragmentListChange(){
-        mSubscriberList.forEach {  subscriber ->
-            subscriber.onListChange(mFragmentList)
-        }
-    }
-
-    fun addFragment(fragmentList:List<BaseMainFragment>){
-        fragmentList.forEach{ fragment ->
-            if (!mFragmentList.contains(fragment)){
-                mFragmentList.add(fragment)
-            }
-        }
-        notifyFragmentListChange()
-    }
-
-    fun removeFragment(fragmentList:List<BaseMainFragment>){
-        mFragmentList.removeAll(fragmentList)
         notifyFragmentListChange()
     }
 
@@ -242,15 +205,29 @@ class MainFragmentListObserver{
         notifyFragmentListChange()
     }
 
-    fun notifyWindowUpdate(index:Int){
+    private fun notifyFragmentListChange(){
         mSubscriberList.forEach {  subscriber ->
-            subscriber.onWindowUpdate(mFragmentList, index)
+            subscriber.onPageChange(this)
         }
     }
 
-    interface Subscriber{
-        fun onListChange(fragmentList:ArrayList<BaseMainFragment>)
-        fun onWindowUpdate(fragmentList:ArrayList<BaseMainFragment>, index:Int)
+    fun notifyFragmentUpdate(index:Int){
+        mSubscriberList.forEach {  subscriber ->
+            subscriber.onPageUpdate(index, this)
+        }
     }
+
+    fun subscribe(subscriber:FragmentPagerSubscriber) = mSubscriberList.add(subscriber)
+
+    fun unsubscribe(subscriber:FragmentPagerSubscriber) = mSubscriberList.remove(subscriber)
+
+
+}
+
+interface FragmentPagerSubscriber{
+
+    fun onPageUpdate(index:Int, observer:FragmentPageObserver)
+
+    fun onPageChange(observer:FragmentPageObserver)
 
 }
