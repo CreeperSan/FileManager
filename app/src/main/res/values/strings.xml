@@ -11,7 +11,7 @@
     <string name="permission_titleWriteStorage">写入文件</string>
     <string name="permission_contentWriteStorage">复制、剪切、删除文件</string>
 
-    <string name="fileFragment_title">文件</string>
+    <string name="fileFragment_title">内置存储</string>
     <string name="fileFragment_menuSearch">搜索</string>
     <string name="fileFragment_menuRefresh">刷新</string>
     <string name="fileFragment_menuCreate">新建</string>
@@ -66,6 +66,21 @@
     <string name="fileFragment_dialogRenameMultiSuccessHint">全部所选文件重命名成功</string>
     <string name="fileFragment_dialogRenameMultiPartlySuccessHint">部分所选文件重命名成功</string>
     <string name="fileFragment_dialogRenameMultiFailHint">全部所选文件重命名失败</string>
+
+    <string name="homeFragment_title">主页</string>
+    
+    <string name="applicationFragment_title">应用程序</string>
+
+    <string name="settingFragment_title">设置</string>
+
+    <string name="aboutFragment_title">关于</string>
+    
+    <string name="exitFragment_title">退出</string>
+    
+    <string name="mainActivityLeftDrawableCatalog_openedWindows">已打开的窗口</string>
+    <string name="mainActivityLeftDrawableCatalog_devices">设备</string>
+    <string name="mainActivityLeftDrawableCatalog_tools">工具</string>
+    <string name="mainActivityLeftDrawableCatalog_other">其他</string>
 
     <string name="common_dialogPositive">确定</string>
     <string name="common_dialogNegative">取消</string>

@@ -127,8 +127,13 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
     override fun onPageSelected(position: Int) {
         if (mPrevVisiblePage != position){
-            mFragmentPageObserver.getFragment(mPrevVisiblePage).onPageInvisible()
-            mFragmentPageObserver.getFragment(position).onPageVisible()
+            // 防止下标越界
+            if (mFragmentPageObserver.isPositionAvailable(mPrevVisiblePage)){
+                mFragmentPageObserver.getFragment(mPrevVisiblePage).onPageInvisible()
+            }
+            if (mFragmentPageObserver.isPositionAvailable(position)){
+                mFragmentPageObserver.getFragment(position).onPageInvisible()
+            }
             mPrevVisiblePage = position
         }
         refreshFloatingActionButton()
@@ -184,6 +189,8 @@ class FragmentPageObserver{
     fun getSize():Int = mFragmentList.size
 
     fun getIndex(fragment:BaseMainFragment):Int = mFragmentList.indexOf(fragment)
+
+    fun isPositionAvailable(position:Int) = position >= 0 && position < mFragmentList.size
 
     fun addFragment(vararg fragment: BaseMainFragment){
         mFragmentList.addAll(fragment)

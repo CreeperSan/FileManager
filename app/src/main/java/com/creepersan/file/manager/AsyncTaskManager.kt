@@ -1,6 +1,6 @@
 package com.creepersan.file.manager
 
-object AsyncManager{
+object AsyncTaskManager{
 
     fun execute(){
         

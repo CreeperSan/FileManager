@@ -27,7 +27,10 @@ import java.io.File
 import java.lang.RuntimeException
 import java.util.*
 
-class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver: FragmentPageObserver) : BaseMainFragment(activityNotify, fragmentListObserver), View.OnClickListener, View.OnLongClickListener, GlobalFileInfoClipBoard.GlobalClipBoardObserver{
+class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver: FragmentPageObserver) : BaseMainFragment(activityNotify, fragmentListObserver),
+    View.OnClickListener,
+    View.OnLongClickListener,
+    GlobalFileInfoClipBoard.GlobalClipBoardObserver{
 
     companion object{
         private const val TYPE_FILE = 0
@@ -63,7 +66,7 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
     override fun getName(): String {
         val directoryName = mFilePageInfo.getCurrentDirectoryInfo().directory.fullName
         if (directoryName.isEmpty()){
-            return R.string.fileFragment_title.toResString()
+            return ResourceManager.getString(R.string.fileFragment_title)
         }
         return directoryName
     }

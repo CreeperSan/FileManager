@@ -13,6 +13,8 @@ import com.creepersan.file.activity.MainActivity
 import com.creepersan.file.application.FileApplication
 import com.creepersan.file.common.view_holder.BaseViewHolder
 import com.creepersan.file.fragment.main.BaseMainFragment
+import com.creepersan.file.fragment.main.HomeFragment
+import com.creepersan.file.manager.ResourceManager
 import java.lang.Exception
 import java.util.ArrayList
 
@@ -54,15 +56,28 @@ class MainLeftDrawerRecyclerViewAdapter(
 
     fun initBaseData(){
         mItemList.addOpenedWindowTopItem(MainLeftDrawerHeaderItem())
-        mItemList.addOpenedWindowTopItem(MainLeftDrawerTitleItem("已打开的窗口"))
-        mItemList.addOpenedWindowBottomItem(MainLeftDrawerTitleItem("应用程序"))
-        mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_setting, "设置", View.OnClickListener {
+        mItemList.addOpenedWindowTopItem(MainLeftDrawerTitleItem(ResourceManager.getString(R.string.mainActivityLeftDrawableCatalog_openedWindows)))
+        mItemList.addOpenedWindowBottomItem(MainLeftDrawerTitleItem(ResourceManager.getString(R.string.mainActivityLeftDrawableCatalog_devices)))
+        mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_home, ResourceManager.getString(R.string.homeFragment_title), View.OnClickListener {
+            observer.addFragment(HomeFragment(mainActivityController, observer))
+            mainActivityController.closeLeftDrawer()
+            mainActivityController.setCurrentPage(observer.getSize() - 1)
+        }))
+        mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_internal_storage, ResourceManager.getString(R.string.fileFragment_title), View.OnClickListener {
 
         }))
-        mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_info_outline, "关于", View.OnClickListener {
+        mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_applications, ResourceManager.getString(R.string.applicationFragment_title), View.OnClickListener {
 
         }))
-        mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_exit, "退出", View.OnClickListener {
+        mItemList.addOpenedWindowBottomItem(MainLeftDrawerTitleItem(ResourceManager.getString(R.string.mainActivityLeftDrawableCatalog_tools)))
+        mItemList.addOpenedWindowBottomItem(MainLeftDrawerTitleItem(ResourceManager.getString(R.string.mainActivityLeftDrawableCatalog_other)))
+        mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_setting, ResourceManager.getString(R.string.settingFragment_title), View.OnClickListener {
+
+        }))
+        mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_info_outline, ResourceManager.getString(R.string.aboutFragment_title), View.OnClickListener {
+
+        }))
+        mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_exit, ResourceManager.getString(R.string.exitFragment_title), View.OnClickListener {
             FileApplication.getInstance().exit()
         }))
     }
