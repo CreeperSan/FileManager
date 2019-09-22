@@ -12,8 +12,7 @@ import com.creepersan.file.activity.FragmentPagerSubscriber
 import com.creepersan.file.activity.MainActivity
 import com.creepersan.file.application.FileApplication
 import com.creepersan.file.common.view_holder.BaseViewHolder
-import com.creepersan.file.fragment.main.BaseMainFragment
-import com.creepersan.file.fragment.main.HomeFragment
+import com.creepersan.file.fragment.main.*
 import com.creepersan.file.manager.ResourceManager
 import java.lang.Exception
 import java.util.ArrayList
@@ -59,27 +58,31 @@ class MainLeftDrawerRecyclerViewAdapter(
         mItemList.addOpenedWindowTopItem(MainLeftDrawerTitleItem(ResourceManager.getString(R.string.mainActivityLeftDrawableCatalog_openedWindows)))
         mItemList.addOpenedWindowBottomItem(MainLeftDrawerTitleItem(ResourceManager.getString(R.string.mainActivityLeftDrawableCatalog_devices)))
         mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_home, ResourceManager.getString(R.string.homeFragment_title), View.OnClickListener {
-            observer.addFragment(HomeFragment(mainActivityController, observer))
-            mainActivityController.closeLeftDrawer()
-            mainActivityController.setCurrentPage(observer.getSize() - 1)
+            openNewFragment(HomeFragment(mainActivityController, observer))
         }))
         mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_internal_storage, ResourceManager.getString(R.string.fileFragment_title), View.OnClickListener {
-
+            openNewFragment(FileFragment(mainActivityController, observer))
         }))
         mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_applications, ResourceManager.getString(R.string.applicationFragment_title), View.OnClickListener {
-
+            openNewFragment(ApplicationFragment(mainActivityController, observer))
         }))
         mItemList.addOpenedWindowBottomItem(MainLeftDrawerTitleItem(ResourceManager.getString(R.string.mainActivityLeftDrawableCatalog_tools)))
         mItemList.addOpenedWindowBottomItem(MainLeftDrawerTitleItem(ResourceManager.getString(R.string.mainActivityLeftDrawableCatalog_other)))
         mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_setting, ResourceManager.getString(R.string.settingFragment_title), View.OnClickListener {
-
+            openNewFragment(SettingFragment(mainActivityController, observer))
         }))
         mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_info_outline, ResourceManager.getString(R.string.aboutFragment_title), View.OnClickListener {
-
+            openNewFragment(AboutFragment(mainActivityController, observer))
         }))
         mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_exit, ResourceManager.getString(R.string.exitFragment_title), View.OnClickListener {
             FileApplication.getInstance().exit()
         }))
+    }
+
+    private fun openNewFragment(fragment:BaseMainFragment){
+        observer.addFragment(fragment)
+        mainActivityController.closeLeftDrawer()
+        mainActivityController.setCurrentPage(observer.getSize() - 1)
     }
 
     fun destroy(){

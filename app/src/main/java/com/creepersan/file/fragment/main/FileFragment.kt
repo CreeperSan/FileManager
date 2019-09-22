@@ -246,7 +246,9 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
         fileFragmentToolbar.setOnMenuItemClickListener {  menuItem ->
             when(menuItem.itemId){
                 R.id.menuFileFragmentToolbarCreate -> {
-                    activity().toActivity(CreateFileDirectoryActivity::class.java)
+                    activity().toActivity(CreateFileDirectoryActivity::class.java, mapOf(
+                        CreateFileDirectoryActivity.INTENT_KEY_DIRECTORY_PATH to mFilePageInfo.getCurrentDirectoryInfo().directory.path
+                    ))
                 }
                 R.id.menuFileFragmentToolbarSearch -> {
                     mSearchDialog.show()

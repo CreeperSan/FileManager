@@ -82,6 +82,8 @@
     <string name="mainActivityLeftDrawableCatalog_tools">工具</string>
     <string name="mainActivityLeftDrawableCatalog_other">其他</string>
 
+    <string name="createFileDirectoryActivity_hintNotSelectDirectory">尚未選擇文件夾</string>
+
     <string name="common_dialogPositive">确定</string>
     <string name="common_dialogNegative">取消</string>
 </resources>
