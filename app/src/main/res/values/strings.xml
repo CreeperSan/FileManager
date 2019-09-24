@@ -14,7 +14,8 @@
     <string name="fileFragment_title">内置存储</string>
     <string name="fileFragment_menuSearch">搜索</string>
     <string name="fileFragment_menuRefresh">刷新</string>
-    <string name="fileFragment_menuCreate">新建</string>
+    <string name="fileFragment_menuCreateFile">新建文件</string>
+    <string name="fileFragment_menuCreateDirectory">新建文件夹</string>
     <string name="fileFragment_dialogOperationCopy">复制</string>
     <string name="fileFragment_dialogOperationCopyAppend">追加复制</string>
     <string name="fileFragment_dialogOperationCut">剪切</string>
@@ -83,6 +84,8 @@
     <string name="mainActivityLeftDrawableCatalog_other">其他</string>
 
     <string name="createFileDirectoryActivity_hintNotSelectDirectory">尚未選擇文件夾</string>
+    <string name="createFileDirectoryActivity_hintFileNameCanNotBeEmpty">文件名不能为空</string>
+    <string name="createFileDirectoryActivity_hintFileAlreadyExist">文件已经存在</string>
 
     <string name="common_dialogPositive">确定</string>
     <string name="common_dialogNegative">取消</string>

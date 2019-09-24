@@ -16,8 +16,13 @@
             app:showAsAction="ifRoom"/>
 
     <item
-            android:id="@+id/menuFileFragmentToolbarCreate"
-            android:title="@string/fileFragment_menuCreate"
+            android:id="@+id/menuFileFragmentToolbarCreateFile"
+            android:title="@string/fileFragment_menuCreateFile"
+            app:showAsAction="never"/>
+
+    <item
+            android:id="@+id/menuFileFragmentToolbarCreateDirectory"
+            android:title="@string/fileFragment_menuCreateDirectory"
             app:showAsAction="never"/>
 
 

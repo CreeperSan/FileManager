@@ -245,9 +245,16 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
         fileFragmentToolbar.inflateMenu(R.menu.file_fragment_toolbar)
         fileFragmentToolbar.setOnMenuItemClickListener {  menuItem ->
             when(menuItem.itemId){
-                R.id.menuFileFragmentToolbarCreate -> {
+                R.id.menuFileFragmentToolbarCreateFile -> {
                     activity().toActivity(CreateFileDirectoryActivity::class.java, mapOf(
-                        CreateFileDirectoryActivity.INTENT_KEY_DIRECTORY_PATH to mFilePageInfo.getCurrentDirectoryInfo().directory.path
+                        CreateFileDirectoryActivity.INTENT_KEY_DIRECTORY_PATH to mFilePageInfo.getCurrentDirectoryInfo().directory.path,
+                        CreateFileDirectoryActivity.INTENT_KEY_TYPE to CreateFileDirectoryActivity.INTENT_TYPE_FILE
+                    ))
+                }
+                R.id.menuFileFragmentToolbarCreateDirectory -> {
+                    activity().toActivity(CreateFileDirectoryActivity::class.java, mapOf(
+                        CreateFileDirectoryActivity.INTENT_KEY_DIRECTORY_PATH to mFilePageInfo.getCurrentDirectoryInfo().directory.path,
+                        CreateFileDirectoryActivity.INTENT_KEY_TYPE to CreateFileDirectoryActivity.INTENT_TYPE_DIRECTORY
                     ))
                 }
                 R.id.menuFileFragmentToolbarSearch -> {
