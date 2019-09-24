@@ -1,6 +1,9 @@
 package com.creepersan.file.fragment.main
 
+import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.creepersan.file.activity.FragmentPageObserver
 import com.creepersan.file.activity.MainActivity
 import com.creepersan.file.fragment.BaseFragment

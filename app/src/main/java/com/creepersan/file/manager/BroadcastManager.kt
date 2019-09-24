@@ -6,8 +6,11 @@ import com.creepersan.file.application.FileApplication
 object BroadcastManager {
     private val context by lazy { FileApplication.getInstance() }
 
+    const val EMPTY_ACTION = ""
+
+    // 通知文件夹下面的内容发生了变化
     const val PATH_CHANGE_ACTION = "com.creepersan.file.broadcast.PATH_CHANGE"
-    const val PATH_CHANGE_KEY_PATH = "path"
+    private const val PATH_CHANGE_KEY_PATH = "path"
 
     fun notifyPathChange(path:String){
         broadcast(PATH_CHANGE_ACTION,

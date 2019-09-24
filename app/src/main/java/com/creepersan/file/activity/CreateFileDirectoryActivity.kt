@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.creepersan.file.R
+import com.creepersan.file.manager.BroadcastManager
 import com.creepersan.file.manager.ToastManager
 import kotlinx.android.synthetic.main.activity_create_file_directory.*
 import java.io.File
@@ -40,7 +41,6 @@ class CreateFileDirectoryActivity : BaseActivity() {
             finish()
         }else{
             directoryPath = intent.getStringExtra(INTENT_KEY_DIRECTORY_PATH) ?: "/"
-            Log.e("TAG", directoryPath)
         }
         // 类型
         type = intent.getStringExtra(INTENT_KEY_TYPE) ?: INTENT_TYPE_FILE
@@ -85,16 +85,12 @@ class CreateFileDirectoryActivity : BaseActivity() {
             when(type){
                 INTENT_TYPE_FILE -> {
                     if (file.createNewFile()){
-                        setResult(Activity.RESULT_OK)
-                    }else{
-                        setResult(Activity.RESULT_CANCELED)
+                        BroadcastManager.notifyPathChange(directoryPath)
                     }
                 }
                 INTENT_TYPE_DIRECTORY -> {
                     if (file.mkdirs()){
-                        setResult(Activity.RESULT_OK)
-                    }else{
-                        setResult(Activity.RESULT_CANCELED)
+                        BroadcastManager.notifyPathChange(directoryPath)
                     }
                 }
                 else -> {

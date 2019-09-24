@@ -1,6 +1,7 @@
 package com.creepersan.file.fragment.main
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ import com.creepersan.file.dialog.*
 import com.creepersan.file.extension.gone
 import com.creepersan.file.extension.visible
 import com.creepersan.file.global.GlobalFileInfoClipBoard
+import com.creepersan.file.manager.BroadcastManager
 import com.creepersan.file.manager.FormatManager
 import com.creepersan.file.manager.ResourceManager
 import com.creepersan.file.manager.ToastManager
@@ -73,6 +75,10 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
 
     override fun getIcon(): Int {
         return R.drawable.ic_directory_dark_blue
+    }
+
+    override fun getBroadcastActions(): Array<String> {
+        return arrayOf(BroadcastManager.PATH_CHANGE_ACTION)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -424,6 +430,15 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
             }
             else -> {
                 false
+            }
+        }
+    }
+
+    override fun onBroadcast(action: String, intent: Intent) {
+        when(action){
+            BroadcastManager.PATH_CHANGE_ACTION -> {
+                mFilePageInfo.refreshTop()
+                mAdapter.notifyDataSetChanged()
             }
         }
     }
