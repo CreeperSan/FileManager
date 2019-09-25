@@ -20,10 +20,7 @@ import com.creepersan.file.dialog.*
 import com.creepersan.file.extension.gone
 import com.creepersan.file.extension.visible
 import com.creepersan.file.global.GlobalFileInfoClipBoard
-import com.creepersan.file.manager.BroadcastManager
-import com.creepersan.file.manager.FormatManager
-import com.creepersan.file.manager.ResourceManager
-import com.creepersan.file.manager.ToastManager
+import com.creepersan.file.manager.*
 import kotlinx.android.synthetic.main.fragment_main_file.*
 import java.io.File
 import java.lang.RuntimeException
@@ -111,19 +108,19 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
                     mSelectMoreOperationDialog.cancel()
                     when(id){
                         DIALOG_SELECTION_COPY -> { //////////////////////////////////////////////////
-                            GlobalFileInfoClipBoard.setFileInfo(GlobalFileInfoClipBoard.ACTION_COPY, mSelectedPathFileInfoListMap.values.toList())
+                            GlobalFileInfoClipBoard.setFileInfo(GlobalFileInfoClipBoard.Action.COPY, mSelectedPathFileInfoListMap.values.toList())
                             setNotSelecting()
                         }
                         DIALOG_SELECTION_COPY_APPEND -> { //////////////////////////////////////////////////
-                            GlobalFileInfoClipBoard.addFileInfo(GlobalFileInfoClipBoard.ACTION_COPY, mSelectedPathFileInfoListMap.values.toList())
+                            GlobalFileInfoClipBoard.addFileInfo(GlobalFileInfoClipBoard.Action.COPY, mSelectedPathFileInfoListMap.values.toList())
                             setNotSelecting()
                         }
                         DIALOG_SELECTION_CUT -> { //////////////////////////////////////////////////
-                            GlobalFileInfoClipBoard.setFileInfo(GlobalFileInfoClipBoard.ACTION_CUT, mSelectedPathFileInfoListMap.values.toList())
+                            GlobalFileInfoClipBoard.setFileInfo(GlobalFileInfoClipBoard.Action.MOVE, mSelectedPathFileInfoListMap.values.toList())
                             setNotSelecting()
                         }
                         DIALOG_SELECTION_CUT_APPEND -> { //////////////////////////////////////////////////
-                            GlobalFileInfoClipBoard.addFileInfo(GlobalFileInfoClipBoard.ACTION_CUT, mSelectedPathFileInfoListMap.values.toList())
+                            GlobalFileInfoClipBoard.addFileInfo(GlobalFileInfoClipBoard.Action.MOVE, mSelectedPathFileInfoListMap.values.toList())
                             setNotSelecting()
                         }
                         DIALOG_SELECTION_PASTE -> { //////////////////////////////////////////////////
@@ -150,9 +147,9 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
                             }
                             mSimpleAlertDialog.setDialogTitle(R.string.fileFragment_dialogSimpleAlertDeleteTitle)
                             mSimpleAlertDialog.setPositiveAction(R.string.common_dialogPositive, View.OnClickListener {
-                                ToastManager.show("删除中...")
-                                setNotSelecting()
-                                mSimpleAlertDialog.cancel()
+                                AsyncIOTaskManager.execute(DeleteAsyncIOTask(mSelectedPathFileInfoListMap.values.toList())) // 提交异步删除任务
+                                setNotSelecting() // 取消选择
+                                mSimpleAlertDialog.cancel() // 关闭对话框
                             })
                             mSimpleAlertDialog.setNegativeAction(R.string.common_dialogNegative, View.OnClickListener {
                                 setNotSelecting()
@@ -354,7 +351,7 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
     override fun onClick(p0: View?) {
         when{
             isSelecting -> { // 浮动按钮是选择
-                GlobalFileInfoClipBoard.setFileInfo(GlobalFileInfoClipBoard.ACTION_COPY, mSelectedPathFileInfoListMap.values.toList())
+                GlobalFileInfoClipBoard.setFileInfo(GlobalFileInfoClipBoard.Action.COPY, mSelectedPathFileInfoListMap.values.toList())
                 setNotSelecting()
             }
             GlobalFileInfoClipBoard.isNotEmpty() -> { // 浮动按钮是粘贴
@@ -375,12 +372,12 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
                         return
                     }
                     when(copiedFileInfo.action){
-                        GlobalFileInfoClipBoard.ACTION_CUT -> {
+                        GlobalFileInfoClipBoard.Action.MOVE -> {
                             if (!sourceFile.renameTo(targetFile)){
                                 failCount += 1
                             }
                         }
-                        GlobalFileInfoClipBoard.ACTION_COPY -> {
+                        GlobalFileInfoClipBoard.Action.COPY -> {
                             try {
                                 sourceFile.copyTo(targetFile, false)
                             }catch (e:FileSystemException){
@@ -437,8 +434,10 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
     override fun onBroadcast(action: String, intent: Intent) {
         when(action){
             BroadcastManager.PATH_CHANGE_ACTION -> {
-                mFilePageInfo.refreshTop()
-                mAdapter.notifyDataSetChanged()
+                if (intent.getStringExtra(BroadcastManager.PATH_CHANGE_KEY_PATH) == mFilePageInfo.getCurrentDirectoryInfo().directory.path){
+                    mFilePageInfo.refreshTop()
+                    mAdapter.notifyDataSetChanged()
+                }
             }
         }
     }

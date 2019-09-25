@@ -1,8 +1,10 @@
 package com.creepersan.file.application
 
 import android.app.Application
+import android.os.Handler
 
 class FileApplication : Application() {
+    private lateinit var mHandler : Handler
 
     companion object{
         private lateinit var mInstance : FileApplication
@@ -16,6 +18,7 @@ class FileApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         mInstance = this
+        mHandler = Handler()
     }
 
     /**
@@ -25,4 +28,7 @@ class FileApplication : Application() {
         System.exit(0)
     }
 
+    fun runOnUIThread(runnable: Runnable){
+        mHandler.post(runnable)
+    }
 }

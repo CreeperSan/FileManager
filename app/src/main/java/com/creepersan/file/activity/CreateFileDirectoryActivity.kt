@@ -5,7 +5,10 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.creepersan.file.R
+import com.creepersan.file.bean.file.FileInfo
+import com.creepersan.file.manager.AsyncIOTaskManager
 import com.creepersan.file.manager.BroadcastManager
+import com.creepersan.file.manager.CreateAsyncIOTask
 import com.creepersan.file.manager.ToastManager
 import kotlinx.android.synthetic.main.activity_create_file_directory.*
 import java.io.File
@@ -81,22 +84,8 @@ class CreateFileDirectoryActivity : BaseActivity() {
                 ToastManager.show(R.string.createFileDirectoryActivity_hintFileAlreadyExist)
                 return@setOnClickListener
             }
-            // 创建文件
-            when(type){
-                INTENT_TYPE_FILE -> {
-                    if (file.createNewFile()){
-                        BroadcastManager.notifyPathChange(directoryPath)
-                    }
-                }
-                INTENT_TYPE_DIRECTORY -> {
-                    if (file.mkdirs()){
-                        BroadcastManager.notifyPathChange(directoryPath)
-                    }
-                }
-                else -> {
-                    setResult(Activity.RESULT_CANCELED)
-                }
-            }
+            // 提交异步任务
+            AsyncIOTaskManager.execute(CreateAsyncIOTask(listOf(FileInfo("$directoryPath/$fileName", type == INTENT_TYPE_DIRECTORY))))
             finish()
         }
     }

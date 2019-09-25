@@ -41,11 +41,11 @@ class MainRightDrawerRecyclerViewAdapter : RecyclerView.Adapter<MainRightDrawerI
         holder.setTitle(fileInfo.fullName)
         holder.setPath(fileInfo.path)
         when(copiedFileInfo.action){
-            GlobalFileInfoClipBoard.ACTION_CUT -> {
+            GlobalFileInfoClipBoard.Action.MOVE -> {
                 holder.showCover()
                 holder.setCoverIcon(R.drawable.ic_content_cut)
             }
-            GlobalFileInfoClipBoard.ACTION_COPY -> {
+            GlobalFileInfoClipBoard.Action.COPY -> {
                 holder.hideCover()
             }
             else -> {

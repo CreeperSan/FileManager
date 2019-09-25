@@ -28,6 +28,10 @@ class FileInfo{
         return FileInfo(File(path).parentFile!!)
     }
 
+    constructor(path: String, isDirectory:Boolean):this (path){
+        this.path = path
+        this.isDirectory = isDirectory
+    } // 用于创建不存在的文件
     constructor(path: String) : this(File(path))
     constructor(file: File){
         this.path = file.path

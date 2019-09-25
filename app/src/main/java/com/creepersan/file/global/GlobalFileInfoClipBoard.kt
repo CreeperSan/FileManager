@@ -4,8 +4,10 @@ import com.creepersan.file.bean.file.FileInfo
 import java.util.*
 
 object GlobalFileInfoClipBoard {
-    const val ACTION_COPY = 0
-    const val ACTION_CUT = 1
+    enum class Action{
+        COPY,
+        MOVE
+    }
 
     private val mSubscriberList = ArrayList<GlobalClipBoardObserver>()
     private val mFileInfoClipBoardList = ArrayList<CopiedFileInfo>()
@@ -50,11 +52,11 @@ object GlobalFileInfoClipBoard {
         removeFileInfo(fileInfo.toList())
     }
 
-    fun addFileInfo(action: Int, vararg fileInfo:FileInfo){
+    fun addFileInfo(action: Action, vararg fileInfo:FileInfo){
         addFileInfo(action, fileInfo.toList())
     }
 
-    fun setFileInfo(action: Int, vararg fileInfo:FileInfo){
+    fun setFileInfo(action: Action, vararg fileInfo:FileInfo){
         setFileInfo(action, fileInfo.toList())
     }
 
@@ -63,7 +65,7 @@ object GlobalFileInfoClipBoard {
         notifyFileInfoListChange()
     }
 
-    fun addFileInfo(action:Int, fileInfoList:List<FileInfo>){
+    fun addFileInfo(action:Action, fileInfoList:List<FileInfo>){
         var hasSameFileInfo : Boolean
         fileInfoList.forEach { needToAddFileInfo ->
             hasSameFileInfo = false
@@ -82,7 +84,7 @@ object GlobalFileInfoClipBoard {
         notifyFileInfoListChange()
     }
 
-    fun setFileInfo(action:Int, fileInfo:List<FileInfo>){
+    fun setFileInfo(action:Action, fileInfo:List<FileInfo>){
         mFileInfoClipBoardList.clear()
         fileInfo.forEach{ needToAddFileInfo ->
             mFileInfoClipBoardList.add(CopiedFileInfo(needToAddFileInfo, action))
@@ -125,4 +127,4 @@ object GlobalFileInfoClipBoard {
 
 }
 
-data class CopiedFileInfo(var fileInfo:FileInfo, var action:Int)
+data class CopiedFileInfo(var fileInfo:FileInfo, var action:GlobalFileInfoClipBoard.Action)
