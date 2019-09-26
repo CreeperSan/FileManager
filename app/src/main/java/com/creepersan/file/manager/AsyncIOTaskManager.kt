@@ -4,6 +4,7 @@ import android.util.Log
 import com.creepersan.file.bean.file.FileInfo
 import com.creepersan.file.global.GlobalFileInfoClipBoard
 import java.io.File
+import java.lang.Exception
 import java.util.HashSet
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
@@ -65,7 +66,7 @@ class DeleteAsyncIOTask(val actionFileList:List<FileInfo>) : BaseAsyncIOTask(){
     override val type: Int = TYPE_DELETE
 }
 
-class RenameAsyncIOTask(val actionFileList: List<FileInfo>, extensions:String) : BaseAsyncIOTask(){
+class RenameAsyncIOTask(val actionFileList: List<FileInfo>, val newFileName:String, val extensions:String) : BaseAsyncIOTask(){
     override val type: Int = TYPE_RENAME
 }
 
@@ -84,13 +85,34 @@ private class IOCopyMoveHandelRunnable(val task:CopyMoveAsyncIOTask) : Runnable{
         task.actionFileList.forEach { copyMoveFileInfo ->
             val scrFile = File(copyMoveFileInfo.fileInfo.path)
             val targetFile = File(copyMoveFileInfo.targetFileInfo.path)
-            val action = copyMoveFileInfo.action
-            when(action){
+            when(copyMoveFileInfo.action){
                 GlobalFileInfoClipBoard.Action.MOVE -> { // 移动
-
+                    // 防止重复
+                    if (!scrFile.exists() || targetFile.exists()){
+                        return@forEach
+                    }
+                    // 移动
+                    try {
+                        if (scrFile.renameTo(targetFile)){
+                            tmpSuccessParentPathSet.add(scrFile.parentFile?.path ?: "")
+                            tmpSuccessParentPathSet.add(targetFile.parentFile?.path ?: "")
+                        }
+                    }catch (e:Exception){
+                        return@forEach
+                    }
                 }
                 GlobalFileInfoClipBoard.Action.COPY -> { // 复制
-
+                    // 防止重复存在
+                    if (!scrFile.exists() || targetFile.exists()){
+                        return@forEach
+                    }
+                    // 复制
+                    try {
+                        scrFile.copyTo(targetFile)
+                        tmpSuccessParentPathSet.add(targetFile.parentFile?.path ?: "")
+                    }catch (e:Exception){
+                        return@forEach
+                    }
                 }
             }
         }

@@ -124,7 +124,7 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
                             setNotSelecting()
                         }
                         DIALOG_SELECTION_PASTE -> { //////////////////////////////////////////////////
-
+                            pasteFileToThisDirectory()
                         }
                         DIALOG_SELECTION_DELETE -> { //////////////////////////////////////////////////
                             when{
@@ -355,52 +355,7 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
                 setNotSelecting()
             }
             GlobalFileInfoClipBoard.isNotEmpty() -> { // 浮动按钮是粘贴
-                val copiedFileInfoList = GlobalFileInfoClipBoard.getCopiedFileInfoList()
-                var failCount = 0
-                val allCount = copiedFileInfoList.size
-                    copiedFileInfoList.forEach { copiedFileInfo ->
-                    val sourceFileInfo = copiedFileInfo.fileInfo
-                    val targetFileInfo = FileInfo("${mFilePageInfo.getCurrentDirectoryInfo().directory.path}/${sourceFileInfo.fullName}")
-                    val sourceFile = File(sourceFileInfo.path)
-                    val targetFile = File(targetFileInfo.path)
-                    if (sourceFileInfo.path == targetFileInfo.path){ // 同一个文件，直接跳过
-                        failCount += 1
-                        return
-                    }
-                    if (targetFileInfo.isExist){ // 文件已经存在，暂时是直接跳过
-                        failCount += 1
-                        return
-                    }
-                    when(copiedFileInfo.action){
-                        GlobalFileInfoClipBoard.Action.MOVE -> {
-                            if (!sourceFile.renameTo(targetFile)){
-                                failCount += 1
-                            }
-                        }
-                        GlobalFileInfoClipBoard.Action.COPY -> {
-                            try {
-                                sourceFile.copyTo(targetFile, false)
-                            }catch (e:FileSystemException){
-                                failCount += 1
-                            }
-                        }
-                    }
-                }
-                GlobalFileInfoClipBoard.clearFileInfo()
-                when{
-                    failCount == 0 -> {
-                        ToastManager.show("操作成功")
-                    }
-                    failCount in 1 until allCount -> {
-                        ToastManager.show("操作完成，部分操作失败")
-                    }
-                    failCount >= failCount -> {
-                        ToastManager.show("操作失败")
-                    }
-                    else -> {
-                        ToastManager.show("操作完成")
-                    }
-                }
+                pasteFileToThisDirectory()
             }
         }
     }
@@ -436,13 +391,29 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
             BroadcastManager.PATH_CHANGE_ACTION -> {
                 if (intent.getStringExtra(BroadcastManager.PATH_CHANGE_KEY_PATH) == mFilePageInfo.getCurrentDirectoryInfo().directory.path){
                     mFilePageInfo.refreshTop()
+                    refreshContentPager()
                     mAdapter.notifyDataSetChanged()
                 }
             }
         }
     }
 
-
+    /**
+     * 从文件的剪切板 粘贴/移动 文件到当前文件夹
+     */
+    private fun pasteFileToThisDirectory(){
+        val list = ArrayList<CopyMoveAsyncIOTask.CopyMoveFileInfo>();
+        GlobalFileInfoClipBoard.getCopiedFileInfoList().forEach {  copiedFileInfo ->
+            list.add(
+                CopyMoveAsyncIOTask.CopyMoveFileInfo(
+                    copiedFileInfo.fileInfo,
+                    copiedFileInfo.action,
+                    FileInfo("${mFilePageInfo.getCurrentDirectoryInfo().directory.path}/${copiedFileInfo.fileInfo.fullName}")
+                ))
+        }
+        GlobalFileInfoClipBoard.clearFileInfo()
+        AsyncIOTaskManager.execute(CopyMoveAsyncIOTask(list))
+    }
 
 
 
@@ -556,6 +527,11 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
         }
     }
 
+    /**
+     * 刷新
+     * 1. 是否显示空文件夹还是显示文件夹列表
+     * 2. 工具栏左边图标为后退还是关闭
+     */
     private fun refreshContentPager(){
         val count = mFilePageInfo.getCurrentPageFileCount()
         if (count <= 0){
