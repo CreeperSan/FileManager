@@ -172,7 +172,29 @@ private class IOCreateHandelRunnable(val task:CreateAsyncIOTask) : Runnable{
 
 private class IORenameHandelRunnable(val task:RenameAsyncIOTask) : Runnable{
     override fun run() {
-
+        val tmpSuccessParentPathSet = HashSet<String>()
+        // 重命名如无意外都是同一目录下的文件
+        when{
+            task.newFileName.isEmpty() && task.extensions.isEmpty() -> { // 没有重命名
+                
+            }
+            else -> { // 换新拓展名
+                task.actionFileList.forEach {  fileInfo ->
+                    val file = File(fileInfo.path)
+                    if (!file.exists()) return@forEach
+                    val fileNewName = if (task.newFileName.isEmpty()) file.nameWithoutExtension else task.newFileName  // 文件名
+                    val fileExtensionStr = if (task.extensions.isEmpty()) file.extension else task.extensions // 拓展名
+                    val targetFile = File("${file.parentFile.path}/${fileNewName}${if (fileExtensionStr.isNotEmpty()){ ".$fileExtensionStr" } else { "" }}")
+                    if (targetFile.exists()) return@forEach
+                    file.renameTo(targetFile)
+                    tmpSuccessParentPathSet.add(file.parentFile.path)
+                }
+            }
+        }
+        // 通知
+        tmpSuccessParentPathSet.forEach {  parentPath ->
+            BroadcastManager.notifyPathChange(parentPath)
+        }
     }
 }
 
