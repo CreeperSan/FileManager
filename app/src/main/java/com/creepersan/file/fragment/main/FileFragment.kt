@@ -331,13 +331,13 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
     }
 
     override fun getFloatingActionButtonIcon(): Int {
-        if (isSelecting){
-            return R.drawable.ic_content_copy
-        }else if (GlobalFileInfoClipBoard.isNotEmpty()){
-            return R.drawable.ic_content_paste
-        }else {
+//        if (isSelecting){
+//            return R.drawable.ic_content_copy
+//        }else if (GlobalFileInfoClipBoard.isNotEmpty()){
+//            return R.drawable.ic_content_paste
+//        }else {
             return R.drawable.ic_more_dot_vertical
-        }
+//        }
     }
 
     override fun getFloatingActionButtonClickListener(): View.OnClickListener? {
@@ -349,6 +349,10 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
     }
 
     override fun onClick(p0: View?) {
+        mSelectMoreOperationDialog.show()
+    }
+
+    override fun onLongClick(p0: View?): Boolean {
         when{
             isSelecting -> { // 浮动按钮是选择
                 GlobalFileInfoClipBoard.setFileInfo(GlobalFileInfoClipBoard.Action.COPY, mSelectedPathFileInfoListMap.values.toList())
@@ -358,10 +362,6 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
                 pasteFileToThisDirectory()
             }
         }
-    }
-
-    override fun onLongClick(p0: View?): Boolean {
-        mSelectMoreOperationDialog.show()
         return true
     }
 
@@ -468,6 +468,7 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
                 holder is DirectoryViewHolder -> {
                     holder.setTitle(fileInfo.fullName)
                     holder.setInfo("${fileInfo.size} 项  ${FormatManager.getFormatTime(fileInfo.modifyTime)}")
+                    holder.setIsHidden(fileInfo.isHidden)
                     holder.setOnClickListener(View.OnClickListener {
                         if (isSelecting){
                             setFileInfoToggleSelect(fileInfo)
@@ -499,6 +500,7 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
                 holder is FileViewHolder -> {
                     holder.setTitle(fileInfo.fullName)
                     holder.setInfo("${FormatManager.getFormatSize(fileInfo.size)}  ${FormatManager.getFormatTime(fileInfo.modifyTime)}")
+                    holder.setIsHidden(fileInfo.isHidden)
                     holder.setOnClickListener(View.OnClickListener {
                         if (isSelecting){
                             setFileInfoToggleSelect(fileInfo)
@@ -553,6 +555,7 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
         private val iconImageView = itemView.findViewById<ImageView>(R.id.itemFileDirectoryIcon)
         private val titleTextView = itemView.findViewById<TextView>(R.id.itemFileDirectoryTitle)
         private val infoTextView = itemView.findViewById<TextView>(R.id.itemFileDirectoryInfo)
+        private val extraTextView = itemView.findViewById<TextView>(R.id.itemFileDirectoryExtraText)
 
         fun setIcon(resID:Int){
             iconImageView.setImageResource(resID)
@@ -568,6 +571,14 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
 
         fun setInfo(info:String){
             infoTextView.text = info
+        }
+
+        fun setIsHidden(isHidden:Boolean){
+            if (isHidden){
+                extraTextView.visible()
+            }else{
+                extraTextView.gone()
+            }
         }
 
         fun setOnClickListener(onClickListener:View.OnClickListener){
@@ -587,6 +598,7 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
         private val iconImageView = itemView.findViewById<ImageView>(R.id.itemFileFileIcon)
         private val titleTextView = itemView.findViewById<TextView>(R.id.itemFileFileFileName)
         private val infoTextView = itemView.findViewById<TextView>(R.id.itemFileFileFileDescription)
+        private val extraTextView = itemView.findViewById<TextView>(R.id.itemFileFileExtraText)
 
         fun setIcon(resID:Int){
             iconImageView.setImageResource(resID)
@@ -602,6 +614,14 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
 
         fun setInfo(info:String){
             infoTextView.text = info
+        }
+
+        fun setIsHidden(isHidden:Boolean){
+            if (isHidden){
+                extraTextView.visible()
+            }else{
+                extraTextView.gone()
+            }
         }
 
         fun setOnClickListener(onClickListener:View.OnClickListener){

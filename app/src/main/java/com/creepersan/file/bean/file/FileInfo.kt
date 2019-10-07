@@ -23,6 +23,7 @@ class FileInfo{
         private set
     var nameWithoutExtension = ""
         private set
+    var isHidden = false
 
     fun getParentFileInfo():FileInfo{
         return FileInfo(File(path).parentFile!!)
@@ -41,6 +42,7 @@ class FileInfo{
         this.nameWithoutExtension = file.nameWithoutExtension
         this.modifyTime = file.lastModified()
         this.isExist = file.exists()
+        this.isHidden = file.isHidden
         this.isDirectory = file.isDirectory
         this.size = when{
             !this.isExist -> 0L

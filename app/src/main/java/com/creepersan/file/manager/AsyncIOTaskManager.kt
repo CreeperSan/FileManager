@@ -171,14 +171,58 @@ private class IOCreateHandelRunnable(val task:CreateAsyncIOTask) : Runnable{
 }
 
 private class IORenameHandelRunnable(val task:RenameAsyncIOTask) : Runnable{
+    fun getExtraString(value:String?, default:String) : String{
+        return if (value?.isNotEmpty() == true){
+            value
+        }else{
+            default
+        }
+    }
+
+    fun renameFile(file:File, fileName:String, fileExtension:String){
+        val targetFile = File("${file.parentFile?.path ?: "/"}${if (fileName.isEmpty()){"."}else{fileName}}${fileExtension}")
+        if (!targetFile.exists()){
+            file.renameTo(targetFile)
+        }
+    }
+
     override fun run() {
         val tmpSuccessParentPathSet = HashSet<String>()
+        val fileInfoList = task.actionFileList
         // 重命名如无意外都是同一目录下的文件
         when{
-            task.newFileName.isEmpty() && task.extensions.isEmpty() -> { // 没有重命名
-                
+            fileInfoList.isEmpty() -> { // 没有选择文件
+                // 什么都不做
             }
-            else -> { // 换新拓展名
+            task.newFileName.isEmpty() && task.extensions.isEmpty() -> { // 没有重命名
+                // 什么都不做
+            }
+            else -> {
+                if (fileInfoList.size <= 1){ // 如果是一个文件
+                    val fileInfo = fileInfoList[0]
+                    val file = File(fileInfo.path)
+                    if (file.exists()){ // 文件存在
+                        tmpSuccessParentPathSet.add(file.parent ?: "")
+                        val extensionName = getExtraString(task.extensions, file.extension)
+                        val fileName = getExtraString(task.newFileName, file.nameWithoutExtension)
+                        renameFile(file, fileName, extensionName)
+                    }else{ // 文件不存在
+                        // 什么也不做
+                    }
+                }else{ // 如果是多个文件
+                    fileInfoList.forEachIndexed{ index, fileInfo ->
+                        val file = File(fileInfo.path)
+                        tmpSuccessParentPathSet.add(file.parent ?: "")
+                        if (file.exists()){ // 文件存在
+                            val extensionName = getExtraString(task.extensions, file.extension)
+                            val fileName = getExtraString(task.newFileName, file.nameWithoutExtension)
+                            renameFile(file, fileName, extensionName)
+                        }else{ // 文件不存在
+                            // 什么也不做
+                        }
+                    }
+                }
+                // 如果是多个文件
                 task.actionFileList.forEach {  fileInfo ->
                     val file = File(fileInfo.path)
                     if (!file.exists()) return@forEach
