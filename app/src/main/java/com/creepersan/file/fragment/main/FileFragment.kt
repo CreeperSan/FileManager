@@ -555,7 +555,7 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
         private val iconImageView = itemView.findViewById<ImageView>(R.id.itemFileDirectoryIcon)
         private val titleTextView = itemView.findViewById<TextView>(R.id.itemFileDirectoryTitle)
         private val infoTextView = itemView.findViewById<TextView>(R.id.itemFileDirectoryInfo)
-        private val extraTextView = itemView.findViewById<TextView>(R.id.itemFileDirectoryExtraText)
+        private val extraTextView = itemView.findViewById<ImageView>(R.id.itemFileDirectoryExtraText)
 
         fun setIcon(resID:Int){
             iconImageView.setImageResource(resID)
@@ -598,7 +598,7 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
         private val iconImageView = itemView.findViewById<ImageView>(R.id.itemFileFileIcon)
         private val titleTextView = itemView.findViewById<TextView>(R.id.itemFileFileFileName)
         private val infoTextView = itemView.findViewById<TextView>(R.id.itemFileFileFileDescription)
-        private val extraTextView = itemView.findViewById<TextView>(R.id.itemFileFileExtraText)
+        private val extraTextView = itemView.findViewById<ImageView>(R.id.itemFileFileExtraText)
 
         fun setIcon(resID:Int){
             iconImageView.setImageResource(resID)

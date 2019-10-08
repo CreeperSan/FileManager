@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_margin="8dp"
         android:padding="12dp"
         android:elevation="2dp"
@@ -30,7 +31,7 @@
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Dribbble" />
+            tools:text="Dribbble" />
 
     <TextView
             app:layout_constraintStart_toStartOf="parent"
@@ -43,22 +44,15 @@
             android:layout_marginTop="2dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="18.02.2019" />
+            tools:text="18.02.2019" />
 
-    <TextView
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:background="@drawable/bg_file_item_extra_text"
+    <ImageView
             android:id="@+id/itemFileDirectoryExtraText"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/itemFileDirectoryIcon"
-            app:layout_constraintBottom_toBottomOf="@id/itemFileDirectoryIcon"
-            android:textSize="10sp"
-            android:textColor="#66ccff"
-            android:text="隐藏"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:alpha="0.1"
+            android:src="@drawable/ic_eye_black"
+            android:layout_width="48dp"
+            android:layout_height="48dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
