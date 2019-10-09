@@ -75,6 +75,8 @@
     <string name="settingFragment_title">设置</string>
 
     <string name="aboutFragment_title">关于</string>
+    <string name="aboutFragment_description">一个自用的简单文件管理器</string>
+    <string name="aboutFragment_versionName">%s（%s）</string>
     
     <string name="exitFragment_title">退出</string>
     
