@@ -87,4 +87,14 @@ class PageHintView : LinearLayout{
         invalidate()
     }
 
+    /**
+     * 设置显示为加载中
+     */
+    fun showAsLoading(hintText:String){
+        mImageView.gone()
+        mHintTextView.text = hintText
+        mButtonTextString = ""
+        invalidate()
+    }
+
 }
