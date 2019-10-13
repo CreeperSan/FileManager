@@ -17,7 +17,7 @@ object AsyncTaskManager{
                     asyncTask.onRunOnUI(response)
                 })
             }
-        }.run()
+        }.start()
     }
 
 }

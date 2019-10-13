@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_height="84dp">
+
+    <ImageView
+            tools:src="@drawable/ic_directory_dark_blue"
+            android:id="@+id/itemApplicationFragmentApplicationIcon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"/>
+
+    <TextView
+            android:maxLines="1"
+            android:lines="1"
+            android:singleLine="true"
+            tools:text="文件管理器"
+            android:layout_marginTop="6dp"
+            android:id="@+id/itemApplicationFragmentApplication"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+</LinearLayout>

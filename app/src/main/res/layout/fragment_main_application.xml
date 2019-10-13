@@ -21,6 +21,7 @@
             android:layout_height="0dp"/>
 
     <com.creepersan.file.view.common.PageHintView
+            app:hintText="loading"
             android:id="@+id/mainApplicationHintView"
             app:layout_constraintTop_toBottomOf="@id/mainApplicationToolbar"
             app:layout_constraintBottom_toBottomOf="parent"
