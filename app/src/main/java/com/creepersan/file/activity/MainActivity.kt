@@ -10,6 +10,7 @@ import com.creepersan.file.adapter.MainFragmentPagerAdapter
 import com.creepersan.file.adapter.MainLeftDrawerRecyclerViewAdapter
 import com.creepersan.file.adapter.MainRightDrawerRecyclerViewAdapter
 import com.creepersan.file.application.FileApplication
+import com.creepersan.file.fragment.main.ApplicationFragment
 import com.creepersan.file.fragment.main.BaseMainFragment
 import com.creepersan.file.fragment.main.FileFragment
 import com.creepersan.file.global.GlobalFileInfoClipBoard
@@ -44,8 +45,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     private fun initFragment(){
         mFragmentPageObserver.addFragment(
             FileFragment(mNotifier, mFragmentPageObserver),
-            FileFragment(mNotifier, mFragmentPageObserver),
-            FileFragment(mNotifier, mFragmentPageObserver)
+            ApplicationFragment(mNotifier, mFragmentPageObserver)
         )
     }
 

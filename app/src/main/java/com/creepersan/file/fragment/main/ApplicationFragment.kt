@@ -1,11 +1,10 @@
 package com.creepersan.file.fragment.main
 
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
@@ -15,6 +14,10 @@ import com.creepersan.file.activity.FragmentPageObserver
 import com.creepersan.file.activity.MainActivity
 import com.creepersan.file.bean.file.ApplicationInfo
 import com.creepersan.file.common.view_holder.BaseViewHolder
+import com.creepersan.file.dialog.BaseBottomSelectItemClickListener
+import com.creepersan.file.dialog.BaseBottomSelectionDialog
+import com.creepersan.file.dialog.BaseBottomSelectionDialogItem
+import com.creepersan.file.dialog.BaseDialog
 import com.creepersan.file.extension.gone
 import com.creepersan.file.extension.visible
 import com.creepersan.file.manager.AsyncTask
@@ -29,8 +32,16 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
 
     override fun getLayoutID(): Int = R.layout.fragment_main_application
 
+    companion object{
+        const val OPERATION_DETAIL = 0
+        const val OPERATION_OPEN = 1
+        const val OPERATION_BACKUP = 2
+        const val OPERATION_UNINSTALL = 3
+    }
+
     private val mApplicationInfoList = ArrayList<ApplicationInfo>()
     private val mAdapter = ApplicationAdapter()
+    private var mApplicationDetailDialog : BaseBottomSelectionDialog? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -76,6 +87,34 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
         mainApplicationRecyclerView.adapter = mAdapter
     }
 
+    private fun getBottomSheetDialog():BaseBottomSelectionDialog{
+        if (mApplicationDetailDialog == null){
+            mApplicationDetailDialog = BaseBottomSelectionDialog(activity()).setItemList(arrayListOf(
+                BaseBottomSelectionDialogItem(OPERATION_OPEN, R.drawable.ic_exit, "打开"),
+                BaseBottomSelectionDialogItem(OPERATION_DETAIL, R.drawable.ic_info_outline, "详情"),
+                BaseBottomSelectionDialogItem(OPERATION_BACKUP, R.drawable.ic_backup, "备份"),
+                BaseBottomSelectionDialogItem(OPERATION_UNINSTALL, R.drawable.ic_delete, "卸载", titleTextColor = Color.RED, iconTintColor = Color.RED)
+            )).setItemClickListener(object : BaseBottomSelectItemClickListener{
+                override fun onItemClick(id: Int, item: BaseBottomSelectionDialogItem, dialog: BaseDialog) {
+                    when(id){
+                        OPERATION_OPEN -> {
+
+                        }
+                        OPERATION_DETAIL -> {
+
+                        }
+                        OPERATION_BACKUP -> {
+
+                        }
+                        OPERATION_UNINSTALL -> {
+
+                        }
+                    }
+                }
+            })
+        }
+        return mApplicationDetailDialog!!
+    }
 
 
 
@@ -92,6 +131,12 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
             val applicationInfo = mApplicationInfoList[position]
             holder.setName(applicationInfo.name)
             holder.setIcon(applicationInfo.icon)
+            holder.setOnClickListener(View.OnClickListener {
+                getBottomSheetDialog().showDialog()
+            })
+            holder.setOnLongClickListener(View.OnLongClickListener {
+                true
+            })
         }
 
     }
@@ -107,6 +152,15 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
         fun setIcon(drawable:Drawable){
             iconView.setImageDrawable(drawable)
         }
+
+        fun setOnClickListener(listener: View.OnClickListener){
+            itemView.setOnClickListener(listener)
+        }
+
+        fun setOnLongClickListener(listener: View.OnLongClickListener){
+            itemView.setOnLongClickListener(listener)
+        }
+
     }
 
 }
