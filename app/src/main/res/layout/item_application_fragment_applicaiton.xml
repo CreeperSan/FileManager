@@ -2,11 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="6dp"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:gravity="center"
-        android:layout_height="84dp">
+        android:layout_height="wrap_content">
 
     <ImageView
             tools:src="@drawable/ic_directory_dark_blue"

@@ -14,16 +14,16 @@ import com.creepersan.file.activity.FragmentPageObserver
 import com.creepersan.file.activity.MainActivity
 import com.creepersan.file.bean.file.ApplicationInfo
 import com.creepersan.file.common.view_holder.BaseViewHolder
-import com.creepersan.file.dialog.BaseBottomSelectItemClickListener
-import com.creepersan.file.dialog.BaseBottomSelectionDialog
-import com.creepersan.file.dialog.BaseBottomSelectionDialogItem
-import com.creepersan.file.dialog.BaseDialog
+import com.creepersan.file.dialog.*
 import com.creepersan.file.extension.gone
 import com.creepersan.file.extension.visible
+import com.creepersan.file.manager.ApplicationManager
 import com.creepersan.file.manager.AsyncTask
 import com.creepersan.file.manager.AsyncTaskManager
 import com.creepersan.file.manager.ResourceManager
 import kotlinx.android.synthetic.main.fragment_main_application.*
+import java.lang.ref.WeakReference
+import java.util.HashMap
 
 class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListObserver: FragmentPageObserver) : BaseMainFragment(activityNotify, fragmentListObserver){
     override fun getName(): String = ResourceManager.getString(R.string.applicationFragment_title)
@@ -39,9 +39,13 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
         const val OPERATION_UNINSTALL = 3
     }
 
+    private var mIsMultiSelectMode = false
     private val mApplicationInfoList = ArrayList<ApplicationInfo>()
     private val mAdapter = ApplicationAdapter()
-    private var mApplicationDetailDialog : BaseBottomSelectionDialog? = null
+    private var mApplicationMoreOperationDialog : BaseBottomSelectionDialog? = null
+    private var mApplicationDetailDialog : ApplicationDetailDialog? = null
+    private var mSelectApplicationInfoMap = HashMap<String, ApplicationInfo>()
+    private var mTmpClickApplicationInfoReference = WeakReference<ApplicationInfo>(null)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -88,34 +92,48 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
     }
 
     private fun getBottomSheetDialog():BaseBottomSelectionDialog{
-        if (mApplicationDetailDialog == null){
-            mApplicationDetailDialog = BaseBottomSelectionDialog(activity()).setItemList(arrayListOf(
+        if (mApplicationMoreOperationDialog == null){
+            mApplicationMoreOperationDialog = BaseBottomSelectionDialog(activity()).setItemList(arrayListOf(
                 BaseBottomSelectionDialogItem(OPERATION_OPEN, R.drawable.ic_exit, "打开"),
                 BaseBottomSelectionDialogItem(OPERATION_DETAIL, R.drawable.ic_info_outline, "详情"),
                 BaseBottomSelectionDialogItem(OPERATION_BACKUP, R.drawable.ic_backup, "备份"),
                 BaseBottomSelectionDialogItem(OPERATION_UNINSTALL, R.drawable.ic_delete, "卸载", titleTextColor = Color.RED, iconTintColor = Color.RED)
             )).setItemClickListener(object : BaseBottomSelectItemClickListener{
                 override fun onItemClick(id: Int, item: BaseBottomSelectionDialogItem, dialog: BaseDialog) {
+                    val applicationInfo = mTmpClickApplicationInfoReference.get() ?: return
                     when(id){
                         OPERATION_OPEN -> {
-
+                            ApplicationManager.openApplication(applicationInfo) { e ->
+                                showToast("此应用不支持打开")
+                            }
+                            getBottomSheetDialog().closeDialog()
                         }
                         OPERATION_DETAIL -> {
-
+                            getDetailDialog(applicationInfo).show()
+                            getBottomSheetDialog().closeDialog()
                         }
                         OPERATION_BACKUP -> {
-
+                            getBottomSheetDialog().closeDialog()
                         }
                         OPERATION_UNINSTALL -> {
-
+                            getBottomSheetDialog().closeDialog()
                         }
                     }
                 }
             })
         }
-        return mApplicationDetailDialog!!
+        return mApplicationMoreOperationDialog!!
     }
 
+    private fun getDetailDialog(info:ApplicationInfo? = null):ApplicationDetailDialog{
+        if (mApplicationDetailDialog == null){
+            mApplicationDetailDialog = ApplicationDetailDialog(activity())
+        }
+        info?.apply {
+            mApplicationDetailDialog?.setApplicationInfo(this)
+        }
+        return mApplicationDetailDialog!!
+    }
 
 
     private inner class ApplicationAdapter : RecyclerView.Adapter<ApplicationViewHolder>(){
@@ -132,11 +150,13 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
             holder.setName(applicationInfo.name)
             holder.setIcon(applicationInfo.icon)
             holder.setOnClickListener(View.OnClickListener {
+                mTmpClickApplicationInfoReference = WeakReference(applicationInfo)
                 getBottomSheetDialog().showDialog()
             })
             holder.setOnLongClickListener(View.OnLongClickListener {
                 true
             })
+
         }
 
     }

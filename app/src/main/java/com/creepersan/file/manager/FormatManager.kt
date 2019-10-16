@@ -6,6 +6,7 @@ import java.util.*
 
 object FormatManager {
     private val timeFormatter = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
+    private val fullTimeFormatter = SimpleDateFormat("yyyy/MM/dd HH:mm:SS", Locale.getDefault())
     private val decimalFormatter = DecimalFormat("#0.00")
 
     const val FILE_SIZE_UNIT_AUTO = 0
@@ -18,6 +19,10 @@ object FormatManager {
     // 格式为 YYYY/MM/dd
     fun getFormatTime(time:Long):String{
         return timeFormatter.format(time)
+    }
+
+    fun getFormatTimeFull(time:Long):String{
+        return fullTimeFormatter.format(time)
     }
 
     fun getFormatSize(size:Long, unit:Int= FILE_SIZE_UNIT_AUTO):String{
