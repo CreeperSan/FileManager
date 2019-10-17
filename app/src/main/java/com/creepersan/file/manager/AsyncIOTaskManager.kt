@@ -106,6 +106,16 @@ private class IOCopyMoveHandelRunnable(val task:CopyMoveAsyncIOTask) : Runnable{
                     if (!scrFile.exists() || targetFile.exists()){
                         return@forEach
                     }
+                    // 防止文件夹不存在
+                    val targetParentDirectory = targetFile.parentFile ?: return@forEach
+                    if (targetParentDirectory.exists() && targetParentDirectory.isFile){
+                        return@forEach
+                    }
+                    if (!targetParentDirectory.exists()){
+                        if (!targetParentDirectory.mkdirs()){
+                            return@forEach
+                        }
+                    }
                     // 复制
                     try {
                         scrFile.copyTo(targetFile)

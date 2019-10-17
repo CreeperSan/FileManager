@@ -24,87 +24,18 @@ object FileManager {
         return FileInfo(Environment.getExternalStorageDirectory())
     }
 
+    fun getFileManagerApplicationFileInfo():FileInfo{
+        return FileInfo("${getExternalStoragePath()}/FileManager")
+    }
+
     fun getRootPath():String{
         return "/";
     }
 
-    /**
-     * 重命名
-     * 重命名不会移动文件，新的命名文件也只是只能局限在当前目录下
-     * @param fileInfo 源文件
-     * @param name 新的文件名
-     */
-    fun rename(fileInfo:FileInfo, name:String):Int{
-        // 检查文件名
-        if (name.contains("/")){
-            return STATE_ERROR_INVALID_FILE_NAME
-        }
-        // 尝试重命名
-        val file = File(fileInfo.path)
-        if (file.exists()){
-            val newFile = File("${File(fileInfo.path).parent}/$name")
-            if (newFile.exists()){
-                return STATE_ERROR_ALREADY_EXIST
-            }
-            return if (file.renameTo(newFile)){
-                STATE_SUCCESS
-            }else{
-                STATE_ERROR
-            }
-        }else{
-            return STATE_ERROR_NOT_EXIST
-        }
+    fun getBackupApkDirectoryFileInfo():FileInfo{
+        return FileInfo("${getFileManagerApplicationFileInfo().path}/backup")
     }
 
-    /**
-     * 删除文件
-     */
-    fun delete(fileInfo:FileInfo):Int{
-        val tmpFile = File(fileInfo.path)
-        if (tmpFile.exists()){
-            return if(tmpFile.delete()){
-                STATE_SUCCESS
-            }else{
-                STATE_ERROR
-            }
-        }else{
-            return STATE_ERROR_NOT_EXIST
-        }
-    }
-
-    /**
-     * 创建文件
-     */
-    fun create(fileInfo: FileInfo):Int{
-        val tmpFile = File(fileInfo.path)
-        if (tmpFile.exists()){
-            return STATE_SUCCESS
-        }else{
-            if (fileInfo.isDirectory){
-                return if (tmpFile.mkdirs()){
-                    STATE_SUCCESS
-                }else{
-                    STATE_ERROR
-                }
-            }else{
-                return if (tmpFile.createNewFile()){
-                    STATE_SUCCESS
-                }else{
-                    STATE_ERROR
-                }
-            }
-        }
-    }
-
-
-
-    fun copy(parentPath:String, override:Boolean=false):Int{
-        return this.copy(FileInfo(parentPath), override)
-    }
-
-    fun copy(parentFolder:FileInfo, override:Boolean=false):Int{
-        return this.moveAction(parentFolder, override, false)
-    }
 
     private fun moveAction(parentDirectory:FileInfo, override: Boolean=false, isMove:Boolean):Int{
         val newFile = File(parentDirectory.getParentFileInfo().path)
@@ -146,14 +77,6 @@ object FileManager {
         }
     }
 
-
-    fun move(parentPath:String, override:Boolean=false):Int{
-        return this.move(FileInfo(parentPath), override)
-    }
-
-    fun move(parentFolder:FileInfo, override:Boolean=false):Int{
-        return this.moveAction(parentFolder, override, true)
-    }
 
     fun listFileInfo(fileInfo:FileInfo): ArrayList<FileInfo> {
         val resultList = ArrayList<FileInfo>()

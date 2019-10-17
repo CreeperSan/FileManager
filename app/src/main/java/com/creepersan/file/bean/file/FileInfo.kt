@@ -61,4 +61,8 @@ class FileInfo{
         return false
     }
 
+    override fun toString(): String {
+        return "FileInfo{ $path }"
+    }
+
 }

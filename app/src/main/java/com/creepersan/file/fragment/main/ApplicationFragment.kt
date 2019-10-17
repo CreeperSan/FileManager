@@ -13,14 +13,13 @@ import com.creepersan.file.R
 import com.creepersan.file.activity.FragmentPageObserver
 import com.creepersan.file.activity.MainActivity
 import com.creepersan.file.bean.file.ApplicationInfo
+import com.creepersan.file.bean.file.FileInfo
 import com.creepersan.file.common.view_holder.BaseViewHolder
 import com.creepersan.file.dialog.*
 import com.creepersan.file.extension.gone
 import com.creepersan.file.extension.visible
-import com.creepersan.file.manager.ApplicationManager
-import com.creepersan.file.manager.AsyncTask
-import com.creepersan.file.manager.AsyncTaskManager
-import com.creepersan.file.manager.ResourceManager
+import com.creepersan.file.global.GlobalFileInfoClipBoard
+import com.creepersan.file.manager.*
 import kotlinx.android.synthetic.main.fragment_main_application.*
 import java.lang.ref.WeakReference
 import java.util.HashMap
@@ -113,9 +112,19 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
                             getBottomSheetDialog().closeDialog()
                         }
                         OPERATION_BACKUP -> {
+                            AsyncIOTaskManager.execute(CopyMoveAsyncIOTask(arrayListOf(
+                                CopyMoveAsyncIOTask.CopyMoveFileInfo(
+                                    FileInfo(applicationInfo.sourceDir),
+                                    GlobalFileInfoClipBoard.Action.COPY,
+                                    FileInfo("${FileManager.getBackupApkDirectoryFileInfo().path}/${applicationInfo.name}_${applicationInfo.versionName}.apk")
+                                )
+                            )))
                             getBottomSheetDialog().closeDialog()
                         }
                         OPERATION_UNINSTALL -> {
+                            ApplicationManager.uninstallApplication(activity(), applicationInfo){
+                                ToastManager.show("无法删除此应用")
+                            }
                             getBottomSheetDialog().closeDialog()
                         }
                     }
