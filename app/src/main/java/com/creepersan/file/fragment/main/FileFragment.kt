@@ -92,7 +92,7 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
 
     private fun initDialog(){
         // 底部弹出的文件操作对话框
-        mSelectMoreOperationDialog = BaseBottomSelectionDialog(activity())
+        mSelectMoreOperationDialog = BaseBottomSelectionDialog(activity)
             .setItemList(arrayListOf(
                 BaseBottomSelectionDialogItem(DIALOG_SELECTION_COPY, R.drawable.ic_content_copy, ResourceManager.getString(R.string.fileFragment_dialogOperationCopy)),
                 BaseBottomSelectionDialogItem(DIALOG_SELECTION_COPY_APPEND, R.drawable.ic_content_copy, ResourceManager.getString(R.string.fileFragment_dialogOperationCopyAppend)),
@@ -219,18 +219,18 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
                 }
             })
         // 上面弹出的搜索对话框
-        mSearchDialog = FileFragmentSearchDialog(activity())
+        mSearchDialog = FileFragmentSearchDialog(activity)
         // 中间的弹窗对话框
-        mSimpleAlertDialog = SimpleAlertDialog(activity())
+        mSimpleAlertDialog = SimpleAlertDialog(activity)
         // 文件详情对话框
-        mFileDetailDialog = FileDetailDialog(activity())
+        mFileDetailDialog = FileDetailDialog(activity)
         // 单个文件重命名对话框
-        mFileRenameSingleDialog = FileRenameSingleDialog(activity())
+        mFileRenameSingleDialog = FileRenameSingleDialog(activity)
         mFileRenameSingleDialog.setCancelListener(DialogInterface.OnCancelListener {
             setNotSelecting()
         })
         // 多个文件重命名对话框
-        mFileRenameMultiDialog = FileRenameMultiDialog(activity())
+        mFileRenameMultiDialog = FileRenameMultiDialog(activity)
         mFileRenameMultiDialog.setOnCancelListener(DialogInterface.OnCancelListener {
             setNotSelecting()
         })
@@ -249,13 +249,13 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
         fileFragmentToolbar.setOnMenuItemClickListener {  menuItem ->
             when(menuItem.itemId){
                 R.id.menuFileFragmentToolbarCreateFile -> {
-                    activity().toActivity(CreateFileDirectoryActivity::class.java, mapOf(
+                    activity.toActivity(CreateFileDirectoryActivity::class.java, mapOf(
                         CreateFileDirectoryActivity.INTENT_KEY_DIRECTORY_PATH to mFilePageInfo.getCurrentDirectoryInfo().directory.path,
                         CreateFileDirectoryActivity.INTENT_KEY_TYPE to CreateFileDirectoryActivity.INTENT_TYPE_FILE
                     ))
                 }
                 R.id.menuFileFragmentToolbarCreateDirectory -> {
-                    activity().toActivity(CreateFileDirectoryActivity::class.java, mapOf(
+                    activity.toActivity(CreateFileDirectoryActivity::class.java, mapOf(
                         CreateFileDirectoryActivity.INTENT_KEY_DIRECTORY_PATH to mFilePageInfo.getCurrentDirectoryInfo().directory.path,
                         CreateFileDirectoryActivity.INTENT_KEY_TYPE to CreateFileDirectoryActivity.INTENT_TYPE_DIRECTORY
                     ))
@@ -506,7 +506,7 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
                             setFileInfoToggleSelect(fileInfo)
                             mAdapter.notifyItemChanged(pos)
                         }else{
-
+                            FileManager.openFile(activity, fileInfo, FileManager.getMimeType(fileInfo))
                         }
                     })
                     holder.setOnLongClickListener(View.OnLongClickListener {

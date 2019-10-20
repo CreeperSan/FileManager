@@ -1,5 +1,9 @@
 package com.creepersan.file.manager
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Environment
 import com.creepersan.file.bean.file.FileInfo
 import java.io.File
@@ -15,6 +19,13 @@ object FileManager {
     const val STATE_ERROR_NOT_EXIST = -2
     const val STATE_ERROR_ALREADY_EXIST = -3
     const val STATE_ERROR_INVALID_FILE_NAME = -4
+
+    const val MIME_AUDIO = "audio/*"
+    const val MIME_VIDEO = "video/*"
+    const val MIME_TEXT = "text/*"
+    const val MIME_TEXT_HTML = "text/html"
+    const val MIME_IMAGE = "image/*"
+    const val MIME_ALL = "*/*"
 
     fun getExternalStoragePath():String{
         return Environment.getExternalStorageDirectory().path
@@ -104,6 +115,59 @@ object FileManager {
             return resultList
         }else{
             return resultList
+        }
+    }
+
+    fun openFile(context:Context, file:FileInfo, type:String="*/*"):Boolean{
+        if (!file.isExist || file.isDirectory) return false
+        val intent = Intent()
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.setDataAndType(Uri.fromFile(File(file.path)), type)
+        context.startActivity(intent)
+        return true
+    }
+
+    fun getMimeType(fileInfo:FileInfo):String{
+        return when(fileInfo.extensionName.toLowerCase(Locale.getDefault())){
+            "tiff",
+            "psd",
+            "svg",
+            "pcx",
+            "dxf",
+            "wmf",
+            "emf",
+            "lic",
+            "eps",
+            "tga",
+            "bmg",
+            "gif",
+            "jpeg",
+            "jpg",
+            "png" -> MIME_IMAGE
+            "wav",
+            "mp3",
+            "midi",
+            "flac",
+            "aiff",
+            "wave" -> MIME_AUDIO
+            "wmv",
+            "asx",
+            "rm",
+            "rmvb",
+            "mp4",
+            "3pg",
+            "mov",
+            "m4v",
+            "avi",
+            "dat",
+            "flv",
+            "mkv",
+            "vob",
+            "asf" -> MIME_AUDIO
+            "txt" -> MIME_TEXT
+            "htm",
+            "html" -> MIME_TEXT_HTML
+            else -> MIME_ALL
         }
     }
 

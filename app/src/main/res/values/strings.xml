@@ -69,8 +69,16 @@
     <string name="fileFragment_dialogRenameMultiFailHint">全部所选文件重命名失败</string>
 
     <string name="homeFragment_title">主页</string>
-    
+    <string name="homeFragment_fileFragment">管理你的文件</string>
+    <string name="homeFragment_applicationFragment">管理你的应用</string>
+
     <string name="applicationFragment_title">应用程序</string>
+    <string name="applicationFragment_menuOpen">打开</string>
+    <string name="applicationFragment_menuDetail">详情</string>
+    <string name="applicationFragment_menuBackup">备份</string>
+    <string name="applicationFragment_menuDelete">卸载</string>
+    <string name="applicationFragment_toastThisApplicationCanNotOpen">此应用不支持打开</string>
+    <string name="applicationFragment_toastCanNotUninstallThisApplication">无法删除此应用</string>
 
     <string name="settingFragment_title">设置</string>
 

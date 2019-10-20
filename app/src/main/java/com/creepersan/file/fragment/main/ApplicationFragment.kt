@@ -38,12 +38,10 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
         const val OPERATION_UNINSTALL = 3
     }
 
-    private var mIsMultiSelectMode = false
     private val mApplicationInfoList = ArrayList<ApplicationInfo>()
     private val mAdapter = ApplicationAdapter()
     private var mApplicationMoreOperationDialog : BaseBottomSelectionDialog? = null
     private var mApplicationDetailDialog : ApplicationDetailDialog? = null
-    private var mSelectApplicationInfoMap = HashMap<String, ApplicationInfo>()
     private var mTmpClickApplicationInfoReference = WeakReference<ApplicationInfo>(null)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -92,18 +90,18 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
 
     private fun getBottomSheetDialog():BaseBottomSelectionDialog{
         if (mApplicationMoreOperationDialog == null){
-            mApplicationMoreOperationDialog = BaseBottomSelectionDialog(activity()).setItemList(arrayListOf(
-                BaseBottomSelectionDialogItem(OPERATION_OPEN, R.drawable.ic_exit, "打开"),
-                BaseBottomSelectionDialogItem(OPERATION_DETAIL, R.drawable.ic_info_outline, "详情"),
-                BaseBottomSelectionDialogItem(OPERATION_BACKUP, R.drawable.ic_backup, "备份"),
-                BaseBottomSelectionDialogItem(OPERATION_UNINSTALL, R.drawable.ic_delete, "卸载", titleTextColor = Color.RED, iconTintColor = Color.RED)
+            mApplicationMoreOperationDialog = BaseBottomSelectionDialog(activity).setItemList(arrayListOf(
+                BaseBottomSelectionDialogItem(OPERATION_OPEN, R.drawable.ic_exit, ResourceManager.getString(R.string.applicationFragment_menuOpen)),
+                BaseBottomSelectionDialogItem(OPERATION_DETAIL, R.drawable.ic_info_outline, ResourceManager.getString(R.string.applicationFragment_menuDetail)),
+                BaseBottomSelectionDialogItem(OPERATION_BACKUP, R.drawable.ic_backup, ResourceManager.getString(R.string.applicationFragment_menuBackup)),
+                BaseBottomSelectionDialogItem(OPERATION_UNINSTALL, R.drawable.ic_delete, ResourceManager.getString(R.string.applicationFragment_menuDelete), titleTextColor = Color.RED, iconTintColor = Color.RED)
             )).setItemClickListener(object : BaseBottomSelectItemClickListener{
                 override fun onItemClick(id: Int, item: BaseBottomSelectionDialogItem, dialog: BaseDialog) {
                     val applicationInfo = mTmpClickApplicationInfoReference.get() ?: return
                     when(id){
                         OPERATION_OPEN -> {
                             ApplicationManager.openApplication(applicationInfo) { e ->
-                                showToast("此应用不支持打开")
+                                showToast(ResourceManager.getString(R.string.applicationFragment_toastThisApplicationCanNotOpen))
                             }
                             getBottomSheetDialog().closeDialog()
                         }
@@ -122,8 +120,8 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
                             getBottomSheetDialog().closeDialog()
                         }
                         OPERATION_UNINSTALL -> {
-                            ApplicationManager.uninstallApplication(activity(), applicationInfo){
-                                ToastManager.show("无法删除此应用")
+                            ApplicationManager.uninstallApplication(activity, applicationInfo){
+                                ToastManager.show(ResourceManager.getString(R.string.applicationFragment_toastCanNotUninstallThisApplication))
                             }
                             getBottomSheetDialog().closeDialog()
                         }
@@ -136,7 +134,7 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
 
     private fun getDetailDialog(info:ApplicationInfo? = null):ApplicationDetailDialog{
         if (mApplicationDetailDialog == null){
-            mApplicationDetailDialog = ApplicationDetailDialog(activity())
+            mApplicationDetailDialog = ApplicationDetailDialog(activity)
         }
         info?.apply {
             mApplicationDetailDialog?.setApplicationInfo(this)

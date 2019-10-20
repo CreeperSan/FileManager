@@ -30,12 +30,7 @@ open class BaseFragment : Fragment() {
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
-    /**
-     * 获取Activity
-     */
-    protected fun activity() : BaseActivity{
-        return activity as BaseActivity
-    }
+    protected val activity get() = super.getActivity() as BaseActivity
 
     /**
      * 获取布局文件ID
