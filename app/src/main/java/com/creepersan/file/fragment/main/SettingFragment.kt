@@ -47,10 +47,10 @@ class SettingFragment(activityNotify: MainActivity.Controller, fragmentListObser
 
     private fun initData(){
         mAdapter.addItem(
-            CategorySettingItem(FILE_SHOW_HIDDEN, "文件設置"),
-            CheckBoxSettingItem(FILE_SHOW_HIDDEN, "顯示隱藏文件", ConfigManager.getGlobalShowHiddenFile(),
+            CategorySettingItem(FILE_SHOW_HIDDEN, ResourceManager.getString(R.string.settingFragment_fileSetting)),
+            CheckBoxSettingItem(FILE_SHOW_HIDDEN, ResourceManager.getString(R.string.settingFragment_fileSetting_showHiddenFile), ConfigManager.getGlobalShowHiddenFile(),
                 icon = R.drawable.ic_eye_black,
-                description = "是否顯示隱藏的文件",
+                description = ResourceManager.getString(R.string.settingFragment_fileSetting_showHiddenFileDescription),
                 onSelectChange = { _, newValue, pos ->
                     ConfigManager.setGlobalShowHiddenFile(newValue)
                     mAdapter.notifyItemChanged(pos)

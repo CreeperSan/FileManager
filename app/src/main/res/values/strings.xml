@@ -81,6 +81,9 @@
     <string name="applicationFragment_toastCanNotUninstallThisApplication">无法删除此应用</string>
 
     <string name="settingFragment_title">设置</string>
+    <string name="settingFragment_fileSetting">文件设置</string>
+    <string name="settingFragment_fileSetting_showHiddenFile">显示隐藏文件</string>
+    <string name="settingFragment_fileSetting_showHiddenFileDescription">是否显示隐藏文件，更改设置后需要刷新以生效</string>
 
     <string name="aboutFragment_title">关于</string>
     <string name="aboutFragment_description">一个自用的简单文件管理器</string>
@@ -93,7 +96,7 @@
     <string name="mainActivityLeftDrawableCatalog_tools">工具</string>
     <string name="mainActivityLeftDrawableCatalog_other">其他</string>
 
-    <string name="createFileDirectoryActivity_hintNotSelectDirectory">尚未選擇文件夾</string>
+    <string name="createFileDirectoryActivity_hintNotSelectDirectory">尚未选择文件夾</string>
     <string name="createFileDirectoryActivity_hintFileNameCanNotBeEmpty">文件名不能为空</string>
     <string name="createFileDirectoryActivity_hintFileAlreadyExist">文件已经存在</string>
 

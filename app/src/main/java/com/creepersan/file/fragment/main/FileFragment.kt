@@ -515,6 +515,7 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
                         mAdapter.notifyItemChanged(pos)
                         true
                     })
+                    holder.setIcon(ResourceManager.getFileIcon(fileInfo))
                     if (fileInfo.isSelected()){
                         holder.setBackground(R.drawable.bg_file_select)
                         holder.setIcon(R.drawable.ic_check)
