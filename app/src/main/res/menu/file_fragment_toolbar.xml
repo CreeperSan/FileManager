@@ -3,11 +3,11 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-            android:id="@+id/menuFileFragmentToolbarSearch"
-            android:title="@string/fileFragment_menuSearch"
-            android:icon="@drawable/ic_search_dart_blue"
-            app:showAsAction="ifRoom"/>
+<!--    <item-->
+<!--            android:id="@+id/menuFileFragmentToolbarSearch"-->
+<!--            android:title="@string/fileFragment_menuSearch"-->
+<!--            android:icon="@drawable/ic_search_dart_blue"-->
+<!--            app:showAsAction="ifRoom"/>-->
 
     <item
             android:id="@+id/menuFileFragmentToolbarRefresh"
