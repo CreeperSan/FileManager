@@ -260,9 +260,6 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
                         CreateFileDirectoryActivity.INTENT_KEY_TYPE to CreateFileDirectoryActivity.INTENT_TYPE_DIRECTORY
                     ))
                 }
-                R.id.menuFileFragmentToolbarSearch -> {
-                    mSearchDialog.show()
-                }
                 R.id.menuFileFragmentToolbarRefresh -> {
                     mFilePageInfo.refreshTop()
                     mAdapter.notifyDataSetChanged()
