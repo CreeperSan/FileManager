@@ -7,4 +7,14 @@
         <attr name="buttonText" format="string|reference"/>
     </declare-styleable>
 
+    <declare-styleable name="PageIndicator">
+        <attr name="position" format="float"/>
+        <attr name="count" format="integer"/>
+        <attr name="dotRadius" format="dimension|reference"/>
+        <attr name="activeDotRadius" format="dimension|reference"/>
+        <attr name="dotColor" format="color|reference"/>
+        <attr name="activeDotColor" format="color|reference"/>
+        <attr name="dotDistance" format="dimension|reference"/>
+    </declare-styleable>
+
 </resources>

@@ -33,6 +33,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         initRightDrawer()
         initFloatingActionButton()
         initFragment()
+        initPageIndicator()
     }
 
     override fun onDestroy() {
@@ -40,6 +41,24 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         mPagerAdapter.destroy()
         mLeftDrawerAdapter.destroy()
         mRightDrawerAdapter.destroy()
+    }
+
+    private fun initPageIndicator(){
+        mainPageIndicator.setCount(mFragmentPageObserver.getSize())
+        mFragmentPageObserver.subscribe(object : FragmentPagerSubscriber{
+            override fun onPageUpdate(index: Int, observer: FragmentPageObserver) {
+                mainPageIndicator.setPosition(index.toFloat())
+            }
+
+            override fun onPageChange(observer: FragmentPageObserver) {
+                mainPageIndicator.setCount(observer.getSize())
+            }
+
+            override fun onPageScroll(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+                mainPageIndicator.setPosition(position + positionOffset)
+            }
+
+        })
     }
 
     private fun initFragment(){
@@ -122,9 +141,13 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     override fun onPageScrollStateChanged(state: Int) {
 
     }
-    override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
 
+    override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+        mFragmentPageObserver.forEach { fragment ->
+            fragment.onPageScroll(position, positionOffset, positionOffsetPixels)
+        }
     }
+
     override fun onPageSelected(position: Int) {
         if (mPrevVisiblePage != position){
             // 防止下标越界
@@ -218,6 +241,10 @@ class FragmentPageObserver{
         }
     }
 
+    fun forEach(action: (FragmentPagerSubscriber) -> Unit){
+        mSubscriberList.forEach(action)
+    }
+
     fun notifyFragmentUpdate(index:Int){
         mSubscriberList.forEach {  subscriber ->
             subscriber.onPageUpdate(index, this)
@@ -232,6 +259,8 @@ class FragmentPageObserver{
 }
 
 interface FragmentPagerSubscriber{
+
+    fun onPageScroll(position: Int, positionOffset: Float, positionOffsetPixels: Int){}
 
     fun onPageUpdate(index:Int, observer:FragmentPageObserver)
 
