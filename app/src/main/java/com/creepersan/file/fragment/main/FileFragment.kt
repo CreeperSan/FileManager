@@ -519,7 +519,7 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
                         holder.setInfoTextColor(ResourceManager.getColor(R.color.textHintColorLight))
                     }else{
                         holder.setBackground(R.drawable.bg_file_file)
-                        holder.setIcon(R.drawable.ic_file_grey)
+                        holder.setIcon(ResourceManager.getFileIcon(fileInfo))
                         holder.setInfoTextColor(ResourceManager.getColor(R.color.textHintColorDark))
                     }
                 }
