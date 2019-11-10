@@ -2,6 +2,7 @@ package com.creepersan.file.activity
 
 import android.content.Context
 import android.os.Bundle
+import android.view.Gravity
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager.widget.ViewPager
@@ -44,6 +45,13 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
 
     private fun initPageIndicator(){
+        mainPageIndicator.setOnClickListener {
+            if (mainDrawerLayout.isDrawerOpen(Gravity.START)){
+                mainDrawerLayout.closeDrawer(Gravity.START)
+            }else{
+                mainDrawerLayout.openDrawer(Gravity.START)
+            }
+        }
         mainPageIndicator.setCount(mFragmentPageObserver.getSize())
         mFragmentPageObserver.subscribe(object : FragmentPagerSubscriber{
             override fun onPageUpdate(index: Int, observer: FragmentPageObserver) {

@@ -32,7 +32,7 @@ object FileManager {
     }
 
     fun getExternalStorageDirectory():FileInfo{
-        return FileInfo(Environment.getExternalStorageDirectory())
+        return FileInfo(getExternalStoragePath())
     }
 
     fun getFileManagerApplicationFileInfo():FileInfo{
