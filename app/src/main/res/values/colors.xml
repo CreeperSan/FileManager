@@ -17,4 +17,6 @@
     <color name="textHintColorDark">#b4bac6</color>
     <color name="divider">#999999</color>
 
+    <color name="warming">#FF0000</color>
+
 </resources>

@@ -85,6 +85,8 @@
     <string name="settingFragment_fileSetting_showHiddenFile">显示隐藏文件</string>
     <string name="settingFragment_fileSetting_showHiddenFileDescription">是否显示隐藏文件，更改设置后需要刷新以生效</string>
 
+    <string name="appInstallerFragment_title">应用安装器</string>
+
     <string name="aboutFragment_title">关于</string>
     <string name="aboutFragment_description">一个自用的简单文件管理器</string>
     <string name="aboutFragment_versionName">%s（%s）</string>

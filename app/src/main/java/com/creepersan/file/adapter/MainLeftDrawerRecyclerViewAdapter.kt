@@ -67,6 +67,9 @@ class MainLeftDrawerRecyclerViewAdapter(
             openNewFragment(ApplicationFragment(mainActivityController, observer))
         }))
         mItemList.addOpenedWindowBottomItem(MainLeftDrawerTitleItem(ResourceManager.getString(R.string.mainActivityLeftDrawableCatalog_tools)))
+        mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_fragment_app_installer, ResourceManager.getString(R.string.appInstallerFragment_title), View.OnClickListener {
+            openNewFragment(AppInstallerFragment(mainActivityController, observer))
+        }))
         mItemList.addOpenedWindowBottomItem(MainLeftDrawerTitleItem(ResourceManager.getString(R.string.mainActivityLeftDrawableCatalog_other)))
         mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_setting, ResourceManager.getString(R.string.settingFragment_title), View.OnClickListener {
             openNewFragment(SettingFragment(mainActivityController, observer))
