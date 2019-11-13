@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:background="@drawable/bg_dialog_default"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <com.creepersan.file.view.common.PageHintView
+                android:id="@+id/dialogApplicationPageHint"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/dialogApplicationRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        <include
+                android:id="@+id/dialogApplicationActionButtonLayout"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                layout="@layout/include_dialog_common_simple_action"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

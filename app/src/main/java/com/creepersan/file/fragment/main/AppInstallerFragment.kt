@@ -12,6 +12,7 @@ import com.creepersan.file.R
 import com.creepersan.file.activity.FragmentPageObserver
 import com.creepersan.file.activity.MainActivity
 import com.creepersan.file.common.view_holder.BaseViewHolder
+import com.creepersan.file.dialog.ApplicationSelectDialog
 import com.creepersan.file.extension.gone
 import com.creepersan.file.extension.visible
 import kotlinx.android.synthetic.main.fragment_main_app_installer.*
@@ -37,11 +38,24 @@ class AppInstallerFragment(activityNotify: MainActivity.Controller, fragmentList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
+        initActionButton()
     }
 
     private fun initRecyclerView(){
         appInstallerRecyclerView.layoutManager = GridLayoutManager(activity, 3)
         appInstallerRecyclerView.adapter = mAdapter
+    }
+
+    private fun initActionButton(){
+        appInstallerInstall.setOnClickListener {
+            ApplicationSelectDialog(activity).showDialog()
+        }
+        appInstallerUninstall.setOnClickListener{
+
+        }
+        appInstallerProcess.setOnClickListener {
+
+        }
     }
 
 

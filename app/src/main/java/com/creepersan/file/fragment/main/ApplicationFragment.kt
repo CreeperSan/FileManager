@@ -18,6 +18,7 @@ import com.creepersan.file.common.view_holder.BaseViewHolder
 import com.creepersan.file.dialog.*
 import com.creepersan.file.extension.gone
 import com.creepersan.file.extension.visible
+import com.creepersan.file.global.GlobalApplicationInfo
 import com.creepersan.file.global.GlobalFileInfoClipBoard
 import com.creepersan.file.manager.*
 import kotlinx.android.synthetic.main.fragment_main_application.*
@@ -63,24 +64,14 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
     }
 
     private fun initData(){
-        AsyncTaskManager.postTask(object : AsyncTask(){
-            override fun runOnBackground(): ArrayList<ApplicationInfo> {
-                val applicationInfoList = ArrayList<ApplicationInfo>()
-                val packageManager = context?.packageManager
-                for (packageInfo in packageManager?.getInstalledPackages(0)?: arrayListOf() ){
-                    applicationInfoList.add(ApplicationInfo(packageInfo))
-                }
-                return applicationInfoList
-            }
-
-            override fun onRunOnUI(response: Any?) {
+        GlobalApplicationInfo.getAllApplicationInfo(activity, object : GlobalApplicationInfo.ApplicationInfoListener{
+            override fun onGetData(applicationInfoList: java.util.ArrayList<ApplicationInfo>) {
                 mApplicationInfoList.clear()
-                mApplicationInfoList.addAll(response as ArrayList<ApplicationInfo>)
+                mApplicationInfoList.addAll(applicationInfoList)
                 mainApplicationHintView.gone()
                 mAdapter.notifyDataSetChanged()
             }
-
-        })
+        }, true)
     }
 
     private fun initRecyclerView(){
