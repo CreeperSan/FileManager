@@ -17,6 +17,7 @@ import com.creepersan.file.activity.MainActivity
 import com.creepersan.file.bean.file.FileInfo
 import com.creepersan.file.bean.file.FilePageInfo
 import com.creepersan.file.dialog.*
+import com.creepersan.file.extension.glide
 import com.creepersan.file.extension.gone
 import com.creepersan.file.extension.visible
 import com.creepersan.file.global.GlobalFileInfoClipBoard
@@ -512,16 +513,21 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
                         mAdapter.notifyItemChanged(pos)
                         true
                     })
-                    holder.setIcon(ResourceManager.getFileIcon(fileInfo))
+
                     if (fileInfo.isSelected()){
                         holder.setBackground(R.drawable.bg_file_select)
                         holder.setIcon(R.drawable.ic_check)
                         holder.setInfoTextColor(ResourceManager.getColor(R.color.textHintColorLight))
                     }else{
                         holder.setBackground(R.drawable.bg_file_file)
-                        holder.setIcon(ResourceManager.getFileIcon(fileInfo))
+                        if (FileManager.isImage(fileInfo)){
+                            holder.loadFile(fileInfo)
+                        }else{
+                            holder.setIcon(ResourceManager.getFileIcon(fileInfo))
+                        }
                         holder.setInfoTextColor(ResourceManager.getColor(R.color.textHintColorDark))
                     }
+
                 }
             }
         }
@@ -632,6 +638,10 @@ class FileFragment(activityNotify: MainActivity.Controller, fragmentListObserver
 
         fun setBackground(resID:Int){
             itemView.setBackgroundResource(resID)
+        }
+
+        fun loadFile(fileInfo: FileInfo){
+            iconImageView.glide(fileInfo.path)
         }
 
     }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        <ImageView
+                android:id="@+id/itemAppInstallerIcon"
+                tools:src="@drawable/ic_fragment_app_installer"
+                android:layout_width="46dp"
+                android:layout_height="46dp"/>
+
+        <ImageView
+                android:id="@+id/itemAppInstallerHintIcon"
+                android:layout_gravity="end|bottom"
+                android:src="@drawable/ic_delete"
+                android:tint="@color/warming"
+                android:layout_width="18dp"
+                android:layout_height="18dp"/>
+
+    </FrameLayout>
+
+    <TextView
+            android:id="@+id/itemAppInstallerName"
+            android:layout_marginTop="6dp"
+            tools:text="应用安装器"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+</LinearLayout>

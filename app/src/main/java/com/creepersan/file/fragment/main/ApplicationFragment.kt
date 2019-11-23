@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
@@ -18,6 +19,7 @@ import com.creepersan.file.common.view_holder.BaseViewHolder
 import com.creepersan.file.dialog.*
 import com.creepersan.file.extension.gone
 import com.creepersan.file.extension.visible
+import com.creepersan.file.global.GlobalApplicationInfo
 import com.creepersan.file.global.GlobalFileInfoClipBoard
 import com.creepersan.file.manager.*
 import kotlinx.android.synthetic.main.fragment_main_application.*
@@ -48,8 +50,9 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
         super.onViewCreated(view, savedInstanceState)
         initToolbar()
         initHintView()
-        initData()
         initRecyclerView()
+        initTitle()
+        initData()
     }
 
     private fun initToolbar(){
@@ -62,25 +65,19 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
         mainApplicationHintView.visible()
     }
 
-    private fun initData(){
-        AsyncTaskManager.postTask(object : AsyncTask(){
-            override fun runOnBackground(): ArrayList<ApplicationInfo> {
-                val applicationInfoList = ArrayList<ApplicationInfo>()
-                val packageManager = context?.packageManager
-                for (packageInfo in packageManager?.getInstalledPackages(0)?: arrayListOf() ){
-                    applicationInfoList.add(ApplicationInfo(packageInfo))
-                }
-                return applicationInfoList
-            }
+    private fun initTitle(){
+        
+    }
 
-            override fun onRunOnUI(response: Any?) {
+    private fun initData(){
+        GlobalApplicationInfo.getAllApplicationInfo(activity, object : GlobalApplicationInfo.ApplicationInfoListener{
+            override fun onGetData(applicationInfoList: java.util.ArrayList<ApplicationInfo>) {
                 mApplicationInfoList.clear()
-                mApplicationInfoList.addAll(response as ArrayList<ApplicationInfo>)
+                mApplicationInfoList.addAll(applicationInfoList)
                 mainApplicationHintView.gone()
                 mAdapter.notifyDataSetChanged()
             }
-
-        })
+        }, true)
     }
 
     private fun initRecyclerView(){
@@ -168,7 +165,7 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
 
     }
 
-    private inner class ApplicationViewHolder(parentView:ViewGroup) : BaseViewHolder(R.layout.item_application_fragment_applicaiton, parentView){
+    class ApplicationViewHolder(parentView:ViewGroup) : BaseViewHolder(R.layout.item_application_fragment_applicaiton, parentView){
         private val iconView = itemView.findViewById<ImageView>(R.id.itemApplicationFragmentApplicationIcon)
         private val titleView = itemView.findViewById<TextView>(R.id.itemApplicationFragmentApplication)
 
@@ -186,6 +183,14 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
 
         fun setOnLongClickListener(listener: View.OnLongClickListener){
             itemView.setOnLongClickListener(listener)
+        }
+
+        fun setCheck(isCheck : Boolean){
+            if (isCheck){
+                itemView.setBackgroundColor(Color.parseColor("#CCCCCC"))
+            }else{
+                itemView.setBackgroundColor(Color.parseColor("#FFFFFF"))
+            }
         }
 
     }

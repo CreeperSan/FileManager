@@ -243,6 +243,15 @@ class FragmentPageObserver{
         notifyFragmentListChange()
     }
 
+    fun hasFragment(clazz: Class<*>):Boolean{
+        mFragmentList.forEach { fragment ->
+            if (fragment.javaClass.name == clazz.name){
+                return true
+            }
+        }
+        return false
+    }
+
     private fun notifyFragmentListChange(){
         mSubscriberList.forEach {  subscriber ->
             subscriber.onPageChange(this)

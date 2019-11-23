@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.Toolbar
+            android:id="@+id/appInstallerToolbar"
+            app:navigationIcon="@drawable/ic_close"
+            app:title="@string/appInstallerFragment_title"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+            app:layout_constraintTop_toBottomOf="@id/appInstallerToolbar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/appInstallerBottomActionButtonLayout"
+            android:id="@+id/appInstallerRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"/>
+
+    <LinearLayout
+            app:layout_constraintTop_toBottomOf="@id/appInstallerToolbar"
+            app:layout_constraintBottom_toTopOf="@id/appInstallerBottomActionButtonLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/appInstallerEmptyHint"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        <ImageView
+                android:src="@drawable/img_app_installer_empty_task"
+                android:layout_width="200dp"
+                android:layout_height="200dp"/>
+        <TextView
+                android:text="尚未添加任务"
+                android:textSize="16sp"
+                android:textColor="#999999"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/appInstallerBottomActionButtonLayout"
+            app:layout_constraintTop_toBottomOf="@id/appInstallerRecyclerView"
+            android:layout_marginBottom="6dp"
+            android:layout_marginTop="6dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:clickable="true"
+                android:focusable="true"
+                android:id="@+id/appInstallerInstall"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:textSize="17sp"
+                android:paddingEnd="26dp"
+                android:paddingStart="26dp"
+                android:textColor="@color/white"
+                android:background="@drawable/bg_app_installer_button"
+                android:text="安装应用"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="46sp"/>
+
+        <TextView
+                android:clickable="true"
+                android:focusable="true"
+                android:id="@+id/appInstallerUninstall"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:textSize="17sp"
+                android:paddingEnd="26dp"
+                android:paddingStart="26dp"
+                android:textColor="@color/white"
+                android:background="@drawable/bg_app_installer_button"
+                android:text="卸载应用"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="46sp"/>
+
+        <ImageView
+                android:clickable="true"
+                android:focusable="true"
+                android:id="@+id/appInstallerProcess"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:textSize="17sp"
+                android:padding="12sp"
+                android:textColor="@color/white"
+                android:background="@drawable/bg_app_installer_button"
+                android:src="@drawable/ic_send_white_24dp"
+                android:layout_width="46sp"
+                android:layout_height="46sp"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

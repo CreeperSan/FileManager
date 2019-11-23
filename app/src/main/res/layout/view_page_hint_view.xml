@@ -1,40 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:orientation="vertical"
-        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp">
 
     <ImageView
             android:id="@+id/viewPageHintViewImage"
-            tools:src="@mipmap/ic_launcher"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            tools:src="@mipmap/ic_launcher" />
 
     <TextView
             android:id="@+id/viewPageHintViewHintText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            tools:text="我是提示文本"
             android:textSize="16sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            tools:text="我是提示文本" />
 
     <Button
             android:id="@+id/viewPageHintViewButton"
-            tools:text="执行"
-            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_view_page_hint_view_button_background"
             android:minWidth="0dp"
             android:minHeight="0dp"
-            android:paddingStart ="32dp"
-            android:paddingEnd   ="32dp"
-            android:paddingTop   ="12dp"
+            android:paddingStart="32dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="32dp"
             android:paddingBottom="12dp"
+            android:textColor="@color/white"
             android:textSize="16sp"
-            android:background="@drawable/bg_view_page_hint_view_button_background"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            tools:text="执行" />
 
 </LinearLayout>
