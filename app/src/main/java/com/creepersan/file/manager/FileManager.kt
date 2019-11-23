@@ -8,6 +8,9 @@ import android.os.Environment
 import com.creepersan.file.bean.file.FileInfo
 import java.io.File
 import java.util.*
+import androidx.core.content.ContextCompat.startActivity
+
+
 
 /**
  * 文件操作类
@@ -129,6 +132,11 @@ object FileManager {
 
     fun getMimeType(fileInfo:FileInfo):String{
         return when(fileInfo.extensionName.toLowerCase(Locale.getDefault())){
+            "jpeg" -> "image/jpeg"
+            "jpg" -> "image/jpg"
+            "gif" -> "image/gif"
+            "bmp" -> "image/bmp"
+            "png" -> "image/png"
             "tiff",
             "psd",
             "svg",
@@ -138,37 +146,55 @@ object FileManager {
             "emf",
             "lic",
             "eps",
-            "tga",
-            "bmg",
-            "gif",
-            "jpeg",
-            "jpg",
-            "png" -> MIME_IMAGE
-            "wav",
-            "mp3",
+            "tga" -> MIME_IMAGE
+            "wav" -> "audio/wav"
+            "mp3" -> "audio/mp3"
+            "flac" -> "audio/flac"
             "midi",
-            "flac",
             "aiff",
             "wave" -> MIME_AUDIO
+            "mp4" -> "video/mp4"
+            "rm" -> "video/rm"
+            "rmvb" -> "video/rmvb"
+            "avi" -> "video/avi"
+            "3pg" -> "video/3gp"
             "wmv",
             "asx",
-            "rm",
-            "rmvb",
-            "mp4",
-            "3pg",
             "mov",
             "m4v",
-            "avi",
             "dat",
             "flv",
             "mkv",
             "vob",
-            "asf" -> MIME_AUDIO
-            "txt" -> MIME_TEXT
+            "asf" -> MIME_VIDEO
+            "md" -> "text/markdown"
+            "markdown" -> "text/markdown"
+            "txt" -> "text/plain"
+            "text" -> MIME_TEXT
             "htm",
             "html" -> MIME_TEXT_HTML
             else -> MIME_ALL
         }
+    }
+
+    fun isImage(fileInfo: FileInfo):Boolean{
+        when (fileInfo.extensionName) {
+            "jpeg",
+            "jpg",
+            "gif",
+            "bmp",
+            "png",
+            "tiff",
+            "psd",
+            "svg",
+            "pcx",
+            "dxf",
+            "wmf",
+            "emf",
+            "lic",
+            "eps" -> return true
+        }
+        return false
     }
 
 

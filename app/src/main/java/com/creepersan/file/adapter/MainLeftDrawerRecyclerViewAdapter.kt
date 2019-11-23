@@ -14,6 +14,7 @@ import com.creepersan.file.application.FileApplication
 import com.creepersan.file.common.view_holder.BaseViewHolder
 import com.creepersan.file.fragment.main.*
 import com.creepersan.file.manager.ResourceManager
+import com.creepersan.file.manager.ToastManager
 import java.lang.Exception
 import java.util.ArrayList
 
@@ -68,7 +69,11 @@ class MainLeftDrawerRecyclerViewAdapter(
         }))
         mItemList.addOpenedWindowBottomItem(MainLeftDrawerTitleItem(ResourceManager.getString(R.string.mainActivityLeftDrawableCatalog_tools)))
         mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_fragment_app_installer, ResourceManager.getString(R.string.appInstallerFragment_title), View.OnClickListener {
-            openNewFragment(AppInstallerFragment(mainActivityController, observer))
+            if(!observer.hasFragment(AppInstallerFragment::class.java)){
+                openNewFragment(AppInstallerFragment(mainActivityController, observer))
+            }else{
+                ToastManager.show("此标签只允许同时打开一个")
+            }
         }))
         mItemList.addOpenedWindowBottomItem(MainLeftDrawerTitleItem(ResourceManager.getString(R.string.mainActivityLeftDrawableCatalog_other)))
         mItemList.addOpenedWindowBottomItem(MainLeftDrawerAppSelectionItem(R.drawable.ic_setting, ResourceManager.getString(R.string.settingFragment_title), View.OnClickListener {

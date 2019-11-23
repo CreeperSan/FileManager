@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
@@ -49,8 +50,9 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
         super.onViewCreated(view, savedInstanceState)
         initToolbar()
         initHintView()
-        initData()
         initRecyclerView()
+        initTitle()
+        initData()
     }
 
     private fun initToolbar(){
@@ -61,6 +63,10 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
 
     private fun initHintView(){
         mainApplicationHintView.visible()
+    }
+
+    private fun initTitle(){
+        
     }
 
     private fun initData(){
@@ -159,7 +165,7 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
 
     }
 
-    private inner class ApplicationViewHolder(parentView:ViewGroup) : BaseViewHolder(R.layout.item_application_fragment_applicaiton, parentView){
+    class ApplicationViewHolder(parentView:ViewGroup) : BaseViewHolder(R.layout.item_application_fragment_applicaiton, parentView){
         private val iconView = itemView.findViewById<ImageView>(R.id.itemApplicationFragmentApplicationIcon)
         private val titleView = itemView.findViewById<TextView>(R.id.itemApplicationFragmentApplication)
 
@@ -177,6 +183,14 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
 
         fun setOnLongClickListener(listener: View.OnLongClickListener){
             itemView.setOnLongClickListener(listener)
+        }
+
+        fun setCheck(isCheck : Boolean){
+            if (isCheck){
+                itemView.setBackgroundColor(Color.parseColor("#CCCCCC"))
+            }else{
+                itemView.setBackgroundColor(Color.parseColor("#FFFFFF"))
+            }
         }
 
     }

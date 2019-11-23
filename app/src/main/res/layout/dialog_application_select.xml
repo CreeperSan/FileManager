@@ -1,32 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:orientation="vertical"
-        android:padding="16dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-            android:background="@drawable/bg_dialog_default"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_dialog_default">
+
+        <include
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/dialogApplicationTitle"
+                layout="@layout/include_dialog_common_simple_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
         <com.creepersan.file.view.common.PageHintView
+                app:layout_constraintTop_toBottomOf="@id/dialogApplicationTitle"
+                app:layout_constraintBottom_toTopOf="@id/dialogApplicationActionButtonLayout"
                 android:id="@+id/dialogApplicationPageHint"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="360dp" />
 
         <androidx.recyclerview.widget.RecyclerView
+                app:layout_constraintTop_toBottomOf="@id/dialogApplicationTitle"
+                app:layout_constraintBottom_toTopOf="@id/dialogApplicationActionButtonLayout"
                 android:id="@+id/dialogApplicationRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="360dp" />
 
         <include
                 android:id="@+id/dialogApplicationActionButtonLayout"
-                app:layout_constraintBottom_toBottomOf="parent"
+                layout="@layout/include_dialog_common_simple_action"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                layout="@layout/include_dialog_common_simple_action"/>
+                app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

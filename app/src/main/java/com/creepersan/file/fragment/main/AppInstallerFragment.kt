@@ -48,10 +48,11 @@ class AppInstallerFragment(activityNotify: MainActivity.Controller, fragmentList
 
     private fun initActionButton(){
         appInstallerInstall.setOnClickListener {
-            ApplicationSelectDialog(activity).showDialog()
+
         }
         appInstallerUninstall.setOnClickListener{
-
+            ApplicationSelectDialog(activity)
+                .showDialog()
         }
         appInstallerProcess.setOnClickListener {
 
