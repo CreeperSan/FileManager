@@ -1,5 +1,6 @@
 package com.creepersan.file.fragment.main
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
@@ -9,12 +10,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.creepersan.file.R
+import com.creepersan.file.action.application_picker.ApplicationPickerActivity
 import com.creepersan.file.activity.FragmentPageObserver
 import com.creepersan.file.activity.MainActivity
 import com.creepersan.file.common.view_holder.BaseViewHolder
 import com.creepersan.file.dialog.ApplicationSelectDialog
 import com.creepersan.file.extension.gone
 import com.creepersan.file.extension.visible
+import com.creepersan.file.res.RequestCode
 import kotlinx.android.synthetic.main.fragment_main_app_installer.*
 import java.util.ArrayList
 
@@ -51,15 +54,22 @@ class AppInstallerFragment(activityNotify: MainActivity.Controller, fragmentList
 
         }
         appInstallerUninstall.setOnClickListener{
-            ApplicationSelectDialog(activity)
-                .showDialog()
+
+            startActivityForResult(Intent(activity, ApplicationPickerActivity::class.java).apply {
+                putExtra(ApplicationPickerActivity.INTENT_TITLE, "选择要卸载的应用")
+            }, RequestCode.APPLICATION_PICKER)
+
+//            ApplicationSelectDialog(activity)
+//                .showDialog()
         }
         appInstallerProcess.setOnClickListener {
 
         }
     }
 
-
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+    }
 
 
 

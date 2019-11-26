@@ -26,6 +26,8 @@
         <activity android:name=".activity.MainActivity" android:screenOrientation="portrait"/>
         <activity android:name=".activity.PermissionDescriptionActivity" android:screenOrientation="portrait" android:theme="@style/AppTheme.NoActionBar.WhiteSystemBar"/>
         <activity android:name=".activity.CreateFileDirectoryActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".action.file_picker.FilePickerActivity" android:screenOrientation="portrait" android:theme="@style/AppTheme.NoActionBar.WhiteSystemBar"/>
+        <activity android:name=".action.application_picker.ApplicationPickerActivity" android:screenOrientation="portrait" android:theme="@style/AppTheme.NoActionBar.WhiteSystemBar"/>
 
     </application>
 
