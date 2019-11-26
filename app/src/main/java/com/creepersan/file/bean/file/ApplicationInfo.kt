@@ -4,8 +4,9 @@ import android.content.pm.PackageInfo
 import android.graphics.drawable.Drawable
 import android.os.Build
 import com.creepersan.file.application.FileApplication
+import java.io.Serializable
 
-class ApplicationInfo(packageInfo:PackageInfo){
+class ApplicationInfo(packageInfo:PackageInfo) : Serializable{
     val icon : Drawable
     val name : String
     val packageName : String
