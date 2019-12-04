@@ -1,28 +1,28 @@
 package com.creepersan.file.global
 
 import android.content.Context
-import com.creepersan.file.bean.file.ApplicationInfo
+import com.creepersan.file.bean.file.AppInfo
 import com.creepersan.file.manager.AsyncTask
 import com.creepersan.file.manager.AsyncTaskManager
 import java.util.ArrayList
 
-object GlobalApplicationInfo{
+object GlobalAppInfo{
 
-    private val mCacheApplicationInfoList = ArrayList<ApplicationInfo>()
+    private val mCacheApplicationInfoList = ArrayList<AppInfo>()
 
     fun getAllApplicationInfo(context:Context, listener:ApplicationInfoListener, isForce:Boolean = false){
         if (isForce || mCacheApplicationInfoList.isEmpty()){
-            AsyncTaskManager.postTask(object : AsyncTask<ArrayList<ApplicationInfo>>(){
-                override fun runOnBackground(): ArrayList<ApplicationInfo> {
-                    val applicationInfoList = ArrayList<ApplicationInfo>()
+            AsyncTaskManager.postTask(object : AsyncTask<ArrayList<AppInfo>>(){
+                override fun runOnBackground(): ArrayList<AppInfo> {
+                    val applicationInfoList = ArrayList<AppInfo>()
                     val packageManager = context.applicationContext.packageManager
                     for (packageInfo in packageManager?.getInstalledPackages(0)?: arrayListOf() ){
-                        applicationInfoList.add(ApplicationInfo(packageInfo))
+                        applicationInfoList.add(AppInfo(packageInfo))
                     }
                     return applicationInfoList
                 }
 
-                override fun onRunOnUI(response: ArrayList<ApplicationInfo>?) {
+                override fun onRunOnUI(response: ArrayList<AppInfo>?) {
                     // 更新数据
                     synchronized(this) {
                         mCacheApplicationInfoList.clear()
@@ -45,7 +45,7 @@ object GlobalApplicationInfo{
     }
 
     interface ApplicationInfoListener{
-        fun onGetData(applicationInfoList:ArrayList<ApplicationInfo>)
+        fun onGetData(applicationInfoList:ArrayList<AppInfo>)
     }
 
 }

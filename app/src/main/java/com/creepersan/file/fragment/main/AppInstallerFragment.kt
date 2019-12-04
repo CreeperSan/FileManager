@@ -57,6 +57,10 @@ class AppInstallerFragment(activityNotify: MainActivity.Controller, fragmentList
 
             startActivityForResult(Intent(activity, ApplicationPickerActivity::class.java).apply {
                 putExtra(ApplicationPickerActivity.INTENT_TITLE, "选择要卸载的应用")
+                putExtra(ApplicationPickerActivity.INTENT_FILTER, arrayOf(
+                    ApplicationPickerActivity.FILTER_USER,
+                    ApplicationPickerActivity.FILTER_ENABLE
+                ))
             }, RequestCode.APPLICATION_PICKER)
 
 //            ApplicationSelectDialog(activity)

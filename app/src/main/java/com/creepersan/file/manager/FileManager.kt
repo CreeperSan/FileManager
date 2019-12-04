@@ -3,13 +3,17 @@ package com.creepersan.file.manager
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
+import android.webkit.MimeTypeMap
 import com.creepersan.file.bean.file.FileInfo
 import java.io.File
 import java.util.*
 import androidx.core.content.ContextCompat.startActivity
-
+import androidx.core.content.FileProvider
+import com.creepersan.file.BuildConfig
 
 
 /**
@@ -121,17 +125,22 @@ object FileManager {
         }
     }
 
-    fun openFile(context:Context, file:FileInfo, type:String="*/*"):Boolean{
-        if (!file.isExist || file.isDirectory) return false
-        val intent = Intent()
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.setDataAndType(Uri.fromFile(File(file.path)), type)
+    private val FILE_PROVIDER_AUTROITIES = "com.creepersan.file.provider"
+    fun openFile(context:Context, fileInfo:FileInfo, type:String="*/*"):Boolean{
+        if (!fileInfo.isExist || fileInfo.isDirectory) return false
+        val file = File(fileInfo.path)
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or FLAG_ACTIVITY_NEW_TASK)
+        val uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file)
+        intent.setDataAndType(uri, type)
         context.startActivity(intent)
         return true
     }
 
     fun getMimeType(fileInfo:FileInfo):String{
-        return when(fileInfo.extensionName.toLowerCase(Locale.getDefault())){
+        val extensionName = fileInfo.extensionName
+        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extensionName)
+        return mimeType ?: when(fileInfo.extensionName.toLowerCase(Locale.getDefault())){
             "jpeg" -> "image/jpeg"
             "jpg" -> "image/jpg"
             "gif" -> "image/gif"

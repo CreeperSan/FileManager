@@ -14,9 +14,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.creepersan.file.R
 import com.creepersan.file.activity.BaseActivity
-import com.creepersan.file.bean.file.ApplicationInfo
+import com.creepersan.file.bean.file.AppInfo
 import com.creepersan.file.common.view_holder.BaseViewHolder
-import com.creepersan.file.global.GlobalApplicationInfo
+import com.creepersan.file.global.GlobalAppInfo
 import kotlinx.android.synthetic.main.activity_application_picker.*
 import java.util.ArrayList
 import java.util.HashSet
@@ -25,20 +25,21 @@ class ApplicationPickerActivity : BaseActivity(){
 
     companion object{
         const val INTENT_TITLE = "title"
-        const val INTENT_TAB = "tab"
+        const val INTENT_FILTER = "filter"
 
         const val RESULT_APPLICATION_PACKAGE_NAME_ARRAY = "data"
 
-        const val TAB_ALL = "all"
-        const val TAB_SYSTEM = "system"
-        const val TAB_USER = "user"
-        const val TAB_DISABLE = "disable"
+        const val FILTER_SYSTEM = "system"
+        const val FILTER_USER = "user"
+        const val FILTER_DISABLE = "disable"
+        const val FILTER_ENABLE = "enable"
     }
 
 
     private var mTitle = "选择应用"
-    private val mApplicationInfoList = ArrayList<ApplicationInfo>()
-    private val mSelectApplicationSet = HashSet<ApplicationInfo>()
+    private var mFilter = arrayOf<String>()
+    private val mApplicationInfoList = ArrayList<AppInfo>()
+    private val mSelectApplicationSet = HashSet<AppInfo>()
     private val mAdapter = ApplicationPickerAdapter()
 
     override fun getLayoutID(): Int = R.layout.activity_application_picker
@@ -57,6 +58,10 @@ class ApplicationPickerActivity : BaseActivity(){
         if (intent.hasExtra(INTENT_TITLE)){
             mTitle = intent.getStringExtra(INTENT_TITLE)
         }
+        // 初始化筛选器
+        if (intent.hasExtra(INTENT_FILTER)){
+            mFilter = intent.getStringArrayExtra(INTENT_FILTER)
+        }
     }
 
     private fun initToolbar(){
@@ -72,11 +77,51 @@ class ApplicationPickerActivity : BaseActivity(){
         applicationPickerRecyclerView.adapter = mAdapter
     }
 
+    /**
+     * 筛选的逻辑如下
+     *
+     * 比如说需要筛选出用户应用，
+     * 那么碰到这个筛选项时，如果此应用不是用户应用，则不添加。
+     */
     private fun initData(){
-        GlobalApplicationInfo.getAllApplicationInfo(this, object : GlobalApplicationInfo.ApplicationInfoListener{
-            override fun onGetData(applicationInfoList: ArrayList<ApplicationInfo>) {
+        GlobalAppInfo.getAllApplicationInfo(this, object : GlobalAppInfo.ApplicationInfoListener{
+            override fun onGetData(applicationInfoList: ArrayList<AppInfo>) {
+                val filterApplicationList = ArrayList<AppInfo>()
+                // 筛选
+                applicationInfoList.forEach {  appInfo ->
+                    for (tmpFilter in mFilter){
+                        when(tmpFilter){
+                            // 如果不是用户应用，则不添加
+                            FILTER_USER -> {
+                                if (!appInfo.isUserApplication()){
+                                    return@forEach
+                                }
+                            }
+                            // 如果不是系统应用，则不添加
+                            FILTER_SYSTEM -> {
+                                if (!appInfo.isSystemApplication()){
+                                    return@forEach
+                                }
+                            }
+                            // 如果不是禁用的应用，则不添加
+                            FILTER_DISABLE -> {
+                                if (appInfo.isEnable){
+                                    return@forEach
+                                }
+                            }
+                            // 如果不是正在使用的应用，则阿布添加
+                            FILTER_ENABLE -> {
+                                if (!appInfo.isEnable){
+                                    return@forEach
+                                }
+                            }
+                        }
+                    }
+                    filterApplicationList.add(appInfo)
+                }
+
                 mApplicationInfoList.clear()
-                mApplicationInfoList.addAll(applicationInfoList)
+                mApplicationInfoList.addAll(filterApplicationList)
 
                 mAdapter.notifyDataSetChanged()
             }
@@ -147,7 +192,7 @@ class ApplicationPickerActivity : BaseActivity(){
             itemView.setBackgroundColor(if (isSelect){
                 Color.parseColor("#CCCCCC")
             }else{
-                Color.parseColor("#FFFFFF")
+                Color.TRANSPARENT
             })
         }
 

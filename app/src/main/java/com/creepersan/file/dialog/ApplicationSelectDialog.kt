@@ -7,14 +7,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.creepersan.file.R
-import com.creepersan.file.bean.file.ApplicationInfo
+import com.creepersan.file.bean.file.AppInfo
 import com.creepersan.file.common.view_holder.IncludeSimpleDialogActionViewHolder
 import com.creepersan.file.common.view_holder.IncludeSimpleDialogTitleViewHolder
 import com.creepersan.file.extension.gone
 import com.creepersan.file.extension.visible
 import com.creepersan.file.fragment.main.ApplicationFragment
-import com.creepersan.file.global.GlobalApplicationInfo
-import com.creepersan.file.view.common.PageHintView
+import com.creepersan.file.global.GlobalAppInfo
 import kotlinx.android.synthetic.main.dialog_application_select.*
 import java.util.ArrayList
 import java.util.HashSet
@@ -25,9 +24,9 @@ class ApplicationSelectDialog(
     private val mIncludeActionButton = IncludeSimpleDialogActionViewHolder(dialogView.findViewById(R.id.dialogApplicationActionButtonLayout))
     private val mAdapter by lazy { ApplicationSelectDialogAdapter() }
 
-    private val mApplicationInfoList = ArrayList<ApplicationInfo>()
+    private val mApplicationInfoList = ArrayList<AppInfo>()
 
-    private val mSelectSet = HashSet<ApplicationInfo>()
+    private val mSelectSet = HashSet<AppInfo>()
 
     override fun getLayoutID(): Int {
         return R.layout.dialog_application_select
@@ -65,8 +64,8 @@ class ApplicationSelectDialog(
     }
 
     private fun initData(){
-        GlobalApplicationInfo.getAllApplicationInfo(context, object : GlobalApplicationInfo.ApplicationInfoListener{
-            override fun onGetData(applicationInfoList: ArrayList<ApplicationInfo>) {
+        GlobalAppInfo.getAllApplicationInfo(context, object : GlobalAppInfo.ApplicationInfoListener{
+            override fun onGetData(applicationInfoList: ArrayList<AppInfo>) {
                 dialogApplicationPageHint.gone()
                 dialogApplicationRecyclerView.visible()
 

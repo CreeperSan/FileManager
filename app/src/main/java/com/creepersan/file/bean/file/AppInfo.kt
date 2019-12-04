@@ -1,12 +1,13 @@
 package com.creepersan.file.bean.file
 
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.graphics.drawable.Drawable
 import android.os.Build
 import com.creepersan.file.application.FileApplication
 import java.io.Serializable
 
-class ApplicationInfo(packageInfo:PackageInfo) : Serializable{
+class AppInfo(packageInfo:PackageInfo) : Serializable{
     val icon : Drawable
     val name : String
     val packageName : String
@@ -18,6 +19,8 @@ class ApplicationInfo(packageInfo:PackageInfo) : Serializable{
     val publicSourceDir : String
     val sourceDir : String
     val firstInstallTime : Long
+    val flag : Int
+    val isEnable : Boolean
 
     init {
         val applicationInfo = packageInfo.applicationInfo
@@ -40,6 +43,16 @@ class ApplicationInfo(packageInfo:PackageInfo) : Serializable{
             versionCode = packageInfo.versionCode.toLong()
         }
 
+        flag = applicationInfo.flags
+        isEnable = applicationInfo.enabled
+    }
+
+    fun isSystemApplication() : Boolean{
+        return flag and ApplicationInfo.FLAG_SYSTEM != 0
+    }
+
+    fun isUserApplication() : Boolean{
+        return !isSystemApplication()
     }
 
 }

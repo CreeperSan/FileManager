@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.creepersan.file.R
-import com.creepersan.file.bean.file.ApplicationInfo
+import com.creepersan.file.bean.file.AppInfo
 import com.creepersan.file.common.view_holder.IncludeSimpleDialogActionViewHolder
 import com.creepersan.file.common.view_holder.IncludeSimpleDialogTitleViewHolder
 import com.creepersan.file.manager.FormatManager
@@ -38,7 +38,7 @@ class ApplicationDetailDialog(context: Context) : BaseDialog(context, POSITION_C
         })
     }
 
-    fun setApplicationInfo(applicationInfo:ApplicationInfo){
+    fun setApplicationInfo(applicationInfo:AppInfo){
         mIconImageView.setImageDrawable(applicationInfo.icon)
         mTitleTextView.text = applicationInfo.name
         mVersionTextView.text = "${applicationInfo.versionName} ( ${applicationInfo.versionCode} )"

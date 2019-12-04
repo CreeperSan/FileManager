@@ -29,6 +29,16 @@
         <activity android:name=".action.file_picker.FilePickerActivity" android:screenOrientation="portrait" android:theme="@style/AppTheme.NoActionBar.WhiteSystemBar"/>
         <activity android:name=".action.application_picker.ApplicationPickerActivity" android:screenOrientation="portrait" android:theme="@style/AppTheme.NoActionBar.WhiteSystemBar"/>
 
+        <provider
+                android:name="androidx.core.content.FileProvider"
+                android:authorities="com.creepersan.file.provider"
+                android:exported="false"
+                android:grantUriPermissions="true">
+            <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/file_paths"/>
+        </provider>
+        
     </application>
 
 </manifest>

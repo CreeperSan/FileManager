@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
@@ -13,18 +12,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.creepersan.file.R
 import com.creepersan.file.activity.FragmentPageObserver
 import com.creepersan.file.activity.MainActivity
-import com.creepersan.file.bean.file.ApplicationInfo
+import com.creepersan.file.bean.file.AppInfo
 import com.creepersan.file.bean.file.FileInfo
 import com.creepersan.file.common.view_holder.BaseViewHolder
 import com.creepersan.file.dialog.*
 import com.creepersan.file.extension.gone
 import com.creepersan.file.extension.visible
-import com.creepersan.file.global.GlobalApplicationInfo
+import com.creepersan.file.global.GlobalAppInfo
 import com.creepersan.file.global.GlobalFileInfoClipBoard
 import com.creepersan.file.manager.*
 import kotlinx.android.synthetic.main.fragment_main_application.*
 import java.lang.ref.WeakReference
-import java.util.HashMap
 
 class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListObserver: FragmentPageObserver) : BaseMainFragment(activityNotify, fragmentListObserver){
     override fun getName(): String = ResourceManager.getString(R.string.applicationFragment_title)
@@ -40,11 +38,11 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
         const val OPERATION_UNINSTALL = 3
     }
 
-    private val mApplicationInfoList = ArrayList<ApplicationInfo>()
+    private val mApplicationInfoList = ArrayList<AppInfo>()
     private val mAdapter = ApplicationAdapter()
     private var mApplicationMoreOperationDialog : BaseBottomSelectionDialog? = null
     private var mApplicationDetailDialog : ApplicationDetailDialog? = null
-    private var mTmpClickApplicationInfoReference = WeakReference<ApplicationInfo>(null)
+    private var mTmpClickApplicationInfoReference = WeakReference<AppInfo>(null)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -70,8 +68,8 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
     }
 
     private fun initData(){
-        GlobalApplicationInfo.getAllApplicationInfo(activity, object : GlobalApplicationInfo.ApplicationInfoListener{
-            override fun onGetData(applicationInfoList: java.util.ArrayList<ApplicationInfo>) {
+        GlobalAppInfo.getAllApplicationInfo(activity, object : GlobalAppInfo.ApplicationInfoListener{
+            override fun onGetData(applicationInfoList: java.util.ArrayList<AppInfo>) {
                 mApplicationInfoList.clear()
                 mApplicationInfoList.addAll(applicationInfoList)
                 mainApplicationHintView.gone()
@@ -129,7 +127,7 @@ class ApplicationFragment(activityNotify: MainActivity.Controller, fragmentListO
         return mApplicationMoreOperationDialog!!
     }
 
-    private fun getDetailDialog(info:ApplicationInfo? = null):ApplicationDetailDialog{
+    private fun getDetailDialog(info:AppInfo? = null):ApplicationDetailDialog{
         if (mApplicationDetailDialog == null){
             mApplicationDetailDialog = ApplicationDetailDialog(activity)
         }
